@@ -7,6 +7,7 @@ import DashboardScreen from '../screens/main/DashboardScreen';
 import FamilyHubScreen from '../screens/main/FamilyHubScreen';
 import TransactionsScreen from '../screens/main/TransactionsScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
+import VisaComplianceScreen from '../screens/main/VisaComplianceScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -56,6 +57,16 @@ const MainNavigator: React.FC = () => {
           title: 'Transactions',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="swap-horizontal" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="VisaCompliance"
+        component={VisaComplianceScreen}
+        options={{
+          title: 'Visa',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="passport" size={size} color={color} />
           ),
         }}
       />

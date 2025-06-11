@@ -75,6 +75,7 @@ export type MainTabParamList = {
   Dashboard: undefined;
   FamilyHub: undefined;
   Transactions: undefined;
+  VisaCompliance: undefined;
   Settings: undefined;
 };
 
