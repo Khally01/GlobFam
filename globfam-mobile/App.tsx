@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store } from './src/store';
 import RootNavigator from './src/navigation/RootNavigator';
 import NotificationService from './src/services/notificationService';
+import { LanguageProvider } from './src/contexts/LanguageContext';
 
 // Custom theme configuration
 const lightTheme = {
@@ -47,10 +48,12 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ReduxProvider store={store}>
-        <PaperProvider theme={isDarkMode ? darkTheme : lightTheme}>
-          <StatusBar style={isDarkMode ? 'light' : 'dark'} />
-          <RootNavigator />
-        </PaperProvider>
+        <LanguageProvider>
+          <PaperProvider theme={isDarkMode ? darkTheme : lightTheme}>
+            <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+            <RootNavigator />
+          </PaperProvider>
+        </LanguageProvider>
       </ReduxProvider>
     </SafeAreaProvider>
   );

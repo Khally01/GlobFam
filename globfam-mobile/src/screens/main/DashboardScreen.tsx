@@ -9,10 +9,13 @@ import currencyService from '../../services/currencyService';
 import TransactionModal from '../../components/TransactionModal';
 import BudgetingService from '../../services/budgetingService';
 import { DEMO_VISA } from '../../services/mockDataService';
+import { useLanguage } from '../../contexts/LanguageContext';
+import LanguageToggle from '../../components/LanguageToggle';
 
 const DashboardScreen: React.FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const { t } = useLanguage();
   const { user, isDemo } = useAppSelector((state) => state.auth);
   const { balances, selectedCurrency, isLoading: currencyLoading } = useAppSelector((state) => state.currency);
   const { transactions, isLoading: transactionLoading } = useAppSelector((state) => state.transaction);
@@ -103,20 +106,22 @@ const DashboardScreen: React.FC = () => {
       }
     >
       <View style={styles.header}>
-        <Title style={styles.greeting}>Hello, {user?.displayName}!</Title>
+        <Title style={styles.greeting}>{t('hello')}, {user?.displayName}!</Title>
         <Text style={styles.date}>{new Date().toLocaleDateString()}</Text>
         {isDemo && (
           <Chip mode="flat" style={styles.demoChip} icon="test-tube">
-            Demo Mode
+            {t('demo_mode')}
           </Chip>
         )}
       </View>
+      
+      <LanguageToggle />
 
       {/* Total Balance Card */}
       <Card style={styles.balanceCard}>
         <Card.Content>
           <View style={styles.balanceHeader}>
-            <Text style={styles.balanceLabel}>Total Balance</Text>
+            <Text style={styles.balanceLabel}>{t('total_balance')}</Text>
             <Chip 
               mode="outlined" 
               onPress={() => {}} 
@@ -133,7 +138,7 @@ const DashboardScreen: React.FC = () => {
 
       {/* Currency Balances */}
       <View style={styles.section}>
-        <Title style={styles.sectionTitle}>Currency Balances</Title>
+        <Title style={styles.sectionTitle}>{t('currency_balances')}</Title>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {balances.map((balance) => (
             <Surface key={balance.currency} style={styles.currencyCard}>
@@ -152,9 +157,9 @@ const DashboardScreen: React.FC = () => {
           {balances.length === 0 && (
             <Surface style={styles.emptyCard}>
               <MaterialCommunityIcons name="currency-usd" size={40} color={theme.colors.primary} />
-              <Text style={styles.emptyText}>No balances yet</Text>
+              <Text style={styles.emptyText}>{t('no_transactions')}</Text>
               <Button mode="text" onPress={() => {}}>
-                Add Currency
+                {t('add')}
               </Button>
             </Surface>
           )}
@@ -164,9 +169,9 @@ const DashboardScreen: React.FC = () => {
       {/* Recent Transactions */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Title style={styles.sectionTitle}>Recent Transactions</Title>
+          <Title style={styles.sectionTitle}>{t('recent_transactions')}</Title>
           <Button mode="text" onPress={() => {}}>
-            View All
+            {t('view_all')}
           </Button>
         </View>
         {getRecentTransactions().map((transaction) => (
@@ -202,9 +207,9 @@ const DashboardScreen: React.FC = () => {
           <Card style={styles.emptyTransactionCard}>
             <Card.Content style={styles.emptyContent}>
               <MaterialCommunityIcons name="swap-horizontal" size={40} color={theme.colors.primary} />
-              <Text style={styles.emptyText}>No transactions yet</Text>
+              <Text style={styles.emptyText}>{t('no_transactions')}</Text>
               <Button mode="contained" onPress={() => setTransactionModalVisible(true)} style={styles.addButton}>
-                Add Transaction
+                {t('add_transaction')}
               </Button>
             </Card.Content>
           </Card>
@@ -213,29 +218,29 @@ const DashboardScreen: React.FC = () => {
 
       {/* Quick Actions */}
       <View style={styles.section}>
-        <Title style={styles.sectionTitle}>Quick Actions</Title>
+        <Title style={styles.sectionTitle}>{t('quick_actions')}</Title>
         <View style={styles.actionGrid}>
           <Surface style={styles.actionCard} onTouchEnd={() => {
             setTransactionType('income');
             setTransactionModalVisible(true);
           }}>
             <MaterialCommunityIcons name="plus" size={32} color={theme.colors.primary} />
-            <Text style={styles.actionText}>Add Income</Text>
+            <Text style={styles.actionText}>{t('add_income')}</Text>
           </Surface>
           <Surface style={styles.actionCard} onTouchEnd={() => {
             setTransactionType('expense');
             setTransactionModalVisible(true);
           }}>
             <MaterialCommunityIcons name="minus" size={32} color={theme.colors.error} />
-            <Text style={styles.actionText}>Add Expense</Text>
+            <Text style={styles.actionText}>{t('add_expense')}</Text>
           </Surface>
           <Surface style={styles.actionCard}>
             <MaterialCommunityIcons name="swap-horizontal" size={32} color={theme.colors.secondary} />
-            <Text style={styles.actionText}>Transfer</Text>
+            <Text style={styles.actionText}>{t('transfer')}</Text>
           </Surface>
           <Surface style={styles.actionCard}>
             <MaterialCommunityIcons name="chart-line" size={32} color={theme.colors.tertiary} />
-            <Text style={styles.actionText}>Analytics</Text>
+            <Text style={styles.actionText}>{t('analytics')}</Text>
           </Surface>
         </View>
       </View>
@@ -246,7 +251,7 @@ const DashboardScreen: React.FC = () => {
           <Card.Content>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
               <MaterialCommunityIcons name="bell-alert" size={24} color={theme.colors.error} />
-              <Title style={{ marginLeft: 8, fontSize: 18 }}>Upcoming Payments</Title>
+              <Title style={{ marginLeft: 8, fontSize: 18 }}>{t('upcoming_payments')}</Title>
             </View>
             {upcomingPayments.slice(0, 3).map((payment, index) => (
               <View key={payment.id} style={{ 
@@ -261,7 +266,7 @@ const DashboardScreen: React.FC = () => {
                   </Text>
                 </View>
                 <Text style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
-                  Due in {Math.ceil((payment.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                  {t('due_in_days', { days: Math.ceil((payment.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) })}
                 </Text>
               </View>
             ))}
@@ -271,7 +276,7 @@ const DashboardScreen: React.FC = () => {
               style={{ marginTop: 8 }}
               icon="arrow-right"
             >
-              View All Payments
+              {t('view_all')}
             </Button>
           </Card.Content>
         </Card>
@@ -282,7 +287,7 @@ const DashboardScreen: React.FC = () => {
         <Card.Content>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
             <MaterialCommunityIcons name="piggy-bank" size={24} color={theme.colors.primary} />
-            <Title style={{ marginLeft: 8, fontSize: 18 }}>Visa Savings Progress</Title>
+            <Title style={{ marginLeft: 8, fontSize: 18 }}>{t('visa_savings_progress')}</Title>
           </View>
           <ProgressBar 
             progress={0.33} 
@@ -291,10 +296,10 @@ const DashboardScreen: React.FC = () => {
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ fontSize: 14, color: '#666' }}>
-              $25,000 of $75,419 saved (33%)
+              {t('saved_of_target', { saved: '$25,000', target: '$75,419', percent: '33' })}
             </Text>
             <Text style={{ fontSize: 14, fontWeight: '600', color: theme.colors.primary }}>
-              $1,000/fortnight
+              {t('per_fortnight', { amount: '$1,000' })}
             </Text>
           </View>
         </Card.Content>

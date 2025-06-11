@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ГлобФам - Монгол оюутан гэр бүлд зориулсан санхүүгийн апп</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+        
+        .language-toggle {
+            display: flex;
+            gap: 5px;
+            background: #f0f0f0;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        
+        .lang-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 20px;
+            background: white;
+            padding: 0 20px;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-tab:hover {
+            color: #4CAF50;
+        }
+        
+        .nav-tab.active {
+            color: #4CAF50;
+            border-bottom-color: #4CAF50;
+        }
+        
+        .demo-badge {
+            background: #FFF3CD;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .notification-bell:hover {
+            background: #f0f0f0;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ff4444;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .greeting {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .date {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .balance-amount {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .currency-item {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .currency-code {
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        .currency-amount {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .alert-card {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            margin-bottom: 20px;
+        }
+        
+        .alert-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #E65100;
+            margin-bottom: 12px;
+        }
+        
+        .payment-item {
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .payment-urgent {
+            background: #FFEBEE;
+            border: 1px solid #FFCDD2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s;
+        }
+        
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #45a049;
+        }
+        
+        .button-outline {
+            background: transparent;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+        
+        .button-outline:hover {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .notification-settings {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #4CAF50;
+        }
+        
+        .toggle-thumb {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active .toggle-thumb {
+            transform: translateX(26px);
+        }
+        
+        .reminder-schedule {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 8px;
+        }
+        
+        .reminder-day {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .reminder-day.urgent {
+            background: #FFEBEE;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .savings-goal {
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .goal-amount {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+        
+        .budget-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .budget-item {
+            text-align: center;
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 8px;
+        }
+        
+        .budget-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .budget-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .income { color: #4CAF50; }
+        .expense { color: #f44336; }
+        
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box h3 {
+            color: #1565C0;
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .balance-card {
+                grid-column: span 1;
+            }
+            
+            .currency-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .budget-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                padding: 0 10px;
+            }
+            
+            .nav-tab {
+                padding: 15px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Translation system
+        const translations = {
+            en: {
+                app_name: 'GlobFam',
+                demo_mode: 'Demo Mode',
+                hello: 'Hello',
+                dashboard: 'Dashboard',
+                visa_compliance: 'Visa',
+                budget_planner: 'Budget',
+                settings: 'Settings',
+                total_balance: 'Total Balance',
+                currency_balances: 'Currency Balances',
+                upcoming_payments: 'Upcoming Payments',
+                due_in_days: 'Due in {{days}} days',
+                due_today: 'Due Today',
+                due_tomorrow: 'Due Tomorrow',
+                visa_savings_progress: 'Visa Savings Progress',
+                saved_of_target: '{{saved}} of {{target}} saved ({{percent}}%)',
+                per_fortnight: '{{amount}}/fortnight',
+                next_payment_due: 'Next Payment Due',
+                visa_status: 'Visa Status',
+                expires: 'Expires',
+                days_remaining: 'Days Remaining',
+                work_hours_tracker: 'Work Hours Tracker',
+                this_fortnight: 'This Fortnight',
+                hours_of_limit: '{{hours}}/{{limit}} hours',
+                within_visa_limit: 'Within visa limit ({{remaining}} hours remaining)',
+                financial_requirements: 'Financial Requirements',
+                required_for_renewal: 'Required for Visa Renewal',
+                living_costs_you: 'Living Costs (You)',
+                living_costs_partner: 'Living Costs (Partner)',
+                living_costs_children: 'Living Costs (2 Children)',
+                school_costs: 'School Costs',
+                university_fees: 'University Fees',
+                monthly_income: 'Monthly Income',
+                monthly_expenses: 'Monthly Expenses',
+                available_to_save: 'Available to Save',
+                savings_goals: 'Savings Goals',
+                payment_schedule: 'Payment Schedule',
+                visa_renewal_fund: 'Visa Renewal Fund',
+                emergency_fund: 'Emergency Fund',
+                semester_tuition: 'Semester 2 Tuition',
+                target: 'Target',
+                saved: 'Saved',
+                remaining: 'Remaining',
+                payment_reminders: 'Payment Reminders',
+                enable_notifications: 'Enable Notifications',
+                reminder_description: 'Get reminded before payment due dates',
+                reminder_schedule: 'Reminder Schedule',
+                urgent_reminder: '{{days}} days before - Urgent reminder',
+                standard_reminder: '{{days}} days before - Standard reminder',
+                early_notice: '{{days}} days before - Early notice',
+                send_test_notification: 'Send Test Notification',
+                profile: 'Profile',
+                name: 'Name',
+                email: 'Email',
+                family_id: 'Family ID',
+                childcare_weekly: 'Childcare Weekly Fee',
+                school_term_fees: 'School Term 1 Fees',
+                visa_renewal_app: 'Visa Renewal Application',
+                info_title: 'For Mongolian Students in Australia',
+                info_text: 'This app helps you track visa compliance, manage multi-currency finances, and plan for your family\'s future in Australia.'
+            },
+            mn: {
+                app_name: 'ГлобФам',
+                demo_mode: 'Жишээ горим',
+                hello: 'Сайн байна уу',
+                dashboard: 'Хяналтын самбар',
+                visa_compliance: 'Виз',
+                budget_planner: 'Төсөв',
+                settings: 'Тохиргоо',
+                total_balance: 'Нийт үлдэгдэл',
+                currency_balances: 'Валютын үлдэгдэл',
+                upcoming_payments: 'Удахгүй болох төлбөрүүд',
+                due_in_days: '{{days}} өдрийн дараа',
+                due_today: 'Өнөөдөр',
+                due_tomorrow: 'Маргааш',
+                visa_savings_progress: 'Визний хуримтлалын явц',
+                saved_of_target: '{{target}}-с {{saved}} хуримтлуулсан ({{percent}}%)',
+                per_fortnight: '2 долоо хоногт {{amount}}',
+                next_payment_due: 'Дараагийн төлбөр',
+                visa_status: 'Визний төлөв',
+                expires: 'Дуусах хугацаа',
+                days_remaining: 'Үлдсэн өдөр',
+                work_hours_tracker: 'Ажлын цагийн бүртгэл',
+                this_fortnight: 'Энэ 2 долоо хоног',
+                hours_of_limit: '{{limit}} цагаас {{hours}} цаг',
+                within_visa_limit: 'Визний хязгаарт багтсан ({{remaining}} цаг үлдсэн)',
+                financial_requirements: 'Санхүүгийн шаардлага',
+                required_for_renewal: 'Виз сунгахад шаардлагатай',
+                living_costs_you: 'Амьжиргааны зардал (Өөрөө)',
+                living_costs_partner: 'Амьжиргааны зардал (Хамтрагч)',
+                living_costs_children: 'Амьжиргааны зардал (2 хүүхэд)',
+                school_costs: 'Сургуулийн зардал',
+                university_fees: 'Их сургуулийн төлбөр',
+                monthly_income: 'Сарын орлого',
+                monthly_expenses: 'Сарын зардал',
+                available_to_save: 'Хуримтлуулах боломжтой',
+                savings_goals: 'Хуримтлалын зорилтууд',
+                payment_schedule: 'Төлбөрийн хуваарь',
+                visa_renewal_fund: 'Виз сунгах сан',
+                emergency_fund: 'Яаралтай тусламжийн сан',
+                semester_tuition: '2-р семестрийн төлбөр',
+                target: 'Зорилт',
+                saved: 'Хуримтлуулсан',
+                remaining: 'Үлдсэн',
+                payment_reminders: 'Төлбөрийн сануулга',
+                enable_notifications: 'Мэдэгдэл идэвхжүүлэх',
+                reminder_description: 'Төлбөрийн өдрөөс өмнө сануулга авах',
+                reminder_schedule: 'Сануулгын хуваарь',
+                urgent_reminder: '{{days}} өдрийн өмнө - Яаралтай сануулга',
+                standard_reminder: '{{days}} өдрийн өмнө - Энгийн сануулга',
+                early_notice: '{{days}} өдрийн өмнө - Эрт мэдэгдэл',
+                send_test_notification: 'Туршилтын мэдэгдэл илгээх',
+                profile: 'Профайл',
+                name: 'Нэр',
+                email: 'Имэйл',
+                family_id: 'Гэр бүлийн ID',
+                childcare_weekly: 'Хүүхэд асрах долоо хоногийн төлбөр',
+                school_term_fees: '1-р улирлын сургуулийн төлбөр',
+                visa_renewal_app: 'Виз сунгах өргөдөл',
+                info_title: 'Австралид суралцаж буй Монгол оюутнуудад',
+                info_text: 'Энэ апп нь визний дүрэм мөрдөлт, олон валютын санхүүгийн удирдлага, Австралид гэр бүлийнхээ ирээдүйг төлөвлөхөд тусалдаг.'
+            }
+        };
+
+        const t = (key, lang, params = {}) => {
+            let text = translations[lang][key] || translations.en[key] || key;
+            Object.keys(params).forEach(param => {
+                text = text.replace(new RegExp(`{{${param}}}`, 'g'), params[param]);
+            });
+            return text;
+        };
+
+        // Mock data for demo
+        const DEMO_USER = {
+            name: "Khally Dashdorj",
+            email: "demo@globfam.app",
+            familyId: "dashdorj-family"
+        };
+
+        const DEMO_BALANCES = {
+            USD: 5000,
+            AUD: 25000,
+            MNT: 15000000
+        };
+
+        const EXCHANGE_RATES = {
+            USD: { AUD: 1.53, MNT: 3450 },
+            AUD: { USD: 0.65, MNT: 2254 },
+            MNT: { USD: 0.00029, AUD: 0.00044 }
+        };
+
+        const DEMO_VISA = {
+            type: "Subclass 500 - Student",
+            expiryDate: "2025-07-14",
+            daysRemaining: 220,
+            financialRequirement: 75419
+        };
+
+        const UPCOMING_PAYMENTS = [
+            { id: 1, title: 'semester_tuition', amount: 17500, dueDate: new Date('2025-07-15'), type: 'tuition', urgent: false },
+            { id: 2, title: 'childcare_weekly', amount: 225, dueDate: new Date('2025-01-20'), type: 'childcare', urgent: true },
+            { id: 3, title: 'school_term_fees', amount: 250, dueDate: new Date('2025-01-31'), type: 'school', urgent: true },
+            { id: 4, title: 'visa_renewal_app', amount: 1680, dueDate: new Date('2025-04-14'), type: 'visa', urgent: false }
+        ];
+
+        const SAVINGS_GOALS = [
+            { id: 1, name: 'visa_renewal_fund', target: 75419, current: 25000, category: 'visa' },
+            { id: 2, name: 'emergency_fund', target: 10000, current: 3500, category: 'emergency' },
+            { id: 3, name: 'semester_tuition', target: 17500, current: 5000, category: 'education' }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [selectedCurrency, setSelectedCurrency] = useState('AUD');
+            const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+            const [language, setLanguage] = useState('mn'); // Default to Mongolian
+            const [notificationCount, setNotificationCount] = useState(3);
+
+            const convertCurrency = (amount, from, to) => {
+                if (from === to) return amount;
+                return amount * EXCHANGE_RATES[from][to];
+            };
+
+            const getTotalBalance = () => {
+                let total = 0;
+                Object.entries(DEMO_BALANCES).forEach(([currency, amount]) => {
+                    total += convertCurrency(amount, currency, selectedCurrency);
+                });
+                return total;
+            };
+
+            const formatCurrency = (amount, currency = selectedCurrency) => {
+                const symbols = { USD: '$', AUD: 'A$', MNT: '₮' };
+                return `${symbols[currency]}${amount.toLocaleString()}`;
+            };
+
+            const getDaysUntil = (date) => {
+                const days = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
+                if (days === 0) return t('due_today', language);
+                if (days === 1) return t('due_tomorrow', language);
+                return t('due_in_days', language, { days });
+            };
+
+            const handleNotificationToggle = () => {
+                if (!notificationsEnabled && 'Notification' in window) {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            setNotificationsEnabled(true);
+                            // Schedule a test notification
+                            setTimeout(() => {
+                                new Notification(t('app_name', language) + ' ' + t('payment_reminders', language), {
+                                    body: language === 'mn' 
+                                        ? 'Таны A$225 хүүхэд асрах төлбөр маргааш!' 
+                                        : 'Your childcare payment of A$225 is due tomorrow!',
+                                    icon: '/favicon.ico'
+                                });
+                            }, 3000);
+                        }
+                    });
+                } else {
+                    setNotificationsEnabled(!notificationsEnabled);
+                }
+            };
+
+            return (
+                <div>
+                    <header className="header">
+                        <div className="header-content">
+                            <div className="logo">{t('app_name', language)}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <div className="language-toggle">
+                                    <button 
+                                        className={`lang-btn ${language === 'mn' ? 'active' : ''}`}
+                                        onClick={() => setLanguage('mn')}
+                                    >
+                                        🇲🇳 MN
+                                    </button>
+                                    <button 
+                                        className={`lang-btn ${language === 'en' ? 'active' : ''}`}
+                                        onClick={() => setLanguage('en')}
+                                    >
+                                        🇬🇧 EN
+                                    </button>
+                                </div>
+                                <div className="notification-bell">
+                                    🔔
+                                    {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
+                                </div>
+                                <span className="demo-badge">{t('demo_mode', language)}</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="container">
+                        <div className="greeting">{t('hello', language)}, {DEMO_USER.name}!</div>
+                        <div className="date">{new Date().toLocaleDateString(language === 'mn' ? 'mn-MN' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+
+                        <div className="info-box">
+                            <h3>{t('info_title', language)}</h3>
+                            <p>{t('info_text', language)}</p>
+                        </div>
+
+                        <div className="nav-tabs">
+                            <button className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+                                {t('dashboard', language)}
+                            </button>
+                            <button className={`nav-tab ${activeTab === 'visa' ? 'active' : ''}`} onClick={() => setActiveTab('visa')}>
+                                {t('visa_compliance', language)}
+                            </button>
+                            <button className={`nav-tab ${activeTab === 'budget' ? 'active' : ''}`} onClick={() => setActiveTab('budget')}>
+                                {t('budget_planner', language)}
+                            </button>
+                            <button className={`nav-tab ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+                                {t('settings', language)}
+                            </button>
+                        </div>
+
+                        {/* Dashboard Tab */}
+                        <div className={`tab-content ${activeTab === 'dashboard' ? 'active' : ''}`}>
+                            {/* Upcoming Payments Alert */}
+                            <div className="card alert-card">
+                                <div className="alert-title">
+                                    <span>⚠️</span> {t('upcoming_payments', language)}
+                                </div>
+                                {UPCOMING_PAYMENTS.filter(p => p.urgent).map(payment => (
+                                    <div key={payment.id} className="payment-item payment-urgent">
+                                        <div>
+                                            <div style={{ fontWeight: 600 }}>{t(payment.title, language)}</div>
+                                            <div style={{ fontSize: '14px', color: '#666' }}>{getDaysUntil(payment.dueDate)}</div>
+                                        </div>
+                                        <div style={{ fontWeight: 600, color: '#E65100' }}>
+                                            {formatCurrency(payment.amount)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="dashboard-grid">
+                                <div className="card balance-card">
+                                    <div className="card-title">{t('total_balance', language)}</div>
+                                    <div className="balance-amount">{formatCurrency(getTotalBalance())}</div>
+                                    <select 
+                                        value={selectedCurrency} 
+                                        onChange={(e) => setSelectedCurrency(e.target.value)}
+                                        style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '5px', borderRadius: '4px' }}
+                                    >
+                                        <option value="USD">USD</option>
+                                        <option value="AUD">AUD</option>
+                                        <option value="MNT">MNT</option>
+                                    </select>
+                                </div>
+
+                                <div className="card">
+                                    <div className="card-title">
+                                        <span>💰</span> {t('visa_savings_progress', language)}
+                                    </div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill" style={{ width: '33%' }}></div>
+                                    </div>
+                                    <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
+                                        {t('saved_of_target', language, { saved: 'A$25,000', target: 'A$75,419', percent: '33' })}
+                                    </div>
+                                    <div style={{ marginTop: '5px', fontWeight: 600, color: '#4CAF50' }}>
+                                        {t('per_fortnight', language, { amount: 'A$1,000' })}
+                                    </div>
+                                </div>
+
+                                <div className="card">
+                                    <div className="card-title">{t('currency_balances', language)}</div>
+                                    <div className="currency-grid">
+                                        {Object.entries(DEMO_BALANCES).map(([currency, amount]) => (
+                                            <div key={currency} className="currency-item">
+                                                <div className="currency-code">{currency}</div>
+                                                <div className="currency-amount">{formatCurrency(amount, currency)}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="card">
+                                    <div className="card-title">
+                                        <span>📅</span> {t('next_payment_due', language)}
+                                    </div>
+                                    <div style={{ fontSize: '24px', fontWeight: 600, color: '#E65100', marginTop: '10px' }}>
+                                        {getDaysUntil(UPCOMING_PAYMENTS[1].dueDate)}
+                                    </div>
+                                    <div style={{ marginTop: '10px' }}>
+                                        <div style={{ fontWeight: 500 }}>{t(UPCOMING_PAYMENTS[1].title, language)}</div>
+                                        <div style={{ fontSize: '20px', marginTop: '5px' }}>{formatCurrency(UPCOMING_PAYMENTS[1].amount)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Visa Compliance Tab */}
+                        <div className={`tab-content ${activeTab === 'visa' ? 'active' : ''}`}>
+                            <div className="dashboard-grid">
+                                <div className="card">
+                                    <div className="card-title">
+                                        <span>📋</span> {t('visa_status', language)}
+                                    </div>
+                                    <div style={{ marginTop: '15px' }}>
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>Type</div>
+                                        <div style={{ fontWeight: 600, marginBottom: '15px' }}>{DEMO_VISA.type}</div>
+                                        
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>{t('expires', language)}</div>
+                                        <div style={{ fontWeight: 600, color: '#E65100', marginBottom: '15px' }}>{DEMO_VISA.expiryDate}</div>
+                                        
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>{t('days_remaining', language)}</div>
+                                        <div style={{ fontSize: '32px', fontWeight: 700, color: '#4CAF50' }}>{DEMO_VISA.daysRemaining}</div>
+                                    </div>
+                                </div>
+
+                                <div className="card">
+                                    <div className="card-title">
+                                        <span>💼</span> {t('work_hours_tracker', language)}
+                                    </div>
+                                    <div style={{ marginTop: '15px' }}>
+                                        <div style={{ marginBottom: '10px' }}>{t('this_fortnight', language)}: <strong>{t('hours_of_limit', language, { hours: 18, limit: 48 })}</strong></div>
+                                        <div className="progress-bar">
+                                            <div className="progress-fill" style={{ width: '37.5%' }}></div>
+                                        </div>
+                                        <div style={{ marginTop: '10px', color: '#4CAF50', fontSize: '14px' }}>
+                                            ✓ {t('within_visa_limit', language, { remaining: 30 })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="card balance-card">
+                                    <div className="card-title">{t('financial_requirements', language)}</div>
+                                    <div style={{ marginTop: '20px' }}>
+                                        <div style={{ marginBottom: '15px' }}>
+                                            <div style={{ opacity: 0.9, marginBottom: '5px' }}>{t('required_for_renewal', language)}</div>
+                                            <div style={{ fontSize: '28px', fontWeight: 600 }}>A$75,419</div>
+                                        </div>
+                                        <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '15px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                <span>{t('living_costs_you', language)}</span>
+                                                <span>A$24,505</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                <span>{t('living_costs_partner', language)}</span>
+                                                <span>A$8,574</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                <span>{t('living_costs_children', language)}</span>
+                                                <span>A$7,400</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                                <span>{t('school_costs', language)}</span>
+                                                <span>A$11,000</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <span>{t('university_fees', language)}</span>
+                                                <span>A$23,940</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Budget Planner Tab */}
+                        <div className={`tab-content ${activeTab === 'budget' ? 'active' : ''}`}>
+                            <div className="budget-summary">
+                                <div className="budget-item">
+                                    <div className="budget-label">{t('monthly_income', language)}</div>
+                                    <div className="budget-value income">+A$4,500</div>
+                                </div>
+                                <div className="budget-item">
+                                    <div className="budget-label">{t('monthly_expenses', language)}</div>
+                                    <div className="budget-value expense">-A$3,360</div>
+                                </div>
+                                <div className="budget-item">
+                                    <div className="budget-label">{t('available_to_save', language)}</div>
+                                    <div className="budget-value">A$1,140</div>
+                                </div>
+                            </div>
+
+                            <div className="card">
+                                <div className="card-title">
+                                    <span>🎯</span> {t('savings_goals', language)}
+                                </div>
+                                {SAVINGS_GOALS.map(goal => (
+                                    <div key={goal.id} className="savings-goal">
+                                        <div className="goal-header">
+                                            <div>
+                                                <div style={{ fontWeight: 600 }}>{t(goal.name, language)}</div>
+                                                <div style={{ fontSize: '14px', color: '#666', marginTop: '5px' }}>
+                                                    {t('target', language)}: {formatCurrency(goal.target)}
+                                                </div>
+                                            </div>
+                                            <div className="goal-amount">
+                                                {Math.round((goal.current / goal.target) * 100)}%
+                                            </div>
+                                        </div>
+                                        <div className="progress-bar">
+                                            <div className="progress-fill" style={{ width: `${(goal.current / goal.target) * 100}%` }}></div>
+                                        </div>
+                                        <div style={{ marginTop: '10px', fontSize: '14px', display: 'flex', justifyContent: 'space-between' }}>
+                                            <span>{t('saved', language)}: {formatCurrency(goal.current)}</span>
+                                            <span>{t('remaining', language)}: {formatCurrency(goal.target - goal.current)}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="card" style={{ marginTop: '20px' }}>
+                                <div className="card-title">
+                                    <span>📅</span> {t('payment_schedule', language)}
+                                </div>
+                                <div style={{ marginTop: '20px' }}>
+                                    {UPCOMING_PAYMENTS.map(payment => (
+                                        <div key={payment.id} className="payment-item">
+                                            <div>
+                                                <div style={{ fontWeight: 500 }}>{t(payment.title, language)}</div>
+                                                <div style={{ fontSize: '14px', color: '#666' }}>{getDaysUntil(payment.dueDate)}</div>
+                                            </div>
+                                            <div style={{ fontWeight: 600 }}>{formatCurrency(payment.amount)}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Settings Tab */}
+                        <div className={`tab-content ${activeTab === 'settings' ? 'active' : ''}`}>
+                            <div className="notification-settings">
+                                <div className="card-title">
+                                    <span>🔔</span> {t('payment_reminders', language)}
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+                                    <div>
+                                        <div style={{ fontWeight: 500 }}>{t('enable_notifications', language)}</div>
+                                        <div style={{ fontSize: '14px', color: '#666', marginTop: '5px' }}>
+                                            {t('reminder_description', language)}
+                                        </div>
+                                    </div>
+                                    <div className={`toggle-switch ${notificationsEnabled ? 'active' : ''}`} onClick={handleNotificationToggle}>
+                                        <div className="toggle-thumb"></div>
+                                    </div>
+                                </div>
+
+                                {notificationsEnabled && (
+                                    <div className="reminder-schedule">
+                                        <div style={{ fontWeight: 600, marginBottom: '15px' }}>{t('reminder_schedule', language)}</div>
+                                        <div className="reminder-day urgent">
+                                            <span>🚨</span>
+                                            <span>{t('urgent_reminder', language, { days: 7 })}</span>
+                                        </div>
+                                        <div className="reminder-day">
+                                            <span>⏰</span>
+                                            <span>{t('standard_reminder', language, { days: 14 })}</span>
+                                        </div>
+                                        <div className="reminder-day">
+                                            <span>📅</span>
+                                            <span>{t('early_notice', language, { days: 30 })}</span>
+                                        </div>
+                                        <button 
+                                            className="button" 
+                                            style={{ marginTop: '20px', width: '100%' }}
+                                            onClick={() => {
+                                                if ('Notification' in window && Notification.permission === 'granted') {
+                                                    new Notification(t('app_name', language), {
+                                                        body: language === 'mn' 
+                                                            ? 'Төлбөрийн сануулга ажиллаж байна! Та чухал өдрүүдийн өмнө мэдэгдэл авах болно.'
+                                                            : 'Payment reminders are working! You\'ll be notified before important dates.',
+                                                        icon: '/favicon.ico'
+                                                    });
+                                                }
+                                            }}
+                                        >
+                                            {t('send_test_notification', language)}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="card" style={{ marginTop: '20px' }}>
+                                <div className="card-title">{t('profile', language)}</div>
+                                <div style={{ marginTop: '20px' }}>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>{t('name', language)}</div>
+                                        <div style={{ fontWeight: 500 }}>{DEMO_USER.name}</div>
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>{t('email', language)}</div>
+                                        <div style={{ fontWeight: 500 }}>{DEMO_USER.email}</div>
+                                    </div>
+                                    <div style={{ marginBottom: '15px' }}>
+                                        <div style={{ color: '#666', marginBottom: '5px' }}>{t('family_id', language)}</div>
+                                        <div style={{ fontWeight: 500 }}>{DEMO_USER.familyId}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
