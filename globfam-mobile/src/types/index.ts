@@ -1,12 +1,12 @@
 // User types
 export interface User {
-  id: string;
+  uid: string;
   email: string;
   displayName: string;
   familyId?: string;
   photoURL?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 // Family types
@@ -84,6 +84,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isDemo?: boolean;
 }
 
 export interface FamilyState {

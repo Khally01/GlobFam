@@ -22,14 +22,14 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 
-// Replace with your Firebase config
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCdPhRXv34mjugsptYs0XBseaatk7iLfbo",
+  authDomain: "globfam-d471a.firebaseapp.com",
+  projectId: "globfam-d471a",
+  storageBucket: "globfam-d471a.firebasestorage.app",
+  messagingSenderId: "779679538848",
+  appId: "1:779679538848:web:ba74cb4f0486deb23573c5"
 };
 
 // Initialize Firebase
