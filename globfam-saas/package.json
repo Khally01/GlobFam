@@ -1,5 +1,5 @@
 {
-  "name": "globfam",
+  "name": "globfam-saas",
   "version": "0.0.1",
   "private": true,
   "workspaces": [
@@ -9,13 +9,20 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "start": "turbo run start",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "db:migrate": "cd apps/api && npm run db:migrate",
+    "db:migrate": "cd apps/api && npx prisma migrate dev",
     "db:seed": "cd apps/api && npm run db:seed",
-    "deploy:api": "cd apps/api && npm run deploy",
-    "deploy:web": "cd apps/web && npm run deploy"
+    "db:studio": "cd apps/api && npx prisma studio",
+    "deploy:staging": "./scripts/deploy.sh staging",
+    "deploy:production": "./scripts/deploy.sh production",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -26,5 +33,6 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  }
+  },
+  "packageManager": "npm@9.0.0"
 }
