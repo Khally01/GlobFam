@@ -40,21 +40,21 @@ export const DEMO_USERS: MockUser[] = [
   {
     uid: 'demo-user-1',
     email: 'demo@globfam.app',
-    displayName: 'Sarah Chen',
-    photoURL: 'https://ui-avatars.com/api/?name=Sarah+Chen&background=4CAF50&color=fff'
+    displayName: 'Khally Dashdorj',
+    photoURL: 'https://ui-avatars.com/api/?name=Khally+Dashdorj&background=4CAF50&color=fff'
   },
   {
     uid: 'demo-user-2',
     email: 'partner@globfam.app',
-    displayName: 'Michael Chen',
-    photoURL: 'https://ui-avatars.com/api/?name=Michael+Chen&background=2196F3&color=fff'
+    displayName: 'Partner Name',
+    photoURL: 'https://ui-avatars.com/api/?name=Partner+Name&background=2196F3&color=fff'
   }
 ];
 
 // Demo family
 export const DEMO_FAMILY: MockFamily = {
   id: 'demo-family-1',
-  name: 'Chen Family',
+  name: 'Dashdorj Family',
   members: ['demo-user-1', 'demo-user-2'],
   inviteCode: 'DEMO2024',
   createdBy: 'demo-user-1',
@@ -63,11 +63,11 @@ export const DEMO_FAMILY: MockFamily = {
 
 // Demo balances
 export const DEMO_BALANCES: MockBalance[] = [
-  // Sarah's balances
+  // Khally's balances
   { userId: 'demo-user-1', currency: 'USD', amount: 45000, lastUpdated: new Date().toISOString() },
   { userId: 'demo-user-1', currency: 'AUD', amount: 35000, lastUpdated: new Date().toISOString() },
   { userId: 'demo-user-1', currency: 'MNT', amount: 25000000, lastUpdated: new Date().toISOString() },
-  // Michael's balances
+  // Partner's balances
   { userId: 'demo-user-2', currency: 'USD', amount: 30000, lastUpdated: new Date().toISOString() },
   { userId: 'demo-user-2', currency: 'AUD', amount: 25000, lastUpdated: new Date().toISOString() },
 ];

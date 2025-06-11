@@ -2,6 +2,8 @@
 
 ## Quick Start (For Monday's Demo)
 
+### Mobile Demo
+
 ### 1. Start the App
 ```bash
 cd globfam-mobile
@@ -13,7 +15,20 @@ npm start
 
 ### 3. Demo Login
 - On the login screen, click the **"Try Demo"** button
-- This will log you in as Sarah Chen with pre-populated data
+- This will log you in as Khally Dashdorj with pre-populated data
+
+### Web Demo
+
+1. **Open in Browser**
+   - Simply double-click `web-demo.html` or
+   - Open in any modern web browser
+   - No installation required!
+
+2. **Features**
+   - Same data as mobile app
+   - Responsive design
+   - Transaction modal
+   - Family hub view
 
 ## Demo Flow
 
@@ -45,7 +60,7 @@ npm start
 
 #### Family Hub
 - Navigate to Family Hub tab
-- Show "Chen Family" with 2 members
+- Show "Dashdorj Family" with 2 members
 - Explain shared budget and financial coordination features
 
 ### 4. **Value Propositions to Highlight**
@@ -66,7 +81,7 @@ npm start
 - If blank screen: Check console for errors
 
 ## Demo Talking Points
-1. "This is Sarah, an international student from Mongolia studying in Australia"
+1. "This is Khally, an international student from Mongolia studying in Australia"
 2. "She has money in 3 different currencies across 2 countries"
 3. "Previously, she used complex spreadsheets to track everything"
 4. "Now, she can see her total wealth instantly in any currency"
