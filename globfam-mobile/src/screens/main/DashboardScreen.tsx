@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Card, Title, Text, useTheme, Button, Surface, Chip, ActivityIndicator } from 'react-native-paper';
+import { Card, Title, Text, useTheme, Button, Surface, Chip, ActivityIndicator, ProgressBar } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { fetchUserBalances, setSelectedCurrency } from '../../store/slices/currencySlice';
 import { fetchTransactions } from '../../store/slices/transactionSlice';
 import currencyService from '../../services/currencyService';
 import TransactionModal from '../../components/TransactionModal';
+import BudgetingService from '../../services/budgetingService';
+import { DEMO_VISA } from '../../services/mockDataService';
 
 const DashboardScreen: React.FC = () => {
   const theme = useTheme();
@@ -18,10 +20,15 @@ const DashboardScreen: React.FC = () => {
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
   const [transactionModalVisible, setTransactionModalVisible] = useState(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('expense');
+  const [upcomingPayments, setUpcomingPayments] = useState<any[]>([]);
 
   useEffect(() => {
     if (user) {
       loadData();
+      // Load upcoming payments
+      const reminders = BudgetingService.generateYearlyReminders(user.uid, true, 35000);
+      const upcoming = BudgetingService.getUpcomingReminders(reminders, 7); // Next 7 days
+      setUpcomingPayments(upcoming);
     }
   }, [user]);
 
@@ -232,6 +239,66 @@ const DashboardScreen: React.FC = () => {
           </Surface>
         </View>
       </View>
+
+      {/* Upcoming Payments Alert */}
+      {upcomingPayments.length > 0 && (
+        <Card style={[styles.card, { margin: 16, borderLeftWidth: 4, borderLeftColor: theme.colors.error }]}>
+          <Card.Content>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <MaterialCommunityIcons name="bell-alert" size={24} color={theme.colors.error} />
+              <Title style={{ marginLeft: 8, fontSize: 18 }}>Upcoming Payments</Title>
+            </View>
+            {upcomingPayments.slice(0, 3).map((payment, index) => (
+              <View key={payment.id} style={{ 
+                paddingVertical: 8, 
+                borderBottomWidth: index < upcomingPayments.length - 1 ? 1 : 0,
+                borderBottomColor: '#f0f0f0'
+              }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontWeight: '500' }}>{payment.title}</Text>
+                  <Text style={{ fontWeight: '600', color: theme.colors.primary }}>
+                    ${payment.amount}
+                  </Text>
+                </View>
+                <Text style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+                  Due in {Math.ceil((payment.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                </Text>
+              </View>
+            ))}
+            <Button 
+              mode="text" 
+              onPress={() => {}} 
+              style={{ marginTop: 8 }}
+              icon="arrow-right"
+            >
+              View All Payments
+            </Button>
+          </Card.Content>
+        </Card>
+      )}
+
+      {/* Visa Savings Progress */}
+      <Card style={[styles.card, { margin: 16 }]}>
+        <Card.Content>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <MaterialCommunityIcons name="piggy-bank" size={24} color={theme.colors.primary} />
+            <Title style={{ marginLeft: 8, fontSize: 18 }}>Visa Savings Progress</Title>
+          </View>
+          <ProgressBar 
+            progress={0.33} 
+            color={theme.colors.primary} 
+            style={{ height: 8, borderRadius: 4, marginBottom: 8 }}
+          />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 14, color: '#666' }}>
+              $25,000 of $75,419 saved (33%)
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: theme.colors.primary }}>
+              $1,000/fortnight
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
 
       {/* Transaction Modal */}
       <TransactionModal

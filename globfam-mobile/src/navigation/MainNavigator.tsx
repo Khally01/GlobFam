@@ -8,6 +8,7 @@ import FamilyHubScreen from '../screens/main/FamilyHubScreen';
 import TransactionsScreen from '../screens/main/TransactionsScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import VisaComplianceScreen from '../screens/main/VisaComplianceScreen';
+import BudgetPlannerScreen from '../screens/main/BudgetPlannerScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -51,12 +52,12 @@ const MainNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="Transactions"
-        component={TransactionsScreen}
+        name="Budget"
+        component={BudgetPlannerScreen}
         options={{
-          title: 'Transactions',
+          title: 'Budget',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="swap-horizontal" size={size} color={color} />
+            <MaterialCommunityIcons name="calculator" size={size} color={color} />
           ),
         }}
       />

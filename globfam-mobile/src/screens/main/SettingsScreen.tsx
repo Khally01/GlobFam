@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { 
   List, 
   Divider, 
@@ -11,11 +11,15 @@ import {
   Switch,
   Button,
   Portal,
-  Dialog
+  Dialog,
+  Banner,
+  SegmentedButtons
 } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { logout } from '../../store/slices/authSlice';
+import NotificationService from '../../services/notificationService';
+import BudgetingService from '../../services/budgetingService';
 
 const SettingsScreen: React.FC = () => {
   const theme = useTheme();
@@ -26,6 +30,22 @@ const SettingsScreen: React.FC = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
+  const [notificationSettingsVisible, setNotificationSettingsVisible] = useState(false);
+  const [reminderDays, setReminderDays] = useState({
+    visa: [90, 60, 30, 14, 7],
+    tuition: [30, 14, 7, 3, 1],
+    other: [14, 7, 3, 1]
+  });
+  const [selectedReminderType, setSelectedReminderType] = useState<'visa' | 'tuition' | 'other'>('visa');
+
+  useEffect(() => {
+    checkNotificationPermissions();
+  }, []);
+
+  const checkNotificationPermissions = async () => {
+    const enabled = await NotificationService.areNotificationsEnabled();
+    setNotificationsEnabled(enabled);
+  };
 
   const handleLogout = async () => {
     try {
@@ -33,6 +53,29 @@ const SettingsScreen: React.FC = () => {
     } catch (error) {
       console.error('Logout error:', error);
     }
+  };
+
+  const handleNotificationToggle = async (value: boolean) => {
+    if (value) {
+      const granted = await NotificationService.requestPermissions();
+      if (granted) {
+        setNotificationsEnabled(true);
+        // Schedule notifications for existing reminders
+        const reminders = BudgetingService.generateYearlyReminders(user?.uid || 'demo', true, 35000);
+        await NotificationService.scheduleMultipleReminders(reminders);
+        Alert.alert('Success', 'Payment reminders have been enabled!');
+      } else {
+        Alert.alert('Permission Denied', 'Please enable notifications in your device settings.');
+      }
+    } else {
+      setNotificationsEnabled(false);
+      await NotificationService.cancelAllNotifications();
+    }
+  };
+
+  const handleTestNotification = async () => {
+    await NotificationService.scheduleTestNotification();
+    Alert.alert('Test Sent', 'You should receive a test notification in 5 seconds.');
   };
 
   return (
@@ -67,15 +110,16 @@ const SettingsScreen: React.FC = () => {
         />
         
         <List.Item
-          title="Notifications"
-          description="Receive transaction alerts"
+          title="Payment Reminders"
+          description={notificationsEnabled ? "Enabled" : "Disabled"}
           left={(props) => <List.Icon {...props} icon="bell" />}
           right={() => (
             <Switch
               value={notificationsEnabled}
-              onValueChange={setNotificationsEnabled}
+              onValueChange={handleNotificationToggle}
             />
           )}
+          onPress={() => setNotificationSettingsVisible(true)}
         />
         
         <List.Item
@@ -203,6 +247,109 @@ const SettingsScreen: React.FC = () => {
             <Button onPress={handleLogout}>Log Out</Button>
           </Dialog.Actions>
         </Dialog>
+
+        {/* Notification Settings Dialog */}
+        <Dialog 
+          visible={notificationSettingsVisible} 
+          onDismiss={() => setNotificationSettingsVisible(false)}
+          style={{ maxHeight: '80%' }}
+        >
+          <Dialog.Title>Payment Reminder Settings</Dialog.Title>
+          <Dialog.ScrollArea>
+            <ScrollView>
+              <View style={{ padding: 20 }}>
+                <Banner
+                  visible={notificationsEnabled}
+                  icon="bell-check"
+                  style={{ marginBottom: 16 }}
+                >
+                  Reminders are active! You'll be notified before important payment dates.
+                </Banner>
+
+                <Title style={{ fontSize: 18, marginBottom: 12 }}>Reminder Schedule</Title>
+                <Text style={{ marginBottom: 16, color: '#666' }}>
+                  Choose when to receive reminders for different payment types:
+                </Text>
+
+                <SegmentedButtons
+                  value={selectedReminderType}
+                  onValueChange={(value) => setSelectedReminderType(value as any)}
+                  buttons={[
+                    { value: 'visa', label: 'Visa' },
+                    { value: 'tuition', label: 'Tuition' },
+                    { value: 'other', label: 'Other' }
+                  ]}
+                  style={{ marginBottom: 16 }}
+                />
+
+                <View style={{ marginBottom: 16 }}>
+                  {selectedReminderType === 'visa' && (
+                    <>
+                      <Text style={{ fontWeight: '600', marginBottom: 8 }}>Visa Payment Reminders</Text>
+                      <Text style={{ fontSize: 14, color: '#666', marginBottom: 12 }}>
+                        Critical reminders for visa renewal payments
+                      </Text>
+                      {reminderDays.visa.map(day => (
+                        <View key={day} style={styles.reminderDayItem}>
+                          <MaterialCommunityIcons name="bell" size={20} color={day <= 7 ? '#F44336' : '#2196F3'} />
+                          <Text style={{ marginLeft: 12, flex: 1 }}>
+                            {day} days before due date
+                          </Text>
+                          {day <= 7 && <Text style={{ color: '#F44336', fontSize: 12 }}>URGENT</Text>}
+                        </View>
+                      ))}
+                    </>
+                  )}
+                  {selectedReminderType === 'tuition' && (
+                    <>
+                      <Text style={{ fontWeight: '600', marginBottom: 8 }}>Tuition Payment Reminders</Text>
+                      <Text style={{ fontSize: 14, color: '#666', marginBottom: 12 }}>
+                        University fee payment reminders
+                      </Text>
+                      {reminderDays.tuition.map(day => (
+                        <View key={day} style={styles.reminderDayItem}>
+                          <MaterialCommunityIcons name="bell" size={20} color={day <= 3 ? '#FF9800' : '#2196F3'} />
+                          <Text style={{ marginLeft: 12, flex: 1 }}>
+                            {day} days before due date
+                          </Text>
+                          {day <= 3 && <Text style={{ color: '#FF9800', fontSize: 12 }}>SOON</Text>}
+                        </View>
+                      ))}
+                    </>
+                  )}
+                  {selectedReminderType === 'other' && (
+                    <>
+                      <Text style={{ fontWeight: '600', marginBottom: 8 }}>Other Payment Reminders</Text>
+                      <Text style={{ fontSize: 14, color: '#666', marginBottom: 12 }}>
+                        School fees, childcare, and other payments
+                      </Text>
+                      {reminderDays.other.map(day => (
+                        <View key={day} style={styles.reminderDayItem}>
+                          <MaterialCommunityIcons name="bell" size={20} color="#2196F3" />
+                          <Text style={{ marginLeft: 12, flex: 1 }}>
+                            {day} days before due date
+                          </Text>
+                        </View>
+                      ))}
+                    </>
+                  )}
+                </View>
+
+                <Button 
+                  mode="contained"
+                  onPress={handleTestNotification}
+                  style={{ marginTop: 16 }}
+                  icon="bell-ring"
+                >
+                  Send Test Notification
+                </Button>
+              </View>
+            </ScrollView>
+          </Dialog.ScrollArea>
+          <Dialog.Actions>
+            <Button onPress={() => setNotificationSettingsVisible(false)}>Close</Button>
+          </Dialog.Actions>
+        </Dialog>
       </Portal>
     </ScrollView>
   );
@@ -239,6 +386,15 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     borderColor: 'red',
+  },
+  reminderDayItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    marginBottom: 8,
   },
 });
 

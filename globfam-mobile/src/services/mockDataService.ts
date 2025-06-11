@@ -72,6 +72,48 @@ export const DEMO_BALANCES: MockBalance[] = [
   { userId: 'demo-user-2', currency: 'AUD', amount: 25000, lastUpdated: new Date().toISOString() },
 ];
 
+// Demo visa details
+export const DEMO_VISA = {
+  type: 'Student Visa (Subclass 500)',
+  number: 'DEMO123456',
+  startDate: '2023-07-15',
+  expiryDate: '2025-07-14',
+  workCondition: '8105 - Maximum 48 hours per fortnight',
+  courseEndDate: '2025-06-30',
+  provider: 'University of Sydney'
+};
+
+// Demo work records
+export const DEMO_WORK_RECORDS = [
+  { id: 'work-1', date: new Date().toISOString(), hours: 8, employer: 'Campus Cafe', rate: 25, income: 200 },
+  { id: 'work-2', date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), hours: 6, employer: 'Campus Cafe', rate: 25, income: 150 },
+  { id: 'work-3', date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), hours: 8, employer: 'Campus Cafe', rate: 25, income: 200 },
+  { id: 'work-4', date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), hours: 10, employer: 'Tutoring', rate: 35, income: 350 },
+  { id: 'work-5', date: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(), hours: 8, employer: 'Campus Cafe', rate: 25, income: 200 }
+];
+
+// Demo childcare details
+export const DEMO_CHILDCARE = [
+  {
+    childName: 'Emma',
+    age: 3,
+    type: 'childcare',
+    provider: 'Bright Stars Childcare',
+    weeklyFee: 450,
+    subsidyRate: 50,
+    annualCost: 23400
+  },
+  {
+    childName: 'Liam',
+    age: 7,
+    type: 'school',
+    provider: 'Sydney Public School',
+    weeklyFee: 20,
+    subsidyRate: 0,
+    annualCost: 1040
+  }
+];
+
 // Demo transactions
 export const DEMO_TRANSACTIONS: MockTransaction[] = [
   // Recent transactions

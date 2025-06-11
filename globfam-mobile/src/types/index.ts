@@ -74,7 +74,7 @@ export type AuthStackParamList = {
 export type MainTabParamList = {
   Dashboard: undefined;
   FamilyHub: undefined;
-  Transactions: undefined;
+  Budget: undefined;
   VisaCompliance: undefined;
   Settings: undefined;
 };

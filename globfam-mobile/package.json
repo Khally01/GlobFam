@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.5.0",
     "expo": "~53.0.11",
+    "expo-notifications": "^0.31.3",
     "expo-status-bar": "~2.2.3",
     "firebase": "^10.14.1",
     "react": "19.0.0",

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Provider as PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { store } from './src/store';
 import RootNavigator from './src/navigation/RootNavigator';
+import NotificationService from './src/services/notificationService';
 
 // Custom theme configuration
 const lightTheme = {
@@ -32,6 +33,16 @@ const darkTheme = {
 export default function App() {
   // You can implement theme switching logic here
   const isDarkMode = false; // This can be connected to device settings or user preference
+
+  useEffect(() => {
+    // Initialize notification service
+    NotificationService.requestPermissions();
+    
+    // Set up notification listeners
+    const cleanup = NotificationService.setupNotificationListeners();
+    
+    return cleanup;
+  }, []);
 
   return (
     <SafeAreaProvider>

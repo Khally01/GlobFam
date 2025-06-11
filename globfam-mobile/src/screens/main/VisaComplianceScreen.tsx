@@ -25,6 +25,7 @@ import VisaComplianceService, {
   WorkHours,
   ChildcareDetails
 } from '../../services/visaComplianceService';
+import VisaCalendar from '../../components/VisaCalendar';
 
 const { width } = Dimensions.get('window');
 
@@ -222,6 +223,25 @@ const VisaComplianceScreen: React.FC = () => {
               <Text style={styles.savingsAmount}>${financialReq.savingsRequired.toLocaleString()}</Text>
             </View>
           </Surface>
+        </Card.Content>
+      </Card>
+
+      {/* Calendar View */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title>Visa & Work Calendar</Title>
+          <VisaCalendar
+            visaExpiryDate={visaDetails.expiryDate}
+            courseEndDate={visaDetails.courseEndDate}
+            workDays={workRecords.map(record => ({
+              date: record.date,
+              hours: record.hours,
+              employer: record.employer
+            }))}
+            onDayPress={(date) => {
+              console.log('Day pressed:', date);
+            }}
+          />
         </Card.Content>
       </Card>
 
