@@ -1,0 +1,9 @@
+{
+  "name": "globfam-root",
+  "version": "1.0.0",
+  "description": "GlobFam root - actual app in globfam-saas",
+  "scripts": {
+    "postinstall": "cd globfam-saas && npm install",
+    "start": "cd globfam-saas && npm start"
+  }
+}
