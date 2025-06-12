@@ -1,9 +1,15 @@
 {
-  "name": "globfam-root",
+  "name": "globfam-pitch",
   "version": "1.0.0",
-  "description": "GlobFam root - actual app in globfam-saas",
+  "description": "GlobFam sales pitch and presentation",
+  "main": "index.html",
   "scripts": {
-    "postinstall": "cd globfam-saas && npm install",
-    "start": "cd globfam-saas && npm start"
+    "start": "npx serve -s . -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
