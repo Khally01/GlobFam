@@ -5,8 +5,8 @@
   },
   "deploy": {
     "startCommand": "python3 -m http.server $PORT",
-    "healthcheckPath": "/sales-pitch.html",
-    "healthcheckTimeout": 300,
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 100,
     "restartPolicyType": "ON_FAILURE"
   }
 }
