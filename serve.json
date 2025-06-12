@@ -1,9 +1,5 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/sales-pitch.html" },
-    { "source": "/sales-pitch", "destination": "/sales-pitch.html" }
-  ],
   "public": ".",
-  "cleanUrls": true,
-  "trailingSlash": false
+  "cleanUrls": false,
+  "directoryListing": false
 }
