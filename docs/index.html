@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobFam - Multi-Currency Family Finance Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#1e40af'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .mongolian { font-family: 'Mongolian Baiti', 'Times New Roman', serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Language Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="toggleLanguage()" class="bg-white shadow-lg rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-50 transition-colors">
+            <span id="lang-toggle">🇲🇳 Монгол</span>
+        </button>
+    </div>
+
+    <!-- English Version -->
+    <div id="english-content">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white">
+            <div class="container mx-auto px-6 py-16">
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold mb-6">
+                        GlobFam
+                        <span class="block text-2xl font-normal mt-2 opacity-90">Multi-Currency Family Finance Platform</span>
+                    </h1>
+                    <p class="text-xl mb-8 max-w-3xl mx-auto leading-relaxed">
+                        The only family finance app designed for international students and global families. 
+                        Track your wealth across borders, manage multiple currencies, and stay compliant with visa requirements.
+                    </p>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <a href="#demo" class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            🚀 Try Demo
+                        </a>
+                        <a href="#features" class="border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem & Solution -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">The Problem</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600">International students struggle to track assets across multiple countries</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600">Families lose track of shared wealth and financial obligations</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600">Visa compliance requires precise financial tracking and work hour monitoring</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600">Existing apps don't understand multi-currency, multi-country complexities</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-primary">Our Solution</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600">Track assets in USD, AUD, MNT, and 50+ currencies with real-time conversion</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600">Family sharing with secure invite codes and role-based access</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600">Australian visa compliance tracking (work hours, financial requirements)</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600">Built specifically for international students and global families</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section id="features" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Why GlobFam?</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">🌍</div>
+                        <h3 class="text-xl font-semibold mb-3">Multi-Country Tracking</h3>
+                        <p class="text-gray-600">Track assets in your home country (Mongolia) and host country (Australia) in one dashboard.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">👨‍👩‍👧‍👦</div>
+                        <h3 class="text-xl font-semibold mb-3">Family Sharing</h3>
+                        <p class="text-gray-600">Share financial data securely with family members. Parents can monitor and support from home.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h3 class="text-xl font-semibold mb-3">Visa Compliance</h3>
+                        <p class="text-gray-600">Track work hours (48h/fortnight limit), financial requirements, and visa renewal deadlines.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">💱</div>
+                        <h3 class="text-xl font-semibold mb-3">Real-time Currency</h3>
+                        <p class="text-gray-600">Live AUD/MNT/USD conversion. See your total wealth in your preferred currency instantly.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">🏦</div>
+                        <h3 class="text-xl font-semibold mb-3">Bank Integration</h3>
+                        <p class="text-gray-600">Connect to Australian and international banks for automatic transaction tracking.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">📱</div>
+                        <h3 class="text-xl font-semibold mb-3">Mobile & Web</h3>
+                        <p class="text-gray-600">Access from anywhere - responsive web app and native mobile apps for iOS and Android.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Section -->
+        <section id="demo" class="py-16 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-8 text-gray-800">See GlobFam in Action</h2>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Try our live demo with real family data from Khally Dashdorj, a Mongolian student in Australia.
+                </p>
+                <div class="bg-gray-100 p-8 rounded-xl max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-semibold mb-4">Demo Account</h3>
+                    <div class="space-y-2 text-left">
+                        <p><strong>Email:</strong> demo@globfam.app</p>
+                        <p><strong>Password:</strong> demo123456</p>
+                        <p><strong>Family Code:</strong> DEMO2025</p>
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <a href="/login" class="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition-colors">
+                            🚀 Try Live Demo
+                        </a>
+                        <p class="text-sm text-gray-600">
+                            See real multi-currency assets, family sharing, and Australian visa tracking in action!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="gradient-bg text-white py-16">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-6">Ready to Take Control of Your Global Finances?</h2>
+                <p class="text-xl mb-8 max-w-3xl mx-auto">
+                    Join thousands of international families already using GlobFam to manage their wealth across borders.
+                </p>
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <a href="/register" class="bg-white text-primary px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+                        Start 14-Day Free Trial
+                    </a>
+                    <a href="mailto:hello@globfam.io" class="border-2 border-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-primary transition-colors">
+                        Schedule Demo Call
+                    </a>
+                </div>
+                <p class="mt-6 text-sm opacity-90">No credit card required • Cancel anytime • Full support included</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Mongolian Version -->
+    <div id="mongolian-content" class="hidden">
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white">
+            <div class="container mx-auto px-6 py-16">
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold mb-6 mongolian">
+                        ГлобФам
+                        <span class="block text-2xl font-normal mt-2 opacity-90">Олон валютын гэр бүлийн санхүүгийн платформ</span>
+                    </h1>
+                    <p class="text-xl mb-8 max-w-3xl mx-auto leading-relaxed mongolian">
+                        Олон улсын оюутан болон дэлхийн гэр бүлүүдэд зориулан бүтээгдсэн цорын ганц гэр бүлийн санхүүгийн програм. 
+                        Хил дамнасан баялгаа хянаж, олон валют удирдаж, визийн шаардлагад нийцүүлэн ажиллаарай.
+                    </p>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <a href="#demo" class="bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors mongolian">
+                            🚀 Туршилт үзэх
+                        </a>
+                        <a href="#features" class="border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary transition-colors mongolian">
+                            Дэлгэрэнгүй
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem & Solution -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800 mongolian">Асуудал</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600 mongolian">Олон улсын оюутнууд олон орны хөрөнгөө хянахад бэрхшээлтэй</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600 mongolian">Гэр бүлүүд хамтын баялаг, санхүүгийн үүргээ алддаг</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600 mongolian">Визийн дагуу яв нарийн санхүүгийн хяналт, ажлын цагийн хяналт шаарддаг</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-red-500 text-xl">❌</span>
+                                <p class="text-gray-600 mongolian">Одоогийн програмууд олон валют, олон орны нарийн асуудлыг ойлгодоггүй</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-bold mb-6 text-primary mongolian">Манай шийдэл</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600 mongolian">USD, AUD, MNT болон 50+ валютын хөрөнгийг бодит цагийн хөрвүүлэлттэй хянах</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600 mongolian">Аюулгүй урилгын код болон үүргийн түвшинтэй гэр бүлийн хуваалцаа</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600 mongolian">Австралийн визийн дагуу явах хяналт (ажлын цаг, санхүүгийн шаардлага)</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="text-green-500 text-xl">✅</span>
+                                <p class="text-gray-600 mongolian">Олон улсын оюутан болон дэлхийн гэр бүлүүдэд тусгайлан бүтээгдсэн</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section id="features" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800 mongolian">Яагаад ГлобФам?</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">🌍</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Олон орны хяналт</h3>
+                        <p class="text-gray-600 mongolian">Төрөлх орон (Монгол) болон өөр орны (Австрали) хөрөнгийг нэг самбарт хянах.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">👨‍👩‍👧‍👦</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Гэр бүлийн хуваалцаа</h3>
+                        <p class="text-gray-600 mongolian">Санхүүгийн мэдээллийг гэр бүлийн гишүүдтэй аюулгүйгээр хуваалцах. Эцэг эх гэрээсээ хянаж дэмжих боломжтой.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Визийн дагуу явах</h3>
+                        <p class="text-gray-600 mongolian">Ажлын цаг (2 долоо хоногт 48 цаг), санхүүгийн шаардлага, визийн сунгалтын хугацааг хянах.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">💱</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Бодит цагийн валют</h3>
+                        <p class="text-gray-600 mongolian">AUD/MNT/USD-ийн амьд хөрвүүлэлт. Нийт баялгаа дуртай валютаараа шууд харах.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">🏦</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Банкны холболт</h3>
+                        <p class="text-gray-600 mongolian">Австрали болон олон улсын банкуудтай холбогдож автомат гүйлгээний хяналт.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg card-hover">
+                        <div class="text-4xl mb-4">📱</div>
+                        <h3 class="text-xl font-semibold mb-3 mongolian">Утас & Вэб</h3>
+                        <p class="text-gray-600 mongolian">Хаанаас ч хандах боломжтой - хариуцагч вэб програм болон iOS, Android-д төрөлх програм.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Section -->
+        <section id="demo" class="py-16 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-8 text-gray-800 mongolian">ГлобФамыг ажиллаж буй байдлаар нь үзэх</h2>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto mongolian">
+                    Австралид суралцаж буй Монгол оюутан Халлы Дашдоржийн бодит гэр бүлийн мэдээлэл бүхий амьд туршилтыг үзээрэй.
+                </p>
+                <div class="bg-gray-100 p-8 rounded-xl max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-semibold mb-4 mongolian">Туршилтын данс</h3>
+                    <div class="space-y-2 text-left">
+                        <p class="mongolian"><strong>И-мэйл:</strong> demo@globfam.app</p>
+                        <p class="mongolian"><strong>Нууц үг:</strong> demo123456</p>
+                        <p class="mongolian"><strong>Гэр бүлийн код:</strong> DEMO2025</p>
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <a href="/login" class="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition-colors mongolian">
+                            🚀 Амьд туршилт үзэх
+                        </a>
+                        <p class="text-sm text-gray-600 mongolian">
+                            Бодит олон валютын хөрөнгө, гэр бүлийн хуваалцаа, Австралийн визийн хянал төлөвийг хараарай!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="gradient-bg text-white py-16">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-6 mongolian">Дэлхийн санхүүгээ удирдахад бэлэн үү?</h2>
+                <p class="text-xl mb-8 max-w-3xl mx-auto mongolian">
+                    Хил дамнасан баялгаа удирдахад ГлобФам ашиглаж буй олон мянган олон улсын гэр бүлүүдтэй нэгдээрэй.
+                </p>
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <a href="/register" class="bg-white text-primary px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors mongolian">
+                        14 хоногийн үнэгүй туршилт эхлүүлэх
+                    </a>
+                    <a href="mailto:hello@globfam.io" class="border-2 border-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-primary transition-colors mongolian">
+                        Демо дуудлага товлох
+                    </a>
+                </div>
+                <p class="mt-6 text-sm opacity-90 mongolian">Картын мэдээлэл шаардлагагүй • Хүссэн үедээ цуцлах • Бүрэн дэмжлэг орсон</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function toggleLanguage() {
+            const englishContent = document.getElementById('english-content');
+            const mongolianContent = document.getElementById('mongolian-content');
+            const langToggle = document.getElementById('lang-toggle');
+
+            if (englishContent.classList.contains('hidden')) {
+                // Show English, hide Mongolian
+                englishContent.classList.remove('hidden');
+                mongolianContent.classList.add('hidden');
+                langToggle.textContent = '🇲🇳 Монгол';
+            } else {
+                // Show Mongolian, hide English
+                englishContent.classList.add('hidden');
+                mongolianContent.classList.remove('hidden');
+                langToggle.textContent = '🇺🇸 English';
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
