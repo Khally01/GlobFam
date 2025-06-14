@@ -1,0 +1,23 @@
+{
+  "name": "@globfam/platform",
+  "version": "1.0.0",
+  "description": "GlobFam - Financial platform for international families",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "db:migrate": "cd backend && npm run db:migrate",
+    "db:seed": "cd backend && npm run db:seed",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "lint": "cd backend && npm run lint && cd ../frontend && npm run lint"
+  },
+  "keywords": ["fintech", "family", "international", "multi-currency"],
+  "author": "GlobFam Team",
+  "license": "PROPRIETARY"
+}
