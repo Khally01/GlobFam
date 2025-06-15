@@ -2,10 +2,13 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd globfam-platform && npm run install:all && npm run build",
+    "buildCommand": "echo 'Cache bust: $(date +%s)' && npm cache clean --force && cd globfam-platform && npm install --no-cache --prefer-online && cd backend && npm install --no-cache --prefer-online && cd ../frontend && npm install --no-cache --prefer-online && cd .. && npm run build",
     "watchPatterns": [
-      "globfam-platform/**"
-    ]
+      "globfam-platform/**",
+      "nixpacks.toml",
+      "railway.json"
+    ],
+    "nixpacksConfigPath": "nixpacks.toml"
   },
   "deploy": {
     "startCommand": "cd globfam-platform && npm run start:railway",
@@ -17,7 +20,12 @@
   "environments": {
     "production": {
       "build": {
-        "cacheMount": "/root/.npm"
+        "cacheMount": false
+      },
+      "env": {
+        "NPM_CONFIG_PREFER_ONLINE": "true",
+        "NPM_CONFIG_CACHE": "/tmp/npm-cache",
+        "CACHE_BUST": "2025-06-15-v1"
       }
     }
   }
