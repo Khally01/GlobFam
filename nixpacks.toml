@@ -2,7 +2,7 @@
 # Simplified configuration for globfam-platform
 
 [phases.setup]
-nixPkgs = ['nodejs-18_x']
+nixPkgs = ['nodejs-20_x']
 
 [phases.install]
 # Simple npm install commands without flags
