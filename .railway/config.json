@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "build": {
+    "env": {
+      "NPM_CONFIG_PREFER_ONLINE": "true",
+      "NPM_CONFIG_CACHE": "/tmp/npm-cache",
+      "NPM_CONFIG_LOGLEVEL": "verbose",
+      "DISABLE_CACHE": "true",
+      "FORCE_COLOR": "1"
+    }
+  }
+}

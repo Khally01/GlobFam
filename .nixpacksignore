@@ -1,0 +1,50 @@
+# Nixpacks ignore file - excludes files from build context
+# This helps reduce cache and speeds up builds
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+archive/
+
+# Development files
+.env.local
+.env.development
+*.log
+.DS_Store
+
+# Test files
+**/__tests__
+**/*.test.*
+**/*.spec.*
+
+# Editor files
+.vscode/
+.idea/
+
+# Docker files (not needed for Railway)
+docker-compose*.yml
+Dockerfile*
+
+# Node modules (will be installed fresh)
+**/node_modules
+**/package-lock.json
+
+# Build artifacts
+**/dist
+**/build
+**/.next
+**/.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Sales pitch site (not part of platform)
+globfam-saas/
+sales-pitch.html
+index.html
