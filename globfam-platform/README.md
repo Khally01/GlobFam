@@ -2,6 +2,8 @@
 
 The complete financial management platform for international families.
 
+> Last deployment update: June 15, 2025 - Railway configuration optimized
+
 ## Architecture Overview
 
 ```
