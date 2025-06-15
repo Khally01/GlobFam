@@ -7,17 +7,20 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "start:prod": "node dist/index.js",
     "test": "vitest",
     "lint": "eslint src --ext .ts",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts",
+    "postinstall": "prisma generate"
   },
   "keywords": ["fintech", "api", "family-finance"],
   "author": "GlobFam Team",
   "license": "PROPRIETARY",
   "dependencies": {
     "@prisma/client": "^5.8.0",
+    "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -29,8 +32,10 @@
     "nodemailer": "^6.9.8",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "plaid": "^12.0.0",
     "redis": "^4.6.12",
     "socket.io": "^4.6.0",
+    "winston": "^3.11.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -53,5 +58,8 @@
     "typescript": "^5.3.3",
     "vitest": "^1.1.1",
     "@vitest/coverage-c8": "^0.33.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
