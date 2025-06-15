@@ -1,30 +1,21 @@
 # Root nixpacks.toml for Railway deployment
-# This ensures we build the globfam-platform project
-# Cache-busting: Updated on 2025-06-15 to force fresh builds
+# Simplified configuration for globfam-platform
 
 [phases.setup]
 nixPkgs = ['nodejs-18_x']
-# Clear npm cache to ensure fresh installs
-cmds = [
-  "npm cache clean --force",
-  "rm -rf node_modules package-lock.json",
-  "rm -rf globfam-platform/node_modules globfam-platform/package-lock.json",
-  "rm -rf globfam-platform/backend/node_modules globfam-platform/backend/package-lock.json",
-  "rm -rf globfam-platform/frontend/node_modules globfam-platform/frontend/package-lock.json"
-]
 
 [phases.install]
-# Force npm install (not npm ci) with cache-busting
+# Simple npm install commands without flags
 cmds = [
-  "echo 'Cache bust timestamp: $(date +%s)'",
-  "cd globfam-platform && npm install --no-cache --prefer-online",
-  "cd globfam-platform/backend && npm install --no-cache --prefer-online",
-  "cd globfam-platform/frontend && npm install --no-cache --prefer-online"
+  "cd globfam-platform && npm install",
+  "cd globfam-platform/backend && npm install",
+  "cd globfam-platform/frontend && npm install"
 ]
 
 [phases.build]
 cmds = [
-  "cd globfam-platform/backend && npm run build && npx prisma generate",
+  "cd globfam-platform/backend && npm run build",
+  "cd globfam-platform/backend && npx prisma generate",
   "cd globfam-platform/frontend && npm run build"
 ]
 
@@ -33,7 +24,3 @@ cmd = "cd globfam-platform && npm run start:railway"
 
 [variables]
 NODE_ENV = "production"
-# Cache-busting environment variable - update this to force rebuild
-CACHE_BUST = "2025-06-15-v1"
-NPM_CONFIG_PREFER_ONLINE = "true"
-NPM_CONFIG_CACHE = "/tmp/npm-cache"

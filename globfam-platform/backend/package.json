@@ -13,7 +13,7 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:seed": "tsx src/db/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate || echo 'Prisma generate will run during build phase'"
   },
   "keywords": ["fintech", "api", "family-finance"],
   "author": "GlobFam Team",
