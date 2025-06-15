@@ -2,11 +2,23 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd globfam-platform && npm run install:all && npm run build"
+    "buildCommand": "cd globfam-platform && npm run install:all && npm run build",
+    "watchPatterns": [
+      "globfam-platform/**"
+    ]
   },
   "deploy": {
     "startCommand": "cd globfam-platform && npm run start:railway",
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "restartPolicyMaxRetries": 10,
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 300
+  },
+  "environments": {
+    "production": {
+      "build": {
+        "cacheMount": "/root/.npm"
+      }
+    }
   }
 }

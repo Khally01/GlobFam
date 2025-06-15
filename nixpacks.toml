@@ -1,0 +1,24 @@
+# Root nixpacks.toml for Railway deployment
+# This ensures we build the globfam-platform project
+
+[phases.setup]
+nixPkgs = ['nodejs-18_x']
+
+[phases.install]
+cmds = [
+  "cd globfam-platform && npm install",
+  "cd globfam-platform/backend && npm ci",
+  "cd globfam-platform/frontend && npm ci"
+]
+
+[phases.build]
+cmds = [
+  "cd globfam-platform/backend && npm run build && npx prisma generate",
+  "cd globfam-platform/frontend && npm run build"
+]
+
+[start]
+cmd = "cd globfam-platform && npm run start:railway"
+
+[variables]
+NODE_ENV = "production"

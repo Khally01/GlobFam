@@ -1,0 +1,14 @@
+# Ignore all Dockerfiles to force Nixpacks usage
+Dockerfile*
+**/Dockerfile*
+
+# Ignore the globfam-saas directory entirely
+globfam-saas/
+
+# Ignore other unnecessary files
+*.log
+.git/
+node_modules/
+venv/
+archives/
+docs/archive/
