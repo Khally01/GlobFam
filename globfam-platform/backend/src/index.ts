@@ -55,12 +55,19 @@ app.use('/api/transactions', transactionRouter);
 app.use('/api/families', familyRouter);
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const { performHealthCheck } = await import('./utils/healthcheck');
+    const health = await performHealthCheck();
+    res.status(health.status === 'healthy' ? 200 : 503).json(health);
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
 });
 
 // Socket.io connection handling
