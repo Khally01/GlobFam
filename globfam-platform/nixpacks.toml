@@ -1,0 +1,21 @@
+# This nixpacks.toml is for deploying from within the globfam-platform directory
+# The main deployment uses railway.json in the root directory
+
+[phases.setup]
+nixPkgs = ['nodejs-18_x']
+
+[phases.install]
+cmds = [
+  "npm install",
+  "cd backend && npm ci",
+  "cd frontend && npm ci"
+]
+
+[phases.build]
+cmds = [
+  "cd backend && npm run build && npx prisma generate",
+  "cd frontend && npm run build"
+]
+
+[start]
+cmd = "npm run start:railway"

@@ -9,6 +9,8 @@
     "dev:frontend": "cd frontend && npm run dev",
     "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "build:railway": "npm run install:all && npm run build",
+    "start:railway": "concurrently -n 'backend,frontend' -c 'cyan,magenta' 'cd backend && npx prisma migrate deploy && npm start' 'cd frontend && npm run preview -- --port ${PORT:-3000} --host 0.0.0.0'",
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up",
     "docker:down": "docker-compose down",
@@ -19,5 +21,8 @@
   },
   "keywords": ["fintech", "family", "international", "multi-currency"],
   "author": "GlobFam Team",
-  "license": "PROPRIETARY"
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
