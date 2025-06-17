@@ -1,0 +1,15 @@
+{
+  "name": "globfam-pitch",
+  "version": "1.0.0",
+  "description": "GlobFam sales pitch and presentation",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s . -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

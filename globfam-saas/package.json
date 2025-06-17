@@ -1,15 +1,19 @@
 {
-  "name": "globfam-pitch",
+  "name": "globfam-monorepo",
   "version": "1.0.0",
-  "description": "GlobFam sales pitch and presentation",
-  "main": "index.html",
+  "private": true,
   "scripts": {
-    "start": "npx serve -s . -l $PORT"
-  },
-  "dependencies": {
-    "serve": "^14.2.0"
+    "dev": "echo 'Use npm run dev:api or dev:web'",
+    "dev:api": "cd apps/api && npm run dev",
+    "dev:web": "cd apps/web && npm run dev",
+    "build": "echo 'Building all apps' && npm run build:api && npm run build:web",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
+    "start:api": "cd apps/api && npm start",
+    "start:web": "cd apps/web && npm start",
+    "install:all": "npm install && cd apps/api && npm install && cd ../web && npm install --legacy-peer-deps"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18.0.0"
   }
 }
