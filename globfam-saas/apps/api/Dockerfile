@@ -6,9 +6,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci --only=production
-RUN npm install -g typescript
+# Install all dependencies (including dev for build)
+RUN npm ci
 RUN npx prisma generate
 
 # Copy source code
