@@ -49,6 +49,7 @@ export interface Asset {
   name: string;
   type: AssetType;
   subtype?: string;
+  country?: string;
   currency: string;
   amount: string;
   userId: string;
