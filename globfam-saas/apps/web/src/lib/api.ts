@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ApiResponse } from '@globfam/types'
+import type { ApiResponse } from '@/lib/shared-types'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 

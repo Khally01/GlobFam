@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@globfam/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared-ui'
 import { 
   DollarSign, 
   TrendingUp, 
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { assetsApi, transactionsApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
-import type { Asset, Transaction } from '@globfam/types'
+import type { Asset, Transaction } from '@/lib/shared-types'
 
 export default function DashboardPage() {
   const { user, family } = useAuthStore()

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@globfam/ui'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/shared-ui'
 import { 
   Crown, 
   CreditCard, 

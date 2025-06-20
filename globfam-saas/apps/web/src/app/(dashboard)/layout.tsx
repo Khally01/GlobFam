@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Button } from '@globfam/ui'
+import { Button } from '@/components/shared-ui'
 import { 
   Home, 
   Wallet, 

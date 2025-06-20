@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@globfam/ui', '@globfam/types'],
   images: {
     domains: ['ui-avatars.com'],
   },

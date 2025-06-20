@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@globfam/ui'
+import { Button } from '@/components/shared-ui'
 
 export default function HomePage() {
   return (

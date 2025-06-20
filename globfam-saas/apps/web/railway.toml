@@ -1,9 +1,16 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm install --legacy-peer-deps && npm run build"
+nixpacksPlan = """
+[phases.setup]
+nixPkgs = ['nodejs-18_x', 'npm-9_x']
+
+[phases.install]
+cmds = ['npm install --legacy-peer-deps']
+
+[phases.build]
+cmds = ['npm run build']
+"""
 
 [deploy]
 startCommand = "npm start"
 healthcheckPath = "/"
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 3

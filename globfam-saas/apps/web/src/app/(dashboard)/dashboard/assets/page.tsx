@@ -12,7 +12,7 @@ import {
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from '@globfam/ui'
+} from '@/components/shared-ui'
 import { 
   Plus, 
   Wallet, 
@@ -28,7 +28,7 @@ import {
 } from 'lucide-react'
 import { assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
-import type { Asset, AssetType } from '@globfam/types'
+import type { Asset, AssetType } from '@/lib/shared-types'
 
 const assetSchema = z.object({
   name: z.string().min(1, 'Asset name is required'),

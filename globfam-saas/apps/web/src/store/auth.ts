@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User, Organization, Family } from '@globfam/types'
+import type { User, Organization, Family } from '@/lib/shared-types'
 
 interface AuthState {
   user: User | null

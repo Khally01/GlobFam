@@ -12,7 +12,7 @@ import {
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from '@globfam/ui'
+} from '@/components/shared-ui'
 import { 
   Plus, 
   ArrowUpRight, 
@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { transactionsApi, assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
-import type { Transaction, Asset, TransactionType } from '@globfam/types'
+import type { Transaction, Asset, TransactionType } from '@/lib/shared-types'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),

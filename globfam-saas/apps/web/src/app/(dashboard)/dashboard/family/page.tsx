@@ -12,7 +12,7 @@ import {
   CardDescription, 
   CardHeader, 
   CardTitle 
-} from '@globfam/ui'
+} from '@/components/shared-ui'
 import { 
   Users, 
   UserPlus, 
@@ -25,7 +25,7 @@ import {
 import { familiesApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import { useToast } from '@/hooks/use-toast'
-import type { Family } from '@globfam/types'
+import type { Family } from '@/lib/shared-types'
 
 const createFamilySchema = z.object({
   name: z.string().min(2, 'Family name must be at least 2 characters'),
