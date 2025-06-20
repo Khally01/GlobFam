@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('🔧 Running prebuild script to fix dependencies...');
+console.log('Current directory:', __dirname);
+console.log('Railway environment:', process.env.RAILWAY_ENVIRONMENT || 'not set');
 
 // Check if we're in Railway environment or local with missing packages
 const packagesPath = path.join(__dirname, '../../packages');
