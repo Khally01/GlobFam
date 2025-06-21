@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { ImportService } from '../services/import/import.service';
 import { csvParser } from '../services/import/csv-parser';
 import { excelParser } from '../services/import/excel-parser';
@@ -54,7 +54,7 @@ const importOptionsSchema = z.object({
 });
 
 // Preview file endpoint
-router.post('/import/preview', authenticate, upload.single('file'), async (req, res) => {
+router.post('/import/preview', authenticate, upload.single('file'), async (req: AuthRequest, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -86,14 +86,14 @@ router.post('/import/preview', authenticate, upload.single('file'), async (req, 
       sheets: isExcel ? sheets : undefined,
       suggestedMapping: suggestColumnMapping(headers)
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('File preview error:', error);
     res.status(400).json({ error: error.message });
   }
 });
 
 // Import file endpoint
-router.post('/import/process', authenticate, upload.single('file'), async (req, res) => {
+router.post('/import/process', authenticate, upload.single('file'), async (req: AuthRequest, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -106,7 +106,7 @@ router.post('/import/process', authenticate, upload.single('file'), async (req, 
     const asset = await prisma.asset.findFirst({
       where: {
         id: options.assetId,
-        organizationId: req.user.organizationId
+        organizationId: req.user!.organizationId
       }
     });
 
@@ -123,16 +123,16 @@ router.post('/import/process', authenticate, upload.single('file'), async (req, 
       result = await importService.importFromExcel(
         fileBuffer,
         fileName,
-        req.user.id,
-        req.user.organizationId,
+        req.user!.id,
+        req.user!.organizationId,
         options
       );
     } else {
       result = await importService.importFromCSV(
         fileBuffer,
         fileName,
-        req.user.id,
-        req.user.organizationId,
+        req.user!.id,
+        req.user!.organizationId,
         options
       );
     }
@@ -145,19 +145,19 @@ router.post('/import/process', authenticate, upload.single('file'), async (req, 
       failedRows: result.importHistory.failedRows,
       errors: result.errors
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Import error:', error);
     res.status(400).json({ error: error.message });
   }
 });
 
 // Get import history
-router.get('/import/history', authenticate, async (req, res) => {
+router.get('/import/history', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const limit = parseInt(req.query.limit as string) || 10;
     const history = await importService.getImportHistory(
-      req.user.organizationId,
-      req.user.id,
+      req.user!.organizationId,
+      req.user!.id,
       limit
     );
 
@@ -169,12 +169,12 @@ router.get('/import/history', authenticate, async (req, res) => {
 });
 
 // Get import details
-router.get('/import/:id', authenticate, async (req, res) => {
+router.get('/import/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const importHistory = await prisma.importHistory.findFirst({
       where: {
         id: req.params.id,
-        organizationId: req.user.organizationId
+        organizationId: req.user!.organizationId
       },
       include: {
         asset: true,

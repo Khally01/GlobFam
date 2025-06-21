@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { OpenAIService } from '../services/ai/openai.service';
 import { prisma } from '../lib/prisma';
+import { Response } from 'express';
 
 const router = Router();
 const openAIService = new OpenAIService(prisma);
 
 // Categorize transactions
-router.post('/ai/categorize', authenticate, async (req, res) => {
+router.post('/ai/categorize', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       transactionIds: z.array(z.string()).optional(),
@@ -16,6 +17,10 @@ router.post('/ai/categorize', authenticate, async (req, res) => {
     });
 
     const { transactionIds, limit } = schema.parse(req.body);
+
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     // Get uncategorized or specified transactions
     const transactions = await prisma.transaction.findMany({
@@ -52,14 +57,15 @@ router.post('/ai/categorize', authenticate, async (req, res) => {
       transactions.map(t => ({
         ...t,
         amount: t.amount.toString(),
-        currentCategory: t.category
+        currentCategory: t.category,
+        description: t.description || ''
       })),
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json({ categorizations: results });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Categorization error:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to categorize transactions' 
@@ -68,7 +74,7 @@ router.post('/ai/categorize', authenticate, async (req, res) => {
 });
 
 // Apply categorization suggestions
-router.post('/ai/categorize/apply', authenticate, async (req, res) => {
+router.post('/ai/categorize/apply', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       categorizations: z.array(z.object({
@@ -80,6 +86,10 @@ router.post('/ai/categorize/apply', authenticate, async (req, res) => {
 
     const { categorizations } = schema.parse(req.body);
 
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     // Apply accepted categorizations
     const updates = await Promise.all(
       categorizations
@@ -88,8 +98,8 @@ router.post('/ai/categorize/apply', authenticate, async (req, res) => {
           prisma.transaction.update({
             where: { 
               id: c.transactionId,
-              userId: req.user.id,
-              organizationId: req.user.organizationId
+              userId: req.user!.id,
+              organizationId: req.user!.organizationId
             },
             data: { category: c.category }
           })
@@ -124,18 +134,18 @@ router.post('/ai/categorize/apply', authenticate, async (req, res) => {
 });
 
 // Get financial insights
-router.get('/ai/insights', authenticate, async (req, res) => {
+router.get('/ai/insights', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const timeframe = (req.query.timeframe as 'monthly' | 'quarterly' | 'yearly') || 'monthly';
     
     const insights = await openAIService.generateFinancialInsights(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       timeframe
     );
 
     res.json({ insights, timeframe });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Insights error:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to generate insights' 
@@ -144,7 +154,7 @@ router.get('/ai/insights', authenticate, async (req, res) => {
 });
 
 // Get budget suggestions
-router.post('/ai/budget', authenticate, async (req, res) => {
+router.post('/ai/budget', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       monthlyIncome: z.number().positive(),
@@ -154,14 +164,14 @@ router.post('/ai/budget', authenticate, async (req, res) => {
     const { monthlyIncome, currency } = schema.parse(req.body);
 
     const budget = await openAIService.suggestBudget(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       monthlyIncome,
       currency
     );
 
     res.json({ budget, currency });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Budget suggestion error:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to suggest budget' 
@@ -170,15 +180,15 @@ router.post('/ai/budget', authenticate, async (req, res) => {
 });
 
 // Get categorization history
-router.get('/ai/categorization-history', authenticate, async (req, res) => {
+router.get('/ai/categorization-history', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const limit = parseInt(req.query.limit as string) || 50;
     
     const history = await prisma.aICategorizationHistory.findMany({
       where: {
         transaction: {
-          userId: req.user.id,
-          organizationId: req.user.organizationId
+          userId: req.user!.id,
+          organizationId: req.user!.organizationId
         }
       },
       include: {

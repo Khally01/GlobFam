@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { ForecastingService } from '../services/forecasting/forecasting.service';
 import { prisma } from '../lib/prisma';
 
@@ -8,13 +8,13 @@ const router = Router();
 const forecastingService = new ForecastingService(prisma);
 
 // Get financial forecast
-router.get('/forecasting/forecast', authenticate, async (req, res) => {
+router.get('/forecasting/forecast', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const months = parseInt(req.query.months as string) || 12;
     
     const forecast = await forecastingService.generateForecast(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       months
     );
 
@@ -26,7 +26,7 @@ router.get('/forecasting/forecast', authenticate, async (req, res) => {
 });
 
 // Generate custom forecast
-router.post('/forecasting/custom', authenticate, async (req, res) => {
+router.post('/forecasting/custom', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       name: z.string(),
@@ -40,8 +40,8 @@ router.post('/forecasting/custom', authenticate, async (req, res) => {
     const { months, ...scenario } = schema.parse(req.body);
     
     const forecast = await forecastingService.generateCustomForecast(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       scenario,
       months
     );
@@ -57,7 +57,7 @@ router.post('/forecasting/custom', authenticate, async (req, res) => {
 });
 
 // What-if analysis
-router.post('/forecasting/what-if', authenticate, async (req, res) => {
+router.post('/forecasting/what-if', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       scenarios: z.array(z.object({
@@ -80,8 +80,8 @@ router.post('/forecasting/what-if', authenticate, async (req, res) => {
     const { scenarios } = schema.parse(req.body);
     
     const analysis = await forecastingService.whatIfAnalysis(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       scenarios
     );
 
@@ -96,7 +96,7 @@ router.post('/forecasting/what-if', authenticate, async (req, res) => {
 });
 
 // Retirement projection
-router.post('/forecasting/retirement', authenticate, async (req, res) => {
+router.post('/forecasting/retirement', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       targetRetirementAge: z.number().min(50).max(80),
@@ -106,8 +106,8 @@ router.post('/forecasting/retirement', authenticate, async (req, res) => {
     const data = schema.parse(req.body);
     
     const projection = await forecastingService.getRetirementProjection(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       data.targetRetirementAge,
       data.targetMonthlyIncome
     );

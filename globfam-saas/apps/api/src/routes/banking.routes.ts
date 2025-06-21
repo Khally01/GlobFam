@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { BankingService } from '../services/banking/banking.service';
 import { prisma } from '../lib/prisma';
 
@@ -8,7 +8,7 @@ const router = Router();
 const bankingService = new BankingService(prisma);
 
 // Get supported banks
-router.get('/banking/supported-banks', authenticate, async (req, res) => {
+router.get('/banking/supported-banks', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const banks = [
       {
@@ -61,11 +61,11 @@ router.get('/banking/supported-banks', authenticate, async (req, res) => {
 });
 
 // Get user's bank connections
-router.get('/banking/connections', authenticate, async (req, res) => {
+router.get('/banking/connections', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const connections = await bankingService.getBankConnections(
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json({ connections });
@@ -76,7 +76,7 @@ router.get('/banking/connections', authenticate, async (req, res) => {
 });
 
 // Connect a bank account
-router.post('/banking/connect', authenticate, async (req, res) => {
+router.post('/banking/connect', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       provider: z.enum(['commonwealth', 'khanbank', 'basiq']),
@@ -91,8 +91,8 @@ router.post('/banking/connect', authenticate, async (req, res) => {
     const { provider, credentials } = schema.parse(req.body);
     
     const connection = await bankingService.connectBank(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       provider,
       credentials
     );
@@ -120,12 +120,12 @@ router.post('/banking/connect', authenticate, async (req, res) => {
 });
 
 // Sync bank transactions
-router.post('/banking/sync/:connectionId', authenticate, async (req, res) => {
+router.post('/banking/sync/:connectionId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const result = await bankingService.syncBankTransactions(
       req.params.connectionId,
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json({ 
@@ -143,12 +143,12 @@ router.post('/banking/sync/:connectionId', authenticate, async (req, res) => {
 });
 
 // Disconnect bank account
-router.delete('/banking/connections/:connectionId', authenticate, async (req, res) => {
+router.delete('/banking/connections/:connectionId', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     await bankingService.disconnectBank(
       req.params.connectionId,
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json({ message: 'Bank connection removed successfully' });
@@ -162,7 +162,7 @@ router.delete('/banking/connections/:connectionId', authenticate, async (req, re
 });
 
 // Get Basiq institutions (for Australian banks)
-router.get('/banking/basiq/institutions', authenticate, async (req, res) => {
+router.get('/banking/basiq/institutions', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     // In production, this would fetch from Basiq API
     const institutions = [

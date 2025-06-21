@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { GoalsService } from '../services/goals/goals.service';
 import prisma from '../lib/prisma';
 import { GoalType, GoalStatus } from '@prisma/client';
@@ -28,13 +28,13 @@ const contributeSchema = z.object({
 });
 
 // Get all goals
-router.get('/goals', authenticate, async (req, res) => {
+router.get('/goals', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const status = req.query.status as GoalStatus | undefined;
     
     const goals = await goalsService.getGoals(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       status
     );
 
@@ -46,11 +46,11 @@ router.get('/goals', authenticate, async (req, res) => {
 });
 
 // Get goal insights
-router.get('/goals/insights', authenticate, async (req, res) => {
+router.get('/goals/insights', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const insights = await goalsService.getGoalInsights(
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json(insights);
@@ -61,12 +61,12 @@ router.get('/goals/insights', authenticate, async (req, res) => {
 });
 
 // Get single goal
-router.get('/goals/:id', authenticate, async (req, res) => {
+router.get('/goals/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const goal = await goalsService.getGoalById(
       req.params.id,
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     if (!goal) {
@@ -81,13 +81,13 @@ router.get('/goals/:id', authenticate, async (req, res) => {
 });
 
 // Create goal
-router.post('/goals', authenticate, async (req, res) => {
+router.post('/goals', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const data = createGoalSchema.parse(req.body);
     
     const goal = await goalsService.createGoal(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       data
     );
 
@@ -102,14 +102,14 @@ router.post('/goals', authenticate, async (req, res) => {
 });
 
 // Update goal
-router.put('/goals/:id', authenticate, async (req, res) => {
+router.put('/goals/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const data = createGoalSchema.partial().parse(req.body);
     
     const goal = await goalsService.updateGoal(
       req.params.id,
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       data
     );
 
@@ -124,13 +124,13 @@ router.put('/goals/:id', authenticate, async (req, res) => {
 });
 
 // Contribute to goal
-router.post('/goals/:id/contribute', authenticate, async (req, res) => {
+router.post('/goals/:id/contribute', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const data = contributeSchema.parse(req.body);
     
     const goal = await goalsService.contributeToGoal(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       {
         goalId: req.params.id,
         ...data
@@ -148,12 +148,12 @@ router.post('/goals/:id/contribute', authenticate, async (req, res) => {
 });
 
 // Delete goal
-router.delete('/goals/:id', authenticate, async (req, res) => {
+router.delete('/goals/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     await goalsService.deleteGoal(
       req.params.id,
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json({ message: 'Goal deleted successfully' });

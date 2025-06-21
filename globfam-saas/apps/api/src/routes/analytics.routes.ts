@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import { z } from 'zod';
-import { authenticate } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 import { AnalyticsService } from '../services/analytics/analytics.service';
 import { prisma } from '../lib/prisma';
 import { startOfMonth, endOfMonth, subMonths } from 'date-fns';
@@ -9,7 +9,7 @@ const router = Router();
 const analyticsService = new AnalyticsService(prisma);
 
 // Get spending by category
-router.get('/analytics/spending-by-category', authenticate, async (req, res) => {
+router.get('/analytics/spending-by-category', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { startDate, endDate } = req.query;
     
@@ -19,8 +19,8 @@ router.get('/analytics/spending-by-category', authenticate, async (req, res) => 
     };
 
     const spending = await analyticsService.getSpendingByCategory(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       timeRange
     );
 
@@ -32,13 +32,13 @@ router.get('/analytics/spending-by-category', authenticate, async (req, res) => 
 });
 
 // Get monthly trends
-router.get('/analytics/monthly-trends', authenticate, async (req, res) => {
+router.get('/analytics/monthly-trends', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const months = parseInt(req.query.months as string) || 12;
     
     const trends = await analyticsService.getMonthlyTrends(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       months
     );
 
@@ -50,11 +50,11 @@ router.get('/analytics/monthly-trends', authenticate, async (req, res) => {
 });
 
 // Get financial health score
-router.get('/analytics/health-score', authenticate, async (req, res) => {
+router.get('/analytics/health-score', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const healthScore = await analyticsService.getFinancialHealthScore(
-      req.user.id,
-      req.user.organizationId
+      req.user!.id,
+      req.user!.organizationId
     );
 
     res.json(healthScore);
@@ -65,13 +65,13 @@ router.get('/analytics/health-score', authenticate, async (req, res) => {
 });
 
 // Get cash flow forecast
-router.get('/analytics/cash-flow-forecast', authenticate, async (req, res) => {
+router.get('/analytics/cash-flow-forecast', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const months = parseInt(req.query.months as string) || 3;
     
     const forecast = await analyticsService.getCashFlowForecast(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       months
     );
 
@@ -83,7 +83,7 @@ router.get('/analytics/cash-flow-forecast', authenticate, async (req, res) => {
 });
 
 // Get top expenses
-router.get('/analytics/top-expenses', authenticate, async (req, res) => {
+router.get('/analytics/top-expenses', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { startDate, endDate, limit } = req.query;
     
@@ -93,8 +93,8 @@ router.get('/analytics/top-expenses', authenticate, async (req, res) => {
     };
 
     const expenses = await analyticsService.getTopExpenses(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       timeRange,
       limit ? parseInt(limit as string) : 10
     );
@@ -107,7 +107,7 @@ router.get('/analytics/top-expenses', authenticate, async (req, res) => {
 });
 
 // Get budget comparison
-router.post('/analytics/budget-comparison', authenticate, async (req, res) => {
+router.post('/analytics/budget-comparison', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       budget: z.record(z.number()),
@@ -123,8 +123,8 @@ router.post('/analytics/budget-comparison', authenticate, async (req, res) => {
     };
 
     const comparison = await analyticsService.getBudgetComparison(
-      req.user.id,
-      req.user.organizationId,
+      req.user!.id,
+      req.user!.organizationId,
       budget,
       timeRange
     );
@@ -137,7 +137,7 @@ router.post('/analytics/budget-comparison', authenticate, async (req, res) => {
 });
 
 // Get analytics summary (combines multiple analytics)
-router.get('/analytics/summary', authenticate, async (req, res) => {
+router.get('/analytics/summary', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const currentMonth = {
       startDate: startOfMonth(new Date()),
@@ -146,22 +146,22 @@ router.get('/analytics/summary', authenticate, async (req, res) => {
 
     const [spending, trends, healthScore, topExpenses] = await Promise.all([
       analyticsService.getSpendingByCategory(
-        req.user.id,
-        req.user.organizationId,
+        req.user!.id,
+        req.user!.organizationId,
         currentMonth
       ),
       analyticsService.getMonthlyTrends(
-        req.user.id,
-        req.user.organizationId,
+        req.user!.id,
+        req.user!.organizationId,
         6
       ),
       analyticsService.getFinancialHealthScore(
-        req.user.id,
-        req.user.organizationId
+        req.user!.id,
+        req.user!.organizationId
       ),
       analyticsService.getTopExpenses(
-        req.user.id,
-        req.user.organizationId,
+        req.user!.id,
+        req.user!.organizationId,
         currentMonth,
         5
       )

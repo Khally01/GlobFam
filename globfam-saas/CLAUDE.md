@@ -4,41 +4,79 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GlobFam is a comprehensive family financial management platform designed for international families to manage multi-currency assets, ensure visa compliance, educate children about money, and optimize cross-border finances with AI-powered insights. It's a production-ready monorepo with separate API and web applications, designed for scalability and future MCP (Model Context Protocol) compatibility.
+GlobFam is a multi-currency family finance platform for international families. It's a production-ready monorepo using Turborepo with Express.js API and Next.js 14 web app.
 
-### Core Value Propositions
-- **Multi-Currency Asset Management**: Track assets across multiple countries and currencies
-- **Smart Banking Integration**: Connect banks globally with automatic transaction import
-- **Cross-Border Remittance**: Send money internationally with best rates comparison
-- **Visa Compliance Tracking**: Never miss important visa deadlines or requirements
-- **Kids Financial Education**: Gamified learning platform for children
-- **AI-Powered Insights**: Personalized financial advice and optimization
+**Tech Stack:**
+- **API**: Express.js, TypeScript, PostgreSQL/Prisma, Redis, JWT auth, Stripe
+- **Web**: Next.js 14 (App Router), React Query, Zustand, TailwindCSS, Shadcn UI
+- **Architecture**: Multi-tenant with organization-based data isolation
 
-### Target Users
-- **Primary**: International student families managing assets in multiple currencies
-- **Secondary**: Expatriate families, immigrant families, digital nomad families, multi-national families
+## Essential Commands
+
+### Development
+```bash
+# Install all dependencies (use this after cloning)
+npm run install:all
+
+# Start services with Docker (recommended)
+docker-compose up
+
+# Or start individually
+npm run dev:api    # API on :3001
+npm run dev:web    # Web on :3000
+```
+
+### Database Operations
+```bash
+cd apps/api
+npm run db:migrate      # Run migrations
+npm run db:push        # Push schema changes (dev only)
+npm run db:seed        # Seed demo data
+npm run db:migrate:deploy  # Production migrations
+npx prisma studio      # Open Prisma Studio GUI
+```
+
+### Building & Testing
+```bash
+# Build all apps
+npm run build
+
+# Type checking
+cd apps/web && npm run type-check
+
+# Linting (run in each app directory)
+npm run lint
+
+# Run tests (API only currently)
+cd apps/api && npm run test
+```
+
+### Deployment
+```bash
+# API deployment (Railway)
+cd apps/api && railway up
+
+# Web deployment (Railway/Vercel)
+cd apps/web && railway up    # or vercel --prod
+```
 
 ## Feature Implementation Status
 
-### Implemented Features
-- ✅ Multi-tenant architecture with organization-based isolation
-- ✅ User authentication with JWT and session management
-- ✅ Family groups with invite codes
-- ✅ Multi-currency support (USD, AUD, MNT, EUR, GBP, CNY, JPY, KRW)
-- ✅ Asset management (CASH, PROPERTY, VEHICLE, INVESTMENT, CRYPTO, etc.)
-- ✅ Transaction tracking (INCOME, EXPENSE, TRANSFER)
-- ✅ Basic dashboard with net worth calculation
-- ✅ Stripe integration for subscriptions
+**✅ Implemented:**
+- Multi-tenant architecture with organizations
+- JWT authentication with Redis sessions
+- Multi-currency support (8 currencies)
+- Asset & transaction management
+- AI transaction categorization
+- Bank statement import (CSV, Excel)
+- Analytics, forecasting & goals
+- Stripe subscriptions
 
-### Planned Features (From Specification)
-- 🚧 Bank statement import (CSV, PDF, Excel parsing)
-- 🚧 AI transaction categorization with OpenAI
-- 🚧 Banking API integration (Basiq for AU, Plaid for US)
-- 🚧 Cross-border remittance (Wise, Remitly APIs)
-- 🚧 Visa compliance tracking and document vault
-- 🚧 Kids financial education platform
-- 🚧 Advanced AI insights and recommendations
-- 🚧 Mobile applications
+**🚧 In Progress (Phase 2):**
+- Banking API integration (Basiq, Plaid)
+- Advanced AI insights
+- Cross-border remittance
+- Visa compliance tracking
 
 ## Critical Architecture Decisions
 
