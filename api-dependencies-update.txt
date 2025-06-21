@@ -1,0 +1,45 @@
+# Instructions for updating API dependencies
+
+1. Open Terminal
+
+2. Navigate to your API directory:
+   cd /Users/khally/Documents/GitHub/GlobFam/globfam-saas/apps/api
+
+3. Remove old package-lock.json:
+   rm package-lock.json
+
+4. Install dependencies (this will create new package-lock.json):
+   npm install
+
+5. The following packages will be installed:
+   - axios@^1.6.2
+   - csv-parse@^5.5.3
+   - date-fns@^3.0.6
+   - decimal.js@^10.4.3
+   - multer@^1.4.5-lts.1
+   - openai@^4.24.1
+   - xlsx@^0.18.5
+   
+   Plus existing packages:
+   - @prisma/client@^5.22.0
+   - bcryptjs@^2.4.3
+   - cors@^2.8.5
+   - express@^4.18.2
+   - And others...
+
+6. Generate Prisma client:
+   npx prisma generate
+
+7. Go back to repository root:
+   cd ../..
+
+8. Add changes to git:
+   git add .
+
+9. Commit:
+   git commit -m "Update API dependencies and fix Dockerfile"
+
+10. Push to GitHub:
+    git push
+
+This will trigger Railway deployment with all the correct dependencies.
