@@ -12,7 +12,10 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  TrendingUp,
+  Target,
+  Building2
 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth'
 import { authApi } from '@/lib/api'
@@ -21,6 +24,9 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
   { name: 'Transactions', href: '/dashboard/transactions', icon: Receipt },
+  { name: 'Analytics', href: '/dashboard/analytics', icon: TrendingUp },
+  { name: 'Budget', href: '/dashboard/budget', icon: Target },
+  { name: 'Banking', href: '/dashboard/banking', icon: Building2 },
   { name: 'Family', href: '/dashboard/family', icon: Users },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]

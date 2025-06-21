@@ -15,6 +15,12 @@ import transactionRoutes from './routes/transactions';
 import familyRoutes from './routes/families';
 import subscriptionRoutes from './routes/subscriptions';
 import webhookRoutes from './routes/webhooks';
+import importRoutes from './routes/import.routes';
+import aiRoutes from './routes/ai.routes';
+import analyticsRoutes from './routes/analytics.routes';
+import goalsRoutes from './routes/goals.routes';
+import forecastingRoutes from './routes/forecasting.routes';
+import bankingRoutes from './routes/banking.routes';
 
 // Load environment variables
 dotenv.config();
@@ -80,6 +86,12 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/families', familyRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/webhooks', webhookRoutes);
+app.use('/api', importRoutes);
+app.use('/api', aiRoutes);
+app.use('/api', analyticsRoutes);
+app.use('/api', goalsRoutes);
+app.use('/api', forecastingRoutes);
+app.use('/api', bankingRoutes);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);

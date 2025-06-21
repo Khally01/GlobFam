@@ -19,11 +19,15 @@ import {
   ArrowDownRight,
   Filter,
   Calendar,
-  Search
+  Search,
+  Upload,
+  Sparkles
 } from 'lucide-react'
 import { transactionsApi, assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { Transaction, Asset, TransactionType } from '@/lib/shared-types'
+import { ImportModal } from '@/components/import/import-modal'
+import { CategorizeModal } from '@/components/ai/categorize-modal'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
@@ -54,6 +58,8 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
+  const [showCategorizeModal, setShowCategorizeModal] = useState(false)
   const [filter, setFilter] = useState<{
     type?: string
     category?: string
@@ -161,10 +167,16 @@ export default function TransactionsPage() {
             Track your income and expenses
           </p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Transaction
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowImportModal(true)}>
+            <Upload className="h-4 w-4 mr-2" />
+            Import
+          </Button>
+          <Button onClick={() => setShowForm(!showForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Transaction
+          </Button>
+        </div>
       </div>
 
       {/* Create Transaction Form */}
@@ -322,6 +334,17 @@ export default function TransactionsPage() {
                 Clear
               </Button>
             )}
+            <div className="ml-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCategorizeModal(true)}
+                disabled={transactions.length === 0}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                AI Categorize
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -399,6 +422,27 @@ export default function TransactionsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        assets={assets}
+        onImportComplete={() => {
+          setShowImportModal(false)
+          fetchData()
+        }}
+      />
+
+      {/* AI Categorize Modal */}
+      <CategorizeModal
+        isOpen={showCategorizeModal}
+        onClose={() => setShowCategorizeModal(false)}
+        onComplete={() => {
+          setShowCategorizeModal(false)
+          fetchData()
+        }}
+      />
     </div>
   )
 }

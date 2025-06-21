@@ -28,6 +28,7 @@ model Organization {
   assets            Asset[]
   transactions      Transaction[]
   subscriptions     Subscription[]
+  goals             Goal[]
   
   @@index([plan])
   @@index([stripeCustomerId])
@@ -62,6 +63,7 @@ model User {
   sessions          Session[]
   notifications     Notification[]
   documents         Document[]
+  goals             Goal[]
   
   @@index([email])
   @@index([organizationId])
@@ -145,8 +147,18 @@ model Transaction {
   organizationId    String
   organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   
+  // Import tracking
+  importHistoryId   String?
+  importHistory     ImportHistory?   @relation("ImportedTransactions", fields: [importHistoryId], references: [id])
+  
   externalId        String?          // ID from bank
   metadata          Json?
+  
+  // AI categorization history
+  aiCategorizations AICategorizationHistory[]
+  
+  // Goal contributions
+  goalContributions GoalContribution[]
   
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
@@ -155,6 +167,7 @@ model Transaction {
   @@index([assetId])
   @@index([date])
   @@index([category])
+  @@index([importHistoryId])
 }
 
 model Valuation {
@@ -306,4 +319,158 @@ enum NotificationType {
   PRICE_ALERT
   SECURITY_ALERT
   SYSTEM
+}
+
+// Bank Connection & Import Models
+model BankConnection {
+  id                String           @id @default(cuid())
+  provider          String           // 'basiq', 'plaid', 'manual'
+  externalId        String?          // External provider ID
+  institutionName   String
+  accountName       String?
+  accountNumber     String?          // Last 4 digits only
+  status            String           @default("active") // active, disconnected, error
+  lastSyncAt        DateTime?
+  accessToken       String?          // Encrypted
+  refreshToken      String?          // Encrypted
+  metadata          Json?
+  
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  imports           ImportHistory[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([organizationId])
+  @@index([provider])
+}
+
+model ImportHistory {
+  id                String           @id @default(cuid())
+  type              String           // 'csv', 'excel', 'pdf', 'api'
+  fileName          String?
+  status            String           // 'pending', 'processing', 'completed', 'failed'
+  totalRows         Int              @default(0)
+  successfulRows    Int              @default(0)
+  failedRows        Int              @default(0)
+  mapping           Json?            // Column mapping configuration
+  errors            Json?            // Error details
+  
+  assetId           String?
+  asset             Asset?           @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  bankConnectionId  String?
+  bankConnection    BankConnection?  @relation(fields: [bankConnectionId], references: [id], onDelete: SetNull)
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  transactions      Transaction[]    @relation("ImportedTransactions")
+  
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([type])
+}
+
+model AICategorizationHistory {
+  id                String           @id @default(cuid())
+  transactionId     String
+  transaction       Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  
+  originalCategory  String?
+  suggestedCategory String
+  confidence        Float            // 0-1 confidence score
+  accepted          Boolean          @default(false)
+  userFeedback      String?          // 'correct', 'incorrect', 'partial'
+  
+  model             String           // 'gpt-3.5-turbo', 'gpt-4', etc.
+  prompt            String?
+  response          Json?
+  
+  createdAt         DateTime         @default(now())
+  
+  @@index([transactionId])
+  @@index([accepted])
+  @@index([confidence])
+}
+
+// Financial Goals
+model Goal {
+  id                String           @id @default(cuid())
+  name              String
+  description       String?
+  type              GoalType         // SAVINGS, DEBT_PAYOFF, INVESTMENT, PURCHASE, EMERGENCY_FUND
+  targetAmount      Decimal          @db.Decimal(20, 2)
+  currentAmount     Decimal          @default(0) @db.Decimal(20, 2)
+  currency          String
+  targetDate        DateTime
+  
+  // Tracking
+  status            GoalStatus       @default(ACTIVE) // ACTIVE, COMPLETED, PAUSED, CANCELLED
+  completedAt       DateTime?
+  
+  // Auto-contribution settings
+  autoContribute    Boolean          @default(false)
+  contributionAmount Decimal?        @db.Decimal(20, 2)
+  contributionFrequency String?      // 'weekly', 'biweekly', 'monthly'
+  
+  // Relationships
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  contributions     GoalContribution[]
+  
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([type])
+}
+
+model GoalContribution {
+  id                String           @id @default(cuid())
+  amount            Decimal          @db.Decimal(20, 2)
+  note              String?
+  
+  goalId            String
+  goal              Goal             @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  
+  // Optional link to transaction
+  transactionId     String?
+  transaction       Transaction?     @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  
+  createdAt         DateTime         @default(now())
+  
+  @@index([goalId])
+  @@index([transactionId])
+}
+
+enum GoalType {
+  SAVINGS
+  DEBT_PAYOFF
+  INVESTMENT
+  PURCHASE
+  EMERGENCY_FUND
+  CUSTOM
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
 }
