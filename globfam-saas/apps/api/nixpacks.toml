@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "openssl"]
+
+[phases.build]
+cmd = "npm ci && npx prisma generate && npx prisma migrate deploy && npm run build"
+
+[phases.start]
+cmd = "npm start"
+
+[variables]
+NODE_ENV = "production"
