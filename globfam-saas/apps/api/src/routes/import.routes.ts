@@ -5,7 +5,7 @@ import { authenticate } from '../middleware/auth';
 import { ImportService } from '../services/import/import.service';
 import { csvParser } from '../services/import/csv-parser';
 import { excelParser } from '../services/import/excel-parser';
-import { prisma } from '../lib/prisma';
+import prisma from '../lib/prisma';
 
 const router = Router();
 const importService = new ImportService(prisma);

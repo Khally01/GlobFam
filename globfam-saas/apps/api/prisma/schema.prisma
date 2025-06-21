@@ -285,6 +285,7 @@ enum UserRole {
 
 enum AssetType {
   CASH
+  BANK_ACCOUNT
   PROPERTY
   VEHICLE
   INVESTMENT
@@ -307,6 +308,7 @@ enum DataSource {
   BASIQ
   CUSTOM_BANK
   IMPORT
+  BANK_SYNC
 }
 
 enum DocumentType {

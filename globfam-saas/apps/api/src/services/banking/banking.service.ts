@@ -302,7 +302,7 @@ export class BankingService {
   private providers: Map<string, BankProvider>;
   
   constructor(private prisma: PrismaClient) {
-    this.providers = new Map([
+    this.providers = new Map<string, BankProvider>([
       ['commonwealth', new CommonwealthBankProvider()],
       ['khanbank', new KhanBankProvider()],
       ['basiq', new BasiqProvider()]
@@ -333,7 +333,7 @@ export class BankingService {
           institutionName: this.getInstitutionName(provider),
           status: 'active',
           accessToken: encryptedToken,
-          metadata: { accounts },
+          metadata: { accounts } as any,
           userId,
           organizationId,
           lastSyncAt: new Date()
