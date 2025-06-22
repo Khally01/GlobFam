@@ -53,7 +53,7 @@ export function CategorizeModal({ isOpen, onClose, transactionIds, onComplete }:
         limit: transactionIds ? undefined : 50
       })
 
-      const results = response.data.categorizations || []
+      const results = (response.data as any).categorizations || []
       setCategorizations(results)
       
       // Auto-accept high confidence suggestions

@@ -50,7 +50,7 @@ export default function BudgetPage() {
           }, {})
           
           const response = await analyticsApi.getBudgetComparison({ budget: budgetMap })
-          setComparison(response.data.comparison)
+          setComparison((response.data as any).comparison)
         }
       } else {
         // Initialize with default categories
@@ -81,7 +81,7 @@ export default function BudgetPage() {
       }, {} as Record<string, number>)
       
       const response = await analyticsApi.getBudgetComparison({ budget: budgetMap })
-      setComparison(response.data.comparison)
+      setComparison((response.data as any).comparison)
       
       setEditMode(false)
       toast({
@@ -114,7 +114,7 @@ export default function BudgetPage() {
         currency: 'USD' // You can get this from user preferences
       })
       
-      const suggestedBudget = response.data.budget
+      const suggestedBudget = (response.data as any).budget
       const newBudget = Object.entries(suggestedBudget).map(([category, amount]) => ({
         category,
         amount: amount as number
