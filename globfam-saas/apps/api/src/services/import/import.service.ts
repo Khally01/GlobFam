@@ -74,13 +74,13 @@ export class ImportService {
         transactions: result.transactions,
         errors: result.errors
       };
-    } catch (error) {
+    } catch (error: any) {
       // Update import history with error
       await this.prisma.importHistory.update({
         where: { id: importHistory.id },
         data: {
           status: 'failed',
-          errors: [{ error: error.message }],
+          errors: [{ error: error.message || 'Import failed' }],
           completedAt: new Date()
         }
       });
@@ -145,13 +145,13 @@ export class ImportService {
         transactions: result.transactions,
         errors: result.errors
       };
-    } catch (error) {
+    } catch (error: any) {
       // Update import history with error
       await this.prisma.importHistory.update({
         where: { id: importHistory.id },
         data: {
           status: 'failed',
-          errors: [{ error: error.message }],
+          errors: [{ error: error.message || 'Import failed' }],
           completedAt: new Date()
         }
       });
@@ -227,10 +227,10 @@ export class ImportService {
         });
 
         transactions.push(transaction);
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           row: i + 1,
-          error: error.message,
+          error: error.message || 'Transaction processing failed',
           data: parsed
         });
       }
