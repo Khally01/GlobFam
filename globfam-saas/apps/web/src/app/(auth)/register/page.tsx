@@ -75,7 +75,7 @@ export default function RegisterPage() {
             </label>
             <Input
               id="name"
-              placeholder="Khally Dashdorj"
+              placeholder="John Smith"
               {...register('name')}
               disabled={isLoading}
             />
@@ -89,7 +89,7 @@ export default function RegisterPage() {
             </label>
             <Input
               id="organizationName"
-              placeholder="Dashdorj Family"
+              placeholder="Smith Family"
               {...register('organizationName')}
               disabled={isLoading}
             />

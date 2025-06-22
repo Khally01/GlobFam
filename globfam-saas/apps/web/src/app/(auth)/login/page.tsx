@@ -74,7 +74,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="demo@globfam.app"
+              placeholder="you@example.com"
               {...register('email')}
               disabled={isLoading}
             />
