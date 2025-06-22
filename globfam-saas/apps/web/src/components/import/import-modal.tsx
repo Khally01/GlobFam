@@ -25,7 +25,7 @@ interface FilePreview {
   headers: string[]
   preview: Record<string, any>[]
   sheets?: string[]
-  suggestedMapping: Record<string, string>
+  suggestedMapping?: Record<string, string>
 }
 
 interface ColumnMapping {
