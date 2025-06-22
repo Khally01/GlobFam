@@ -356,10 +356,11 @@ export default function AnalyticsPage() {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
-              <Bar 
-                dataKey="net" 
-                fill={(data: any) => data.net >= 0 ? '#10b981' : '#ef4444'}
-              />
+              <Bar dataKey="net" fill="#3b82f6">
+                {trends.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.net >= 0 ? '#10b981' : '#ef4444'} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
