@@ -354,7 +354,7 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
                       <tr key={idx} className="border-b">
                         {filePreview.headers.map(header => (
                           <td key={header} className="px-3 py-2">
-                            {row[header] || '-'}
+                            {(row as any)[header] || '-'}
                           </td>
                         ))}
                       </tr>

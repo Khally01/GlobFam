@@ -52,7 +52,7 @@ export default function DashboardLayout({
             user, 
             organization, 
             family,
-            token: localStorage.getItem('token') || ''
+            token: typeof window !== 'undefined' ? (localStorage.getItem('token') || '') : ''
           })
         })
         .catch(() => {

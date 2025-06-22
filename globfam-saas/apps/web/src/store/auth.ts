@@ -29,7 +29,9 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setAuth: ({ user, organization, family, token }) => {
-        localStorage.setItem('token', token)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', token)
+        }
         set({
           user,
           organization,
@@ -47,7 +49,9 @@ export const useAuthStore = create<AuthState>()(
       updateFamily: (family) => set({ family }),
 
       logout: () => {
-        localStorage.removeItem('token')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token')
+        }
         set({
           user: null,
           organization: null,

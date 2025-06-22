@@ -4,10 +4,10 @@ export async function apiClient(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const token = localStorage.getItem('token')
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
   
-  const defaultHeaders: HeadersInit = {
-    ...options.headers,
+  const defaultHeaders: Record<string, string> = {
+    ...(options.headers as Record<string, string> || {}),
   }
   
   // Only set Content-Type if not already set (for FormData)
@@ -26,8 +26,10 @@ export async function apiClient(
   
   // Handle authentication errors
   if (response.status === 401) {
-    localStorage.removeItem('token')
-    window.location.href = '/login'
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
   }
   
   return response
