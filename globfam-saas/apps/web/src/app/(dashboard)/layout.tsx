@@ -24,6 +24,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Assets', href: '/dashboard/assets', icon: Wallet },
   { name: 'Transactions', href: '/dashboard/transactions', icon: Receipt },
+  { name: 'Goals', href: '/dashboard/goals', icon: Target },
   { name: 'Analytics', href: '/dashboard/analytics', icon: TrendingUp },
   { name: 'Budget', href: '/dashboard/budget', icon: Target },
   { name: 'Banking', href: '/dashboard/banking', icon: Building2 },
