@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* GlobFam Brand Colors */
+    --primary: 271 91% 65%; /* #a855f7 */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 45 94% 58%; /* #fbbf24 */
+    --secondary-foreground: 0 0% 9%;
+    
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 271 91% 65%;
+    
+    --radius: 0.5rem;
+  }
+  
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 0 0% 14.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 0 0% 14.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Typography */
+  h1 {
+    @apply text-4xl font-bold tracking-tight;
+  }
+  
+  h2 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h4 {
+    @apply text-xl font-semibold;
+  }
+  
+  /* Links */
+  a {
+    @apply transition-colors;
+  }
+  
+  /* Code */
+  code {
+    @apply font-mono text-sm;
+  }
+}
+
+@layer components {
+  /* GlobFam Button Styles */
+  .btn-primary {
+    @apply bg-gradient-primary text-white shadow-sm hover:shadow-primary transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+  }
+  
+  /* Cards with hover effect */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  }
+  
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+  }
+  
+  /* Glow effect */
+  .glow {
+    @apply shadow-glow;
+  }
+  
+  /* Number display */
+  .number-display {
+    @apply font-mono tabular-nums;
+  }
+  
+  /* Status badges */
+  .badge-success {
+    @apply bg-success-light text-success-dark;
+  }
+  
+  .badge-warning {
+    @apply bg-warning-light text-warning-dark;
+  }
+  
+  .badge-error {
+    @apply bg-destructive-light text-destructive-dark;
+  }
+  
+  /* Animated gradient border */
+  .gradient-border {
+    @apply relative;
+    background: linear-gradient(var(--background), var(--background)) padding-box,
+                linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) border-box;
+    border: 2px solid transparent;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  /* Smooth scroll */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Text balance */
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/30;
+}
+
+/* Focus styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Selection */
+::selection {
+  @apply bg-primary/20 text-primary-foreground;
+}
+
+/* Loading skeleton */
+.skeleton {
+  @apply animate-pulse bg-muted;
+}
+
+/* Transitions */
+.transition-base {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.transition-spring {
+  @apply transition-all duration-300 ease-spring-smooth;
+}
