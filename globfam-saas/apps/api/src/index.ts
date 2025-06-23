@@ -21,6 +21,7 @@ import analyticsRoutes from './routes/analytics.routes';
 import goalsRoutes from './routes/goals.routes';
 import forecastingRoutes from './routes/forecasting.routes';
 import bankingRoutes from './routes/banking.routes';
+import setupRoutes from './routes/setup';
 
 // Load environment variables
 dotenv.config();
@@ -92,6 +93,11 @@ app.use('/api', analyticsRoutes);
 app.use('/api', goalsRoutes);
 app.use('/api', forecastingRoutes);
 app.use('/api', bankingRoutes);
+
+// Temporary setup route - REMOVE IN PRODUCTION
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SETUP === 'true') {
+  app.use('/api', setupRoutes);
+}
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
