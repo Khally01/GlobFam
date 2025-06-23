@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { assetsApi, transactionsApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
-import type { Asset, Transaction } from '@/lib/shared-types'
+import type { Asset, Transaction } from '@/lib/shared-types/index'
 
 export default function DashboardPage() {
   const { user, family } = useAuthStore()
