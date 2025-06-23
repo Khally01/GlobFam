@@ -13,6 +13,7 @@
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "ts-node src/scripts/seed.ts",
     "deploy": "npm run build && npm run db:migrate:deploy"

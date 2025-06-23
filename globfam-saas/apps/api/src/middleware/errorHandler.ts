@@ -62,6 +62,15 @@ export const errorHandler = (
     });
   }
 
+  // Database table doesn't exist error
+  if (err.code === '42P01' || (err.message && err.message.includes('relation') && err.message.includes('does not exist'))) {
+    return res.status(503).json({
+      error: 'Database Error',
+      message: 'Database is not properly initialized. Please contact support.',
+      details: process.env.NODE_ENV !== 'production' ? 'Database migrations may need to be run.' : undefined
+    });
+  }
+
   // Default error
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
