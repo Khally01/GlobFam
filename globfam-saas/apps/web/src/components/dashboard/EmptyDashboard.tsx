@@ -129,7 +129,13 @@ export function EmptyDashboard() {
   )
 }
 
-function PreviewItem({ icon: Icon, title, description }: any) {
+interface PreviewItemProps {
+  icon: any
+  title: string
+  description: string
+}
+
+function PreviewItem({ icon: Icon, title, description }: PreviewItemProps) {
   return (
     <div className="text-center">
       <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-background flex items-center justify-center shadow-sm">

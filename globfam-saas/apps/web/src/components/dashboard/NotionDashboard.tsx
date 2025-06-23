@@ -242,9 +242,17 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
   )
 }
 
-function MetricCard({ title, value, change, icon: Icon, color }: any) {
+interface MetricCardProps {
+  title: string
+  value: string
+  change: number
+  icon: any
+  color: 'blue' | 'green' | 'red' | 'purple'
+}
+
+function MetricCard({ title, value, change, icon: Icon, color }: MetricCardProps) {
   const isPositive = change > 0
-  const colorClasses = {
+  const colorClasses: Record<string, string> = {
     blue: 'bg-blue-100 text-blue-600',
     green: 'bg-green-100 text-green-600',
     red: 'bg-red-100 text-red-600',
@@ -255,7 +263,7 @@ function MetricCard({ title, value, change, icon: Icon, color }: any) {
     <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
+          <div className={`p-3 rounded-lg ${colorClasses[color] || colorClasses.blue}`}>
             <Icon className="h-6 w-6" />
           </div>
           <div className={`flex items-center gap-1 text-sm font-medium ${
@@ -272,7 +280,14 @@ function MetricCard({ title, value, change, icon: Icon, color }: any) {
   )
 }
 
-function QuickAction({ title, description, icon: Icon, href }: any) {
+interface QuickActionProps {
+  title: string
+  description: string
+  icon: any
+  href: string
+}
+
+function QuickAction({ title, description, icon: Icon, href }: QuickActionProps) {
   return (
     <a
       href={href}
