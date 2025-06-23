@@ -73,8 +73,8 @@ export default function BankingPage() {
       const connectionsData = await connectionsRes.json();
       const banksData = await banksRes.json();
 
-      setConnections(connectionsData.connections);
-      setSupportedBanks(banksData.banks);
+      setConnections(connectionsData?.connections || []);
+      setSupportedBanks(banksData?.banks || []);
     } catch (error) {
       console.error('Error fetching banking data:', error);
     } finally {
@@ -246,7 +246,7 @@ export default function BankingPage() {
 
                   {/* Accounts */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {connection.accounts.map((account) => (
+                    {(connection.accounts || []).map((account) => (
                       <div 
                         key={account.id}
                         className="bg-muted/50 rounded-lg p-3"

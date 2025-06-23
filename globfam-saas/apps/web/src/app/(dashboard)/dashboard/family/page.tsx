@@ -26,6 +26,7 @@ import { familiesApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import { useToast } from '@/hooks/use-toast'
 import type { Family } from '@/lib/shared-types'
+import { InviteCodeDisplay } from '@/components/family/InviteCodeDisplay'
 
 const createFamilySchema = z.object({
   name: z.string().min(2, 'Family name must be at least 2 characters'),
@@ -115,15 +116,6 @@ export default function FamilyPage() {
     }
   }
 
-  const handleCopyInviteCode = () => {
-    if (familyData?.inviteCode) {
-      navigator.clipboard.writeText(familyData.inviteCode)
-      toast({
-        title: 'Copied!',
-        description: 'Invite code copied to clipboard.',
-      })
-    }
-  }
 
   const handleRegenerateInvite = async () => {
     try {
@@ -206,39 +198,13 @@ export default function FamilyPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Invite Code */}
-                <div>
-                  <label className="text-sm font-medium">Invite Code</label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      value={familyData.inviteCode}
-                      readOnly
-                      className="font-mono"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCopyInviteCode}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRegenerateInvite}
-                    >
-                      Regenerate
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Share this code with family members to invite them
-                  </p>
-                </div>
-              </div>
-            </CardContent>
           </Card>
+
+          {/* Invite Code Display */}
+          <InviteCodeDisplay 
+            inviteCode={familyData.inviteCode} 
+            familyName={familyData.name}
+          />
 
           {/* Family Members */}
           <Card>
