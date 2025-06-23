@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge } from '@/components/shared-ui';
 import { 
   Building2, 
   Plus, 
@@ -15,6 +13,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import ConnectBankDialog from './ConnectBankDialog';
+import BankingAlternatives from './BankingAlternatives';
+import SmartImportFeatures from './SmartImportFeatures';
 
 interface BankConnection {
   id: string;
@@ -176,18 +176,18 @@ export default function BankingPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Bank Connections</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Banking & Import</h1>
         <p className="text-muted-foreground">
-          Connect your bank accounts to automatically import transactions
+          Import your transactions and let GlobFam intelligently categorize them
         </p>
       </div>
 
       {/* Connected Banks */}
       <Card>
         <CardHeader>
-          <CardTitle>Connected Banks</CardTitle>
+          <CardTitle>Direct Bank Connection (Coming Soon)</CardTitle>
           <CardDescription>
-            Your active bank connections and their sync status
+            Premium feature: Automatic daily sync with your banks
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -319,6 +319,12 @@ export default function BankingPage() {
           }}
         />
       )}
+
+      {/* Smart Import Features */}
+      <SmartImportFeatures />
+      
+      {/* Alternative Methods */}
+      <BankingAlternatives />
     </div>
   );
 }

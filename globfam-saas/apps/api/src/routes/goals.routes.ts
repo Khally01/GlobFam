@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { z } from 'zod';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { GoalsService } from '../services/goals/goals.service';
-import prisma from '../lib/prisma';
+import { prisma } from '../lib/prisma';
 import { GoalType, GoalStatus } from '@prisma/client';
 
 const router = Router();
@@ -38,7 +38,7 @@ router.get('/goals', authenticate, async (req: AuthRequest, res: Response) => {
       status
     );
 
-    res.json({ goals });
+    res.json({ data: goals });
   } catch (error) {
     console.error('Get goals error:', error);
     res.status(500).json({ error: 'Failed to fetch goals' });

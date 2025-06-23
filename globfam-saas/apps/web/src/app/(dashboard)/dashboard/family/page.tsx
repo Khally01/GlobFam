@@ -268,7 +268,7 @@ export default function FamilyPage() {
                         <Eye className="h-4 w-4 text-gray-500" />
                       )}
                       <span className="text-xs text-muted-foreground">
-                        {member.role.toLowerCase()}
+                        {member.role?.toLowerCase() || 'member'}
                       </span>
                     </div>
                   </div>

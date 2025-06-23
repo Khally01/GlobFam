@@ -18,10 +18,9 @@ interface Goal {
   currentAmount: number
   currency: string
   targetDate: string
-  category: string
-  priority: 'LOW' | 'MEDIUM' | 'HIGH'
-  status: 'ACTIVE' | 'COMPLETED' | 'PAUSED'
-  progress: number
+  type: 'SAVINGS' | 'DEBT_PAYOFF' | 'INVESTMENT' | 'PURCHASE' | 'EMERGENCY_FUND' | 'CUSTOM'
+  status: 'ACTIVE' | 'COMPLETED' | 'PAUSED' | 'CANCELLED'
+  progress?: number
 }
 
 export default function GoalsPage() {
@@ -36,8 +35,7 @@ export default function GoalsPage() {
     targetAmount: '',
     currency: 'USD',
     targetDate: '',
-    category: 'SAVINGS',
-    priority: 'MEDIUM'
+    category: 'SAVINGS'
   })
 
   useEffect(() => {
@@ -47,7 +45,13 @@ export default function GoalsPage() {
   const fetchGoals = async () => {
     try {
       const response = await api.get('/api/goals')
-      setGoals(response.data.data || [])
+      const goalsData = response.data.data || []
+      // Calculate progress for each goal
+      const goalsWithProgress = goalsData.map((goal: any) => ({
+        ...goal,
+        progress: goal.targetAmount > 0 ? Math.round((goal.currentAmount / goal.targetAmount) * 100) : 0
+      }))
+      setGoals(goalsWithProgress)
     } catch (error) {
       console.error('Failed to fetch goals:', error)
       toast({
@@ -65,6 +69,7 @@ export default function GoalsPage() {
     try {
       const response = await api.post('/api/goals', {
         ...formData,
+        type: formData.category,
         targetAmount: parseFloat(formData.targetAmount)
       })
       
@@ -80,8 +85,7 @@ export default function GoalsPage() {
         targetAmount: '',
         currency: 'USD',
         targetDate: '',
-        category: 'SAVINGS',
-        priority: 'MEDIUM'
+        category: 'SAVINGS'
       })
       fetchGoals()
     } catch (error) {
@@ -115,11 +119,13 @@ export default function GoalsPage() {
     }
   }
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'HIGH': return 'destructive'
-      case 'MEDIUM': return 'default'
-      case 'LOW': return 'secondary'
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'SAVINGS': return 'default'
+      case 'DEBT_PAYOFF': return 'destructive'
+      case 'INVESTMENT': return 'success'
+      case 'PURCHASE': return 'secondary'
+      case 'EMERGENCY_FUND': return 'outline'
       default: return 'default'
     }
   }
@@ -237,27 +243,12 @@ export default function GoalsPage() {
                       <SelectItem value="INVESTMENT">Investment</SelectItem>
                       <SelectItem value="DEBT_PAYOFF">Debt Payoff</SelectItem>
                       <SelectItem value="PURCHASE">Purchase</SelectItem>
-                      <SelectItem value="RETIREMENT">Retirement</SelectItem>
-                      <SelectItem value="EDUCATION">Education</SelectItem>
-                      <SelectItem value="EMERGENCY">Emergency</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
+                      <SelectItem value="EMERGENCY_FUND">Emergency Fund</SelectItem>
+                      <SelectItem value="CUSTOM">Custom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="priority">Priority</Label>
-                  <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               <Button type="submit" className="w-full">Create Goal</Button>
@@ -292,26 +283,21 @@ export default function GoalsPage() {
                       <CardDescription>{goal.description}</CardDescription>
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    <Badge variant={getPriorityColor(goal.priority) as any}>
-                      {goal.priority}
-                    </Badge>
-                    <Badge variant={getStatusColor(goal.status) as any}>
-                      {goal.status}
-                    </Badge>
-                  </div>
+                  <Badge variant={getStatusColor(goal.status) as any}>
+                    {goal.status}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Progress</span>
-                    <span className="font-semibold">{goal.progress}%</span>
+                    <span className="font-semibold">{goal.progress || 0}%</span>
                   </div>
                   <div className="w-full bg-secondary rounded-full h-2">
                     <div
                       className="bg-primary h-2 rounded-full transition-all"
-                      style={{ width: `${goal.progress}%` }}
+                      style={{ width: `${goal.progress || 0}%` }}
                     />
                   </div>
                 </div>

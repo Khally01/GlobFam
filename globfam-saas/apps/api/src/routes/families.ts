@@ -32,6 +32,7 @@ router.get('/current', authenticate, async (req: AuthRequest, res, next) => {
                 name: true,
                 email: true,
                 avatar: true,
+                role: true,
                 role: true
               }
             },

@@ -15,6 +15,7 @@ import {
 import { assetsApi, transactionsApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import type { Asset, Transaction } from '@/lib/shared-types/index'
+import { IntelligentInsights } from '@/components/dashboard/IntelligentInsights'
 
 export default function DashboardPage() {
   const { user, family } = useAuthStore()
@@ -131,13 +132,19 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Recent Transactions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>Your latest financial activities</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Intelligent Insights */}
+        <div>
+          <IntelligentInsights />
+        </div>
+
+        {/* Recent Transactions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Your latest financial activities</CardDescription>
+          </CardHeader>
+          <CardContent>
           <div className="space-y-4">
             {transactions.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
@@ -191,6 +198,7 @@ export default function DashboardPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }
