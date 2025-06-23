@@ -39,13 +39,16 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, logout } = useAuthStore()
+  const { user, organization, clearAuth } = useAuthStore()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch user data if not in store
-    if (!user) {
+    // Check if we have user data
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    
+    if (!user && token) {
+      // Try to fetch user data once
       authApi.getMe()
         .then((response) => {
           const { user, organization, family } = response.data.data
@@ -53,19 +56,24 @@ export default function DashboardLayout({
             user, 
             organization, 
             family,
-            token: typeof window !== 'undefined' ? (localStorage.getItem('token') || '') : ''
+            token: token
           })
-        })
-        .catch(() => {
-          router.push('/login')
-        })
-        .finally(() => {
           setLoading(false)
         })
+        .catch((error) => {
+          console.error('Failed to fetch user data:', error)
+          // Clear auth and redirect to login
+          clearAuth()
+          router.push('/login')
+        })
+    } else if (!user && !token) {
+      // No token, redirect to login
+      router.push('/login')
     } else {
+      // User exists, stop loading
       setLoading(false)
     }
-  }, [user, router])
+  }, []) // Remove dependencies to prevent loops
 
   const handleLogout = async () => {
     try {
@@ -73,7 +81,7 @@ export default function DashboardLayout({
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
-      logout()
+      clearAuth()
       router.push('/login')
     }
   }

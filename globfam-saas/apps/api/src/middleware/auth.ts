@@ -31,9 +31,9 @@ export const authenticate = async (
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
 
-    // Verify session exists and is valid
+    // Verify session exists and is valid using sessionId from JWT
     const session = await prisma.session.findUnique({
-      where: { token },
+      where: { id: decoded.sessionId },
       include: { user: true }
     });
 
