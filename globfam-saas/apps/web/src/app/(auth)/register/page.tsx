@@ -49,9 +49,10 @@ export default function RegisterPage() {
 
       router.push('/dashboard')
     } catch (error: any) {
+      console.error('Registration error:', error)
       toast({
         title: 'Registration failed',
-        description: error.response?.data?.message || 'Something went wrong',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
         variant: 'destructive',
       })
     } finally {
