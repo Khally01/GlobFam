@@ -32,6 +32,8 @@ export const useAuthStore = create<AuthState>()(
       setAuth: ({ user, organization, family, token }) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', token)
+          // Also set as cookie for middleware
+          document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}` // 7 days
         }
         set({
           user,
@@ -52,6 +54,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token')
+          // Clear cookie
+          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
         }
         set({
           user: null,
@@ -66,6 +70,8 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token')
           localStorage.removeItem('auth-storage')
+          // Clear cookie
+          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
         }
         set({
           user: null,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -21,8 +21,15 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const setAuth = useAuthStore((state) => state.setAuth)
+  const { setAuth, user } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   const {
     register,
@@ -45,7 +52,8 @@ export default function LoginPage() {
         description: 'You have successfully logged in.',
       })
 
-      router.push('/dashboard')
+      // Force navigation to dashboard
+      window.location.href = '/dashboard'
     } catch (error: any) {
       toast({
         title: 'Login failed',
