@@ -48,8 +48,8 @@ export function IntelligentInsights() {
         api.get('/api/analytics/summary')
       ])
 
-      const goals = goalsRes.data.data || []
-      const analytics = analyticsRes.data.data || {}
+      const goals = goalsRes.data?.data || []
+      const analytics = analyticsRes.data?.data || {}
 
       // Generate insights
       const newInsights: Insight[] = []

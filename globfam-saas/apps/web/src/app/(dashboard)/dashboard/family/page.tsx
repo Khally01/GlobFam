@@ -62,8 +62,8 @@ export default function FamilyPage() {
   const fetchFamilyData = async () => {
     try {
       const response = await familiesApi.getCurrent()
-      setFamilyData(response.data.data.family)
-      updateFamily(response.data.data.family)
+      setFamilyData(response.data.data?.family)
+      updateFamily(response.data.data?.family)
     } catch (error) {
       console.error('Error fetching family data:', error)
     } finally {
@@ -75,8 +75,8 @@ export default function FamilyPage() {
     setCreating(true)
     try {
       const response = await familiesApi.create(data)
-      setFamilyData(response.data.data.family)
-      updateFamily(response.data.data.family)
+      setFamilyData(response.data.data?.family)
+      updateFamily(response.data.data?.family)
       
       toast({
         title: 'Family created!',
@@ -97,8 +97,8 @@ export default function FamilyPage() {
     setJoining(true)
     try {
       const response = await familiesApi.join(data.inviteCode)
-      setFamilyData(response.data.data.family)
-      updateFamily(response.data.data.family)
+      setFamilyData(response.data.data?.family)
+      updateFamily(response.data.data?.family)
       
       toast({
         title: 'Joined family!',
@@ -130,7 +130,7 @@ export default function FamilyPage() {
       const response = await familiesApi.regenerateInvite()
       setFamilyData({
         ...familyData,
-        inviteCode: response.data.data.inviteCode
+        inviteCode: response.data.data?.inviteCode
       })
       
       toast({

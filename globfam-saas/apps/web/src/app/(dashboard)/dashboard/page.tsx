@@ -36,9 +36,9 @@ export default function DashboardPage() {
         transactionsApi.getAnalytics()
       ])
 
-      setAssets(assetsRes.data.data.assets)
-      setTransactions(transactionsRes.data.data.transactions)
-      setSummary(analyticsRes.data.data.summary)
+      setAssets(assetsRes.data.data?.assets || [])
+      setTransactions(transactionsRes.data.data?.transactions || [])
+      setSummary(analyticsRes.data.data?.summary || null)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
     } finally {

@@ -91,8 +91,8 @@ export default function TransactionsPage() {
         assetsApi.getAll()
       ])
       
-      setTransactions(transactionsRes.data.data.transactions || [])
-      setAssets(assetsRes.data.data.assets || [])
+      setTransactions(transactionsRes.data.data?.transactions || [])
+      setAssets(assetsRes.data.data?.assets || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

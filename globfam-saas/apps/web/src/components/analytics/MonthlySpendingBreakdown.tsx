@@ -20,7 +20,7 @@ export function MonthlySpendingBreakdown() {
   const fetchSpendingData = async () => {
     try {
       const response = await analyticsApi.getSpendingByCategory()
-      const data = response.data.data.spending || []
+      const data = response.data.data?.spending || []
       
       // Transform data for pie chart
       const chartData = data.map((item: any) => ({

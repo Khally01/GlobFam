@@ -32,7 +32,6 @@ router.get('/current', authenticate, async (req: AuthRequest, res, next) => {
                 name: true,
                 email: true,
                 avatar: true,
-                role: true,
                 role: true
               }
             },
@@ -96,7 +95,8 @@ router.post('/', authenticate, async (req: AuthRequest, res, next) => {
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatar: true,
+            role: true
           }
         }
       }
@@ -159,7 +159,8 @@ router.post('/join', authenticate, async (req: AuthRequest, res, next) => {
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatar: true,
+            role: true
           }
         }
       }
@@ -243,7 +244,8 @@ router.put('/current', authenticate, async (req: AuthRequest, res, next) => {
             id: true,
             name: true,
             email: true,
-            avatar: true
+            avatar: true,
+            role: true
           }
         }
       }

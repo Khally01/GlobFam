@@ -93,7 +93,7 @@ export default function AssetsPage() {
   const fetchAssets = async () => {
     try {
       const response = await assetsApi.getAll()
-      setAssets(response.data.data.assets)
+      setAssets(response.data.data?.assets || [])
     } catch (error) {
       console.error('Error fetching assets:', error)
     } finally {
