@@ -21,5 +21,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Expose port
+EXPOSE 3001
+
 # Run migrations and start
-CMD npx prisma migrate deploy && npm start
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]

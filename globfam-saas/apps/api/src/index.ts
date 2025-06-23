@@ -79,6 +79,38 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Database health check
+app.get('/api/db-health', async (req, res) => {
+  try {
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    // Check if tables exist
+    const userCount = await prisma.user.count().catch(() => 'TABLE_NOT_FOUND');
+    const orgCount = await prisma.organization.count().catch(() => 'TABLE_NOT_FOUND');
+    
+    await prisma.$disconnect();
+    
+    res.json({
+      database: 'connected',
+      tables: {
+        users: userCount,
+        organizations: orgCount
+      },
+      migrationStatus: userCount === 'TABLE_NOT_FOUND' ? 'MIGRATIONS_NEEDED' : 'OK'
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      database: 'error',
+      error: error.message,
+      hint: 'Database tables may not exist. Migrations may need to run.'
+    });
+  }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
