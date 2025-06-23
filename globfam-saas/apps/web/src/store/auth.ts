@@ -17,6 +17,7 @@ interface AuthState {
   updateUser: (user: Partial<User>) => void
   updateFamily: (family: Family | null) => void
   logout: () => void
+  clearAuth: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -60,10 +61,27 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
         })
       },
+
+      clearAuth: () => {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token')
+          localStorage.removeItem('auth-storage')
+        }
+        set({
+          user: null,
+          organization: null,
+          family: null,
+          token: null,
+          isAuthenticated: false,
+        })
+      },
     }),
     {
       name: 'auth-storage',
       partialize: (state) => ({
+        user: state.user,
+        organization: state.organization,
+        family: state.family,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
