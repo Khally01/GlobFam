@@ -26,7 +26,7 @@ import {
 import { transactionsApi, assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { Transaction, Asset, TransactionType } from '@/lib/shared-types'
-import { ImportModal } from '@/components/import/import-modal'
+import { SimpleImportModal } from '@/components/import/simple-import-modal'
 import { CategorizeModal } from '@/components/ai/categorize-modal'
 import { EmptyTransactionsState } from './EmptyTransactionsState'
 
@@ -440,7 +440,7 @@ export default function TransactionsPage() {
       )}
 
       {/* Import Modal */}
-      <ImportModal
+      <SimpleImportModal
         isOpen={showImportModal}
         onClose={() => setShowImportModal(false)}
         assets={assets}

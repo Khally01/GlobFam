@@ -113,7 +113,7 @@ router.put('/goals/:id', authenticate, async (req: AuthRequest, res: Response) =
       data
     );
 
-    res.json({ goal });
+    res.json({ data: goal });
   } catch (error) {
     console.error('Update goal error:', error);
     if (error instanceof z.ZodError) {
@@ -137,7 +137,7 @@ router.post('/goals/:id/contribute', authenticate, async (req: AuthRequest, res:
       }
     );
 
-    res.json({ goal });
+    res.json({ data: goal });
   } catch (error) {
     console.error('Contribute to goal error:', error);
     if (error instanceof z.ZodError) {

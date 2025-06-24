@@ -27,6 +27,7 @@ export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [contributingGoalId, setContributingGoalId] = useState<string | null>(null)
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({
@@ -103,9 +104,9 @@ export default function GoalsPage() {
 
   const handleContribute = async (goalId: string, amount: string) => {
     try {
-      await api.post(`/api/goals/${goalId}/contributions`, {
+      const response = await api.post(`/api/goals/${goalId}/contribute`, {
         amount: parseFloat(amount),
-        date: new Date().toISOString()
+        note: 'Manual contribution'
       })
       
       toast({
@@ -113,11 +114,13 @@ export default function GoalsPage() {
         description: 'Contribution added successfully'
       })
       
+      setContributingGoalId(null) // Close the dialog
       fetchGoals()
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Contribution error:', error)
       toast({
         title: 'Error',
-        description: 'Failed to add contribution',
+        description: error.response?.data?.error || 'Failed to add contribution',
         variant: 'destructive'
       })
     }
@@ -327,44 +330,14 @@ export default function GoalsPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="flex-1">
-                        <TrendingUp className="h-4 w-4 mr-2" />
-                        Contribute
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add Contribution</DialogTitle>
-                        <DialogDescription>
-                          Add a contribution to "{goal.name}"
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault()
-                          const formData = new FormData(e.currentTarget)
-                          const amount = formData.get('amount') as string
-                          handleContribute(goal.id, amount)
-                        }}
-                        className="space-y-4"
-                      >
-                        <div>
-                          <Label htmlFor="amount">Amount ({goal.currency})</Label>
-                          <Input
-                            id="amount"
-                            name="amount"
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            required
-                          />
-                        </div>
-                        <Button type="submit" className="w-full">Add Contribution</Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
+                  <Button 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => setContributingGoalId(goal.id)}
+                  >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Contribute
+                  </Button>
                   <Button size="sm" variant="outline" className="flex-1">
                     View Details
                   </Button>
@@ -374,6 +347,42 @@ export default function GoalsPage() {
           ))}
         </div>
       )}
+
+      {/* Contribution Dialog */}
+      <Dialog open={!!contributingGoalId} onOpenChange={(open) => !open && setContributingGoalId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Contribution</DialogTitle>
+            <DialogDescription>
+              Add a contribution to your goal
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (!contributingGoalId) return
+              const formData = new FormData(e.currentTarget)
+              const amount = formData.get('amount') as string
+              handleContribute(contributingGoalId, amount)
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <Label htmlFor="contribution-amount">Amount</Label>
+              <Input
+                id="contribution-amount"
+                name="amount"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                required
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full">Add Contribution</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -3,12 +3,14 @@ import multer from 'multer';
 import { z } from 'zod';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { ImportService } from '../services/import/import.service';
+import { FastImportService } from '../services/import/fast-import.service';
 import { csvParser } from '../services/import/csv-parser';
 import { excelParser } from '../services/import/excel-parser';
 import prisma from '../lib/prisma';
 
 const router = Router();
 const importService = new ImportService(prisma);
+const fastImportService = new FastImportService(prisma);
 
 // Configure multer for file uploads
 const upload = multer({
@@ -131,8 +133,10 @@ router.post('/import/process', authenticate, upload.single('file'), async (req: 
     const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
 
     let result;
+    
+    // Use fast import for better performance
     if (isExcel) {
-      result = await importService.importFromExcel(
+      result = await fastImportService.importFromExcel(
         fileBuffer,
         fileName,
         req.user!.id,
@@ -140,7 +144,7 @@ router.post('/import/process', authenticate, upload.single('file'), async (req: 
         options
       );
     } else {
-      result = await importService.importFromCSV(
+      result = await fastImportService.importFromCSV(
         fileBuffer,
         fileName,
         req.user!.id,
@@ -152,9 +156,9 @@ router.post('/import/process', authenticate, upload.single('file'), async (req: 
     res.json({
       success: true,
       importId: result.importHistory.id,
-      totalRows: result.importHistory.totalRows,
-      successfulRows: result.importHistory.successfulRows,
-      failedRows: result.importHistory.failedRows,
+      totalRows: result.successCount + result.failedCount,
+      successfulRows: result.successCount,
+      failedRows: result.failedCount,
       errors: result.errors
     });
   } catch (error: any) {
