@@ -223,7 +223,7 @@ export class ImportService {
           try {
             const categorizationResult = await this.categorizationService.categorizeTransaction(
               parsed.description,
-              Math.abs(parsed.amount),
+              Math.abs(parseFloat(parsed.amount.toString())),
               transactionType
             );
             

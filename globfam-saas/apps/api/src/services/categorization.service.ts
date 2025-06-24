@@ -14,7 +14,7 @@ export interface CategorizationResult {
 
 export class CategorizationService {
   private prisma: PrismaClient;
-  private openai: OpenAI | null;
+  private openai: OpenAI | null = null;
   private categoryCache: Map<string, CategorizationResult> = new Map();
 
   // Predefined categories for better consistency
