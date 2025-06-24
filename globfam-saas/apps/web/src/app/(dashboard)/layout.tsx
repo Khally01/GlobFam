@@ -42,8 +42,12 @@ export default function DashboardLayout({
   const { user, organization, clearAuth } = useAuthStore()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
+    // Only check auth once
+    if (authChecked) return
+    
     // Check if we have user data
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
     
@@ -59,6 +63,7 @@ export default function DashboardLayout({
             token: token
           })
           setLoading(false)
+          setAuthChecked(true)
         })
         .catch((error) => {
           console.error('Failed to fetch user data:', error)
@@ -72,8 +77,9 @@ export default function DashboardLayout({
     } else {
       // User exists, stop loading
       setLoading(false)
+      setAuthChecked(true)
     }
-  }, []) // Remove dependencies to prevent loops
+  }, [authChecked, user]) // Add controlled dependencies
 
   const handleLogout = async () => {
     try {

@@ -65,6 +65,7 @@ export default function TransactionsPage() {
     category?: string
     assetId?: string
   }>({})
+  const [hasInitialized, setHasInitialized] = useState(false)
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
@@ -77,12 +78,17 @@ export default function TransactionsPage() {
   const transactionType = form.watch('type')
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!hasInitialized) {
+      fetchData()
+      setHasInitialized(true)
+    }
+  }, [hasInitialized])
 
   useEffect(() => {
-    fetchTransactions()
-  }, [filter])
+    if (hasInitialized && Object.keys(filter).length > 0) {
+      fetchTransactions()
+    }
+  }, [filter, hasInitialized])
 
   const fetchData = async () => {
     try {

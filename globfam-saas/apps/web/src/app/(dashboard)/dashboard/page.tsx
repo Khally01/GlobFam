@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { assetsApi, transactionsApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import type { Asset, Transaction } from '@/lib/shared-types/index'
@@ -15,14 +15,15 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [summary, setSummary] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const [hasLoaded, setHasLoaded] = useState(false)
+  const isFetching = useRef(false)
 
   useEffect(() => {
-    // Only fetch if we haven't loaded yet
-    if (!hasLoaded) {
+    // Prevent multiple fetches
+    if (!isFetching.current) {
+      isFetching.current = true
       fetchDashboardData()
     }
-  }, [hasLoaded])
+  }, [])
 
   const fetchDashboardData = async () => {
     try {
@@ -45,13 +46,12 @@ export default function DashboardPage() {
       setAssets(assetsRes.data.data?.assets || [])
       setTransactions(transactionsRes.data.data?.transactions || [])
       setSummary(analyticsRes.data.data?.summary || null)
-      setHasLoaded(true)
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error)
       setError(error.message || 'Failed to load dashboard data')
-      setHasLoaded(true)
     } finally {
       setLoading(false)
+      isFetching.current = false
     }
   }
 
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           <p className="text-destructive mb-4">{error}</p>
           <button 
             onClick={() => {
-              setHasLoaded(false)
+              isFetching.current = false
               setError(null)
               fetchDashboardData()
             }}
