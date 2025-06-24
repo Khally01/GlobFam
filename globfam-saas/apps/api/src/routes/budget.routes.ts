@@ -8,14 +8,13 @@ const router = Router();
 // Budget validation schema
 const createBudgetSchema = z.object({
   name: z.string().optional().default('Monthly Budget'),
-  period: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'yearly']).default('monthly'),
+  period: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'yearly', 'custom']).default('monthly'),
   startDate: z.string().transform(str => new Date(str)),
   endDate: z.string().transform(str => new Date(str)),
   currency: z.string().length(3),
   categories: z.array(z.object({
     category: z.string(),
-    amount: z.number().positive(),
-    description: z.string().optional()
+    amount: z.number().positive()
   }))
 });
 
@@ -48,7 +47,7 @@ router.post('/budgets', authenticate, async (req: AuthRequest, res: Response) =>
     const budget = await prisma.budget.create({
       data: {
         name: data.name,
-        period: data.period,
+        period: data.period.toUpperCase() as any,
         startDate: data.startDate,
         endDate: data.endDate,
         currency: data.currency,
@@ -57,8 +56,7 @@ router.post('/budgets', authenticate, async (req: AuthRequest, res: Response) =>
         categories: {
           create: data.categories.map(cat => ({
             category: cat.category,
-            budgetedAmount: cat.amount,
-            description: cat.description
+            amount: cat.amount
           }))
         }
       },

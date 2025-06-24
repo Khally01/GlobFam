@@ -91,7 +91,7 @@ router.post('/goals', authenticate, async (req: AuthRequest, res: Response) => {
       data
     );
 
-    res.status(201).json({ goal });
+    res.status(201).json({ data: goal });
   } catch (error) {
     console.error('Create goal error:', error);
     if (error instanceof z.ZodError) {

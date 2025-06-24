@@ -31,6 +31,7 @@ model Organization {
   goals           Goal[]
   bankConnections BankConnection[]
   importHistory   ImportHistory[]
+  budgets         Budget[]
 
   @@index([plan])
   @@index([stripeCustomerId])
@@ -68,6 +69,7 @@ model User {
   goals           Goal[]
   bankConnections BankConnection[]
   importHistory   ImportHistory[]
+  budgets         Budget[]
 
   @@index([email])
   @@index([organizationId])
@@ -164,6 +166,9 @@ model Transaction {
 
   // Goal contributions
   goalContributions GoalContribution[]
+
+  // Budget tracking
+  budgetItems BudgetItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -480,4 +485,74 @@ enum GoalStatus {
   COMPLETED
   PAUSED
   CANCELLED
+}
+
+// Budget Models
+model Budget {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  period      BudgetPeriod
+  startDate   DateTime
+  endDate     DateTime
+  currency    String
+  
+  // Relationships
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  categories BudgetCategory[]
+  items      BudgetItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([organizationId])
+  @@index([period])
+  @@index([startDate, endDate])
+}
+
+model BudgetCategory {
+  id       String  @id @default(cuid())
+  category String
+  amount   Decimal @db.Decimal(20, 2)
+  
+  budgetId String
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([budgetId])
+  @@index([category])
+}
+
+model BudgetItem {
+  id          String      @id @default(cuid())
+  budgetId    String
+  budget      Budget      @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  
+  amount    Decimal @db.Decimal(20, 2)
+  category  String
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([budgetId, transactionId])
+  @@index([budgetId])
+  @@index([transactionId])
+}
+
+enum BudgetPeriod {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  CUSTOM
 }

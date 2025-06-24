@@ -251,11 +251,15 @@ export default function TransactionsPage() {
                     disabled={creating}
                   >
                     <option value="">Select asset</option>
-                    {assets.map(asset => (
-                      <option key={asset.id} value={asset.id}>
-                        {asset.name} ({asset.currency})
-                      </option>
-                    ))}
+                    {assets.length === 0 ? (
+                      <option value="" disabled>No assets found - create one first</option>
+                    ) : (
+                      assets.map(asset => (
+                        <option key={asset.id} value={asset.id}>
+                          {asset.name} ({asset.currency})
+                        </option>
+                      ))
+                    )}
                   </select>
                   {form.formState.errors.assetId && (
                     <p className="text-sm text-destructive mt-1">

@@ -189,34 +189,39 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
         {/* Step 1: Upload File */}
         {step === 'upload' && (
           <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Select Asset</label>
-              <Select value={selectedAsset} onValueChange={setSelectedAsset}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose an asset for these transactions" />
-                </SelectTrigger>
-                <SelectContent>
-                  {assets.length === 0 ? (
-                    <SelectItem value="" disabled>
-                      No assets found - please create an asset first
-                    </SelectItem>
-                  ) : (
-                    assets.map(asset => (
+            {assets.length === 0 ? (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  You need to create an asset first before importing transactions.
+                  Please go to the Assets page and create at least one asset.
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div>
+                <label className="text-sm font-medium">Select Asset</label>
+                <Select value={selectedAsset} onValueChange={setSelectedAsset}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose an asset for these transactions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assets.map(asset => (
                       <SelectItem key={asset.id} value={asset.id}>
                         {asset.name} ({asset.currency})
                       </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-                ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400'}`}
+                ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400'}
+                ${assets.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <input {...getInputProps()} />
+              <input {...getInputProps()} disabled={assets.length === 0} />
               <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
               {isDragActive ? (
                 <p>Drop the file here...</p>
@@ -247,15 +252,18 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-                {selectedAsset && (
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => handleFilePreview(selectedFile)}
-                      disabled={!selectedAsset}
-                    >
-                      Next
-                    </Button>
-                  </div>
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => handleFilePreview(selectedFile)}
+                    disabled={!selectedAsset || assets.length === 0}
+                  >
+                    Next
+                  </Button>
+                </div>
+                {!selectedAsset && assets.length > 0 && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Please select an asset above to continue
+                  </p>
                 )}
               </div>
             )}
