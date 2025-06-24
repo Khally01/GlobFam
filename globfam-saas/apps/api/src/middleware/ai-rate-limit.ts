@@ -13,7 +13,7 @@ export const aiCategorizationLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req: Request) => {
     // Rate limit by user ID if authenticated, otherwise by IP
-    return (req as AuthRequest).user?.id || req.ip;
+    return (req as AuthRequest).user?.id || req.ip || 'anonymous';
   }
 });
 
@@ -24,7 +24,7 @@ export const aiInsightsLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req: Request) => {
-    return (req as AuthRequest).user?.id || req.ip;
+    return (req as AuthRequest).user?.id || req.ip || 'anonymous';
   }
 });
 

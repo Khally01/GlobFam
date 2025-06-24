@@ -37,8 +37,7 @@ await prisma.settings.create({
   data: {
     key: 'openai_api_key',
     value: encrypted.encrypted,
-    iv: encrypted.iv,
-    tag: encrypted.tag
+    iv: encrypted.iv
   }
 });
 ```
