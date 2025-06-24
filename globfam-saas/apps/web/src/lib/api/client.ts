@@ -27,8 +27,13 @@ export async function apiClient(
   // Handle authentication errors
   if (response.status === 401) {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      // Only redirect if we're not already on the login page
+      const currentPath = window.location.pathname
+      if (!currentPath.includes('/login')) {
+        localStorage.removeItem('token')
+        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+        window.location.href = '/login'
+      }
     }
   }
   

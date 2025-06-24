@@ -12,6 +12,14 @@ const nextConfig = {
       },
     ];
   },
+  // Suppress the quick-fetch warning
+  experimental: {
+    instrumentationHook: false,
+  },
+  // Increase timeout for API calls
+  httpAgentOptions: {
+    keepAlive: true,
+  },
 };
 
 module.exports = nextConfig;

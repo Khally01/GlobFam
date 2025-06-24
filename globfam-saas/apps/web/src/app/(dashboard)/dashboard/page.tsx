@@ -14,24 +14,42 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [summary, setSummary] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [hasLoaded, setHasLoaded] = useState(false)
 
   useEffect(() => {
-    fetchDashboardData()
-  }, [])
+    // Only fetch if we haven't loaded yet
+    if (!hasLoaded) {
+      fetchDashboardData()
+    }
+  }, [hasLoaded])
 
   const fetchDashboardData = async () => {
     try {
+      setError(null)
       const [assetsRes, transactionsRes, analyticsRes] = await Promise.all([
-        assetsApi.getAll(),
-        transactionsApi.getAll({ limit: 10 }),
-        transactionsApi.getAnalytics()
+        assetsApi.getAll().catch(err => {
+          console.error('Assets API error:', err)
+          return { data: { data: { assets: [] } } }
+        }),
+        transactionsApi.getAll({ limit: 10 }).catch(err => {
+          console.error('Transactions API error:', err)
+          return { data: { data: { transactions: [] } } }
+        }),
+        transactionsApi.getAnalytics().catch(err => {
+          console.error('Analytics API error:', err)
+          return { data: { data: { summary: null } } }
+        })
       ])
 
       setAssets(assetsRes.data.data?.assets || [])
       setTransactions(transactionsRes.data.data?.transactions || [])
       setSummary(analyticsRes.data.data?.summary || null)
-    } catch (error) {
+      setHasLoaded(true)
+    } catch (error: any) {
       console.error('Error fetching dashboard data:', error)
+      setError(error.message || 'Failed to load dashboard data')
+      setHasLoaded(true)
     } finally {
       setLoading(false)
     }
@@ -39,7 +57,28 @@ export default function DashboardPage() {
 
   // Check if user has any data
   const hasData = assets.length > 0 || transactions.length > 0
-  const isNewUser = !loading && !hasData
+  const isNewUser = !loading && !hasData && !error
+
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-destructive mb-4">{error}</p>
+          <button 
+            onClick={() => {
+              setHasLoaded(false)
+              setError(null)
+              fetchDashboardData()
+            }}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // Show empty state for new users
   if (isNewUser) {
