@@ -160,7 +160,7 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
     setSelectedFile(null)
     setSelectedAsset('')
     setFilePreview(null)
-    setColumnMapping({ date: '', description: '', amount: '' })
+    setColumnMapping({ date: '', description: '', amount: '', type: undefined, category: undefined, currency: undefined })
     setSelectedSheet('')
     setImportProgress(0)
     setImportResult(null)
@@ -351,14 +351,14 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
 
               <div>
                 <label className="text-sm font-medium">Type Column (Optional)</label>
-                <Select value={columnMapping.type || ''} onValueChange={(value) => 
-                  setColumnMapping(prev => ({ ...prev, type: value }))
+                <Select value={columnMapping.type || 'none'} onValueChange={(value) => 
+                  setColumnMapping(prev => ({ ...prev, type: value === 'none' ? undefined : value }))
                 }>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type column" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {filePreview.headers.map(header => (
                       <SelectItem key={header} value={header}>
                         {header}
