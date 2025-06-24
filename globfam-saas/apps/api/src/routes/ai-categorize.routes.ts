@@ -49,10 +49,13 @@ router.post('/ai/categorize-transactions', authenticate, async (req: AuthRequest
       // Process batch in parallel
       const promises = batch.map(async (transaction) => {
         try {
+          // Skip TRANSFER transactions or convert to EXPENSE for categorization
+          const categorizationType = transaction.type === 'TRANSFER' ? 'EXPENSE' : transaction.type;
+          
           const result = await categorizationService.categorizeTransaction(
             transaction.description || '',
             parseFloat(transaction.amount.toString()),
-            transaction.type
+            categorizationType as 'INCOME' | 'EXPENSE'
           );
 
           // Update transaction with AI categorization
@@ -86,9 +89,9 @@ router.post('/ai/categorize-transactions', authenticate, async (req: AuthRequest
           });
 
           categorizedCount++;
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to categorize transaction:', transaction.id, error);
-          errors.push({ transactionId: transaction.id, error: error.message });
+          errors.push({ transactionId: transaction.id, error: error?.message || 'Unknown error' });
         }
       });
 
