@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast'
 import type { Transaction, Asset, TransactionType } from '@/lib/shared-types'
 import { ImportModal } from '@/components/import/import-modal'
 import { CategorizeModal } from '@/components/ai/categorize-modal'
+import { EmptyTransactionsState } from './EmptyTransactionsState'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
@@ -356,7 +357,12 @@ export default function TransactionsPage() {
       </Card>
 
       {/* Transactions List */}
-      {transactions.length === 0 ? (
+      {transactions.length === 0 && assets.length === 0 ? (
+        <EmptyTransactionsState 
+          hasAssets={assets.length > 0} 
+          onAddTransaction={() => setShowForm(true)}
+        />
+      ) : transactions.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
             <ArrowUpRight className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

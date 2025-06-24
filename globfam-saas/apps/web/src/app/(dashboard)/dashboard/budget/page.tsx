@@ -72,16 +72,22 @@ export default function BudgetPage() {
       }
       localStorage.setItem('userBudget', JSON.stringify(budgetData))
       
-      // Get comparison
-      const budgetMap = budget.reduce((acc, item) => {
-        if (item.amount > 0) {
-          acc[item.category] = item.amount
-        }
-        return acc
-      }, {} as Record<string, number>)
+      // Create budget with categories
+      const now = new Date()
+      const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
       
-      const response = await analyticsApi.getBudgetComparison({ budget: budgetMap })
-      setComparison((response.data as any).comparison)
+      const response = await api.post('/api/budgets', {
+        name: 'Monthly Budget',
+        period: 'monthly',
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        currency: 'AUD',
+        categories: budget.filter(item => item.amount > 0).map(item => ({
+          category: item.category,
+          amount: item.amount
+        }))
+      })
       
       setEditMode(false)
       toast({

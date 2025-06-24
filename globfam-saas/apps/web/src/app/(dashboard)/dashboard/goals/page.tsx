@@ -67,11 +67,15 @@ export default function GoalsPage() {
   const handleCreateGoal = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await api.post('/api/goals', {
-        ...formData,
-        type: formData.category,
-        targetAmount: parseFloat(formData.targetAmount)
-      })
+      const goalData = {
+        name: formData.name,
+        description: formData.description,
+        type: formData.category.toUpperCase(),
+        targetAmount: parseFloat(formData.targetAmount),
+        currency: formData.currency,
+        targetDate: formData.targetDate
+      }
+      const response = await api.post('/api/goals', goalData)
       
       toast({
         title: 'Success',

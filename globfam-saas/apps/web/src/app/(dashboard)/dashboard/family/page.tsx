@@ -84,9 +84,10 @@ export default function FamilyPage() {
         description: 'Your family group has been created successfully.',
       })
     } catch (error: any) {
+      console.error('Family creation error:', error.response?.data)
       toast({
         title: 'Error',
-        description: error.response?.data?.message || 'Failed to create family',
+        description: error.response?.data?.error || error.response?.data?.message || 'Failed to create family',
         variant: 'destructive',
       })
     } finally {

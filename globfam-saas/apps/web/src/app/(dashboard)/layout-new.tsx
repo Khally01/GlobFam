@@ -113,7 +113,7 @@ export default function DashboardLayout({
     }
 
     checkAuth()
-  }, []) // Empty dependencies to run only once
+  }, [router, clearAuth]) // Minimal dependencies
 
   const handleLogout = async () => {
     try {

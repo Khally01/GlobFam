@@ -196,11 +196,17 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
                   <SelectValue placeholder="Choose an asset for these transactions" />
                 </SelectTrigger>
                 <SelectContent>
-                  {assets.map(asset => (
-                    <SelectItem key={asset.id} value={asset.id}>
-                      {asset.name} ({asset.currency})
+                  {assets.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      No assets found - please create an asset first
                     </SelectItem>
-                  ))}
+                  ) : (
+                    assets.map(asset => (
+                      <SelectItem key={asset.id} value={asset.id}>
+                        {asset.name} ({asset.currency})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
