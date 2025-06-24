@@ -2,6 +2,8 @@ import { PrismaClient, ImportHistory, Transaction, Prisma } from '@prisma/client
 import { csvParser, ParsedTransaction, ColumnMapping } from './csv-parser';
 import { excelParser } from './excel-parser';
 import { format, parse } from 'date-fns';
+import { CategorizationService } from '../categorization.service';
+import { logger } from '../../utils/logger';
 
 interface ImportOptions {
   assetId: string;
@@ -17,7 +19,11 @@ interface ImportResult {
 }
 
 export class ImportService {
-  constructor(private prisma: PrismaClient) {}
+  private categorizationService: CategorizationService;
+  
+  constructor(private prisma: PrismaClient) {
+    this.categorizationService = new CategorizationService(prisma);
+  }
 
   async importFromCSV(
     fileBuffer: Buffer,
@@ -206,11 +212,41 @@ export class ImportService {
           }
         }
 
-        // Create transaction
+        // Determine transaction type
+        const transactionType = parsed.type === 'income' ? 'INCOME' : 'EXPENSE';
+        
+        // Use AI categorization if no category provided
+        let category = parsed.category;
+        let categorizationMetadata = {};
+        
+        if (!category || category === 'Other' || category === 'Other Income') {
+          try {
+            const categorizationResult = await this.categorizationService.categorizeTransaction(
+              parsed.description,
+              Math.abs(parsed.amount),
+              transactionType
+            );
+            
+            category = categorizationResult.subcategory || categorizationResult.category;
+            categorizationMetadata = {
+              aiCategorized: true,
+              confidence: categorizationResult.confidence,
+              merchantName: categorizationResult.merchantName,
+              isRecurring: categorizationResult.isRecurring,
+              recurringFrequency: categorizationResult.recurringFrequency
+            };
+          } catch (error) {
+            logger.error('Categorization failed for transaction:', error);
+            // Fall back to default category
+            category = transactionType === 'INCOME' ? 'Other Income' : 'Other';
+          }
+        }
+
+        // Create transaction with enhanced metadata
         const transaction = await this.prisma.transaction.create({
           data: {
-            type: parsed.type === 'income' ? 'INCOME' : 'EXPENSE',
-            category: parsed.category || (parsed.type === 'income' ? 'Other Income' : 'Other'),
+            type: transactionType,
+            category,
             amount: new Prisma.Decimal(parsed.amount),
             currency: parsed.currency || asset.currency,
             description: parsed.description,
@@ -221,7 +257,8 @@ export class ImportService {
             importHistoryId,
             metadata: {
               imported: true,
-              originalRow: parsed.originalRow
+              originalRow: parsed.originalRow,
+              ...categorizationMetadata
             }
           }
         });

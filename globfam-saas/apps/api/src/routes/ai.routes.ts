@@ -2,14 +2,17 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { OpenAIService } from '../services/ai/openai.service';
+import { CategorizationService } from '../services/categorization.service';
 import { prisma } from '../lib/prisma';
 import { Response } from 'express';
+import { aiCategorizationLimiter, aiInsightsLimiter, checkAIQuota } from '../middleware/ai-rate-limit';
 
 const router = Router();
 const openAIService = new OpenAIService(prisma);
+const categorizationService = new CategorizationService(prisma);
 
 // Categorize transactions
-router.post('/ai/categorize', authenticate, async (req: AuthRequest, res: Response) => {
+router.post('/ai/categorize', authenticate, aiCategorizationLimiter, checkAIQuota, async (req: AuthRequest, res: Response) => {
   try {
     const schema = z.object({
       transactionIds: z.array(z.string()).optional(),
@@ -134,7 +137,7 @@ router.post('/ai/categorize/apply', authenticate, async (req: AuthRequest, res: 
 });
 
 // Get financial insights
-router.get('/ai/insights', authenticate, async (req: AuthRequest, res: Response) => {
+router.get('/ai/insights', authenticate, aiInsightsLimiter, checkAIQuota, async (req: AuthRequest, res: Response) => {
   try {
     const timeframe = (req.query.timeframe as 'monthly' | 'quarterly' | 'yearly') || 'monthly';
     
@@ -212,6 +215,58 @@ router.get('/ai/categorization-history', authenticate, async (req: AuthRequest, 
     res.status(500).json({ 
       error: 'Failed to fetch categorization history' 
     });
+  }
+});
+
+// Recategorize a single transaction
+router.post('/ai/recategorize/:transactionId', authenticate, aiCategorizationLimiter, checkAIQuota, async (req: AuthRequest, res: Response) => {
+  try {
+    const { transactionId } = req.params;
+
+    // Fetch the transaction
+    const transaction = await prisma.transaction.findFirst({
+      where: {
+        id: transactionId,
+        organizationId: req.user!.organizationId
+      }
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ error: 'Transaction not found' });
+    }
+
+    // Recategorize using AI
+    const categorizationResult = await categorizationService.categorizeTransaction(
+      transaction.description || '',
+      parseFloat(transaction.amount.toString()),
+      transaction.type as 'INCOME' | 'EXPENSE'
+    );
+
+    // Update the transaction
+    const updated = await prisma.transaction.update({
+      where: { id: transactionId },
+      data: {
+        category: categorizationResult.subcategory || categorizationResult.category,
+        metadata: {
+          ...(transaction.metadata as any || {}),
+          aiCategorized: true,
+          confidence: categorizationResult.confidence,
+          merchantName: categorizationResult.merchantName,
+          isRecurring: categorizationResult.isRecurring,
+          recurringFrequency: categorizationResult.recurringFrequency,
+          recategorizedAt: new Date().toISOString()
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      transaction: updated,
+      categorization: categorizationResult
+    });
+  } catch (error) {
+    console.error('Recategorization error:', error);
+    res.status(500).json({ error: 'Failed to recategorize transaction' });
   }
 });
 

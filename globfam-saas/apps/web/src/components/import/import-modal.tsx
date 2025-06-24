@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, FileSpreadsheet, X, AlertCircle } from 'lucide-react'
+import { Upload, FileSpreadsheet, X, AlertCircle, TrendingUp } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -38,6 +39,7 @@ interface ColumnMapping {
 }
 
 export function ImportModal({ isOpen, onClose, assets, onImportComplete }: ImportModalProps) {
+  const router = useRouter()
   const [step, setStep] = useState<'upload' | 'mapping' | 'importing' | 'complete'>('upload')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedAsset, setSelectedAsset] = useState<string>('')
@@ -64,13 +66,18 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
       if (acceptedFiles.length > 0) {
         setSelectedFile(acceptedFiles[0])
         setError(null)
-        await handleFilePreview(acceptedFiles[0])
+        // Don't auto-preview, wait for user to select asset and click Next
       }
     }
   })
 
   const handleFilePreview = async (file: File) => {
     try {
+      if (!selectedAsset) {
+        setError('Please select an asset first')
+        return
+      }
+      
       const formData = new FormData()
       formData.append('file', file)
       if (selectedSheet) {
@@ -220,18 +227,30 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
             </div>
 
             {selectedFile && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <FileSpreadsheet className="w-5 h-5 text-gray-500" />
-                  <span className="text-sm">{selectedFile.name}</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileSpreadsheet className="w-5 h-5 text-gray-500" />
+                    <span className="text-sm">{selectedFile.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedFile(null)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedFile(null)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+                {selectedAsset && (
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={() => handleFilePreview(selectedFile)}
+                      disabled={!selectedAsset}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -405,9 +424,16 @@ export function ImportModal({ isOpen, onClose, assets, onImportComplete }: Impor
                 )}
               </div>
             </div>
-            <div className="flex justify-center">
-              <Button onClick={handleClose}>
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" onClick={handleClose}>
                 Close
+              </Button>
+              <Button onClick={() => {
+                handleClose()
+                router.push('/dashboard/transactions/import-insights')
+              }}>
+                <TrendingUp className="h-4 w-4 mr-2" />
+                View AI Insights
               </Button>
             </div>
           </div>

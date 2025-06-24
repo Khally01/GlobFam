@@ -27,6 +27,7 @@ router.get('/', authenticate, async (req: AuthRequest, res, next) => {
       category, 
       startDate, 
       endDate,
+      imported,
       limit = '50',
       offset = '0'
     } = req.query;
@@ -47,6 +48,14 @@ router.get('/', authenticate, async (req: AuthRequest, res, next) => {
       where.date = {};
       if (startDate) where.date.gte = new Date(startDate as string);
       if (endDate) where.date.lte = new Date(endDate as string);
+    }
+
+    // Filter by imported status
+    if (imported === 'true') {
+      where.metadata = {
+        path: '$.imported',
+        equals: true
+      };
     }
 
     const [transactions, total] = await Promise.all([

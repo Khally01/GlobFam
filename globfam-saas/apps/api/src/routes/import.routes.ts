@@ -99,8 +99,20 @@ router.post('/import/process', authenticate, upload.single('file'), async (req: 
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Validate request body
-    const options = importOptionsSchema.parse(req.body);
+    // Parse columnMapping if it's a string
+    const columnMapping = typeof req.body.columnMapping === 'string' 
+      ? JSON.parse(req.body.columnMapping) 
+      : req.body.columnMapping;
+    
+    // Parse skipDuplicates to boolean
+    const skipDuplicates = req.body.skipDuplicates === 'true' || req.body.skipDuplicates === true;
+
+    // Validate request body with parsed values
+    const options = importOptionsSchema.parse({
+      ...req.body,
+      columnMapping,
+      skipDuplicates
+    });
 
     // Check asset ownership
     const asset = await prisma.asset.findFirst({

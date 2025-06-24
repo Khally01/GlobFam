@@ -41,14 +41,14 @@ export default function BankingAlternatives() {
         </div>
 
         <div className="border rounded-lg p-4 hover:border-primary transition-colors cursor-pointer"
-             onClick={() => router.push('/dashboard/transactions')}>
+             onClick={() => router.push('/dashboard/transactions/import-insights')}>
           <TrendingUp className="h-8 w-8 mb-3 text-primary" />
-          <h3 className="font-semibold mb-2">AI Categorization</h3>
+          <h3 className="font-semibold mb-2">AI Insights</h3>
           <p className="text-sm text-muted-foreground mb-3">
-            Import first, then use AI to auto-categorize
+            View AI-powered insights from imported transactions
           </p>
           <Button variant="outline" size="sm" className="w-full">
-            Learn More
+            View Insights
           </Button>
         </div>
       </CardContent>

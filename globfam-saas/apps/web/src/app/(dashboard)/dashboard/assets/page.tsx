@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
+import { RenameAssetDialog } from '@/components/assets/RenameAssetDialog'
 import type { Asset, AssetType } from '@/lib/shared-types'
 
 const assetSchema = z.object({
@@ -66,6 +67,7 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [renameAsset, setRenameAsset] = useState<Asset | null>(null)
 
   const form = useForm<AssetForm>({
     resolver: zodResolver(assetSchema),
@@ -316,7 +318,11 @@ export default function AssetsPage() {
                       </div>
                     </div>
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setRenameAsset(asset)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -370,6 +376,17 @@ export default function AssetsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Rename Asset Dialog */}
+      <RenameAssetDialog 
+        asset={renameAsset}
+        open={!!renameAsset}
+        onOpenChange={(open) => !open && setRenameAsset(null)}
+        onSuccess={() => {
+          fetchAssets()
+          setRenameAsset(null)
+        }}
+      />
     </div>
   )
 }
