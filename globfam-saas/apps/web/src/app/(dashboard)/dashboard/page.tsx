@@ -7,6 +7,7 @@ import type { Asset, Transaction } from '@/lib/shared-types/index'
 import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress'
 import { NotionDashboard } from '@/components/dashboard/NotionDashboard'
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard'
+import { SkeletonDashboard } from '@/components/ui/skeleton'
 
 export default function DashboardPage() {
   const { user, family } = useAuthStore()
@@ -64,14 +65,14 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <p className="text-destructive mb-4">{error}</p>
+          <p className="text-globfam-alert mb-brand-sm">{error}</p>
           <button 
             onClick={() => {
               isFetching.current = false
               setError(null)
               fetchDashboardData()
             }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            className="brand-button"
           >
             Retry
           </button>
@@ -90,6 +91,11 @@ export default function DashboardPage() {
     )
   }
 
+  // Show skeleton loader while loading
+  if (loading) {
+    return <SkeletonDashboard />
+  }
+
   return (
     <div className="space-y-6">
       {/* Show onboarding progress if user hasn't completed all steps */}
@@ -101,7 +107,7 @@ export default function DashboardPage() {
           assets,
           transactions,
           summary,
-          loading
+          loading: false
         }}
       />
     </div>

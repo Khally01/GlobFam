@@ -66,17 +66,17 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
+    <Card className="brand-card border-globfam-border shadow-brand-lg">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-brand-h3 text-globfam-deep-blue">Welcome back</CardTitle>
+        <CardDescription className="text-globfam-steel">
           Enter your email and password to sign in
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-brand-sm">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <label htmlFor="email" className="text-sm font-medium text-globfam-deep-blue">
               Email
             </label>
             <Input
@@ -85,13 +85,14 @@ export default function LoginPage() {
               placeholder="you@example.com"
               {...register('email')}
               disabled={isLoading}
+              className="border-globfam-border focus:border-primary focus:ring-1 focus:ring-primary"
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+              <p className="text-sm text-globfam-alert">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <label htmlFor="password" className="text-sm font-medium text-globfam-deep-blue">
               Password
             </label>
             <Input
@@ -100,27 +101,28 @@ export default function LoginPage() {
               placeholder="••••••••"
               {...register('password')}
               disabled={isLoading}
+              className="border-globfam-border focus:border-primary focus:ring-1 focus:ring-primary"
             />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-sm text-globfam-alert">{errors.password.message}</p>
             )}
           </div>
           <div className="text-sm">
             <Link
               href="/forgot-password"
-              className="text-primary hover:underline"
+              className="text-primary hover:text-primary/80 font-medium"
             >
               Forgot password?
             </Link>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+        <CardFooter className="flex flex-col space-y-brand-sm">
+          <Button type="submit" className="w-full brand-button" disabled={isLoading}>
             {isLoading ? 'Signing in...' : 'Sign in'}
           </Button>
-          <div className="text-center text-sm">
+          <div className="text-center text-sm text-globfam-steel">
             Don't have an account?{' '}
-            <Link href="/register" className="text-primary hover:underline">
+            <Link href="/register" className="text-primary hover:text-primary/80 font-medium">
               Sign up
             </Link>
           </div>

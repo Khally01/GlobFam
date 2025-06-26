@@ -21,7 +21,9 @@ import {
   Calendar,
   Search,
   Upload,
-  Sparkles
+  Sparkles,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import { transactionsApi, assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
@@ -29,6 +31,8 @@ import type { Transaction, Asset, TransactionType } from '@/lib/shared-types'
 import { SimpleImportModal } from '@/components/import/simple-import-modal'
 import { CategorizeModal } from '@/components/ai/categorize-modal'
 import { EmptyTransactionsState } from './EmptyTransactionsState'
+import { SkeletonTransactionList } from '@/components/ui/skeleton-transactions'
+import { useDebounce } from '@/hooks/use-debounce'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
@@ -65,8 +69,12 @@ export default function TransactionsPage() {
     type?: string
     category?: string
     assetId?: string
+    search?: string
   }>({})
   const [hasInitialized, setHasInitialized] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const form = useForm<TransactionForm>({
     resolver: zodResolver(transactionSchema),
@@ -77,6 +85,7 @@ export default function TransactionsPage() {
   })
 
   const transactionType = form.watch('type')
+  const debouncedSearch = useDebounce(searchTerm, 300)
 
   useEffect(() => {
     if (!hasInitialized) {
@@ -86,10 +95,16 @@ export default function TransactionsPage() {
   }, [hasInitialized])
 
   useEffect(() => {
-    if (hasInitialized && Object.keys(filter).length > 0) {
+    if (hasInitialized) {
       fetchTransactions()
     }
   }, [filter, hasInitialized])
+
+  useEffect(() => {
+    if (debouncedSearch !== undefined) {
+      setFilter(prev => ({...prev, search: debouncedSearch || undefined}))
+    }
+  }, [debouncedSearch])
 
   const fetchData = async () => {
     try {
@@ -151,17 +166,32 @@ export default function TransactionsPage() {
 
   const categories = transactionType === 'INCOME' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
 
+  // Filter transactions on the frontend for immediate feedback
+  const filteredTransactions = transactions.filter(transaction => {
+    if (filter.search) {
+      const searchLower = filter.search.toLowerCase()
+      const matchesSearch = 
+        transaction.description?.toLowerCase().includes(searchLower) ||
+        transaction.category.toLowerCase().includes(searchLower) ||
+        transaction.amount.toString().includes(filter.search)
+      if (!matchesSearch) return false
+    }
+    return true
+  })
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filter, searchTerm])
+
   if (loading) {
-    return (
-      <div className="animate-pulse space-y-6">
-        <div className="h-8 w-48 bg-muted rounded"></div>
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-muted rounded-lg"></div>
-          ))}
-        </div>
-      </div>
-    )
+    return <SkeletonTransactionList />
   }
 
   return (
@@ -169,17 +199,17 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Transactions</h1>
-          <p className="text-muted-foreground">
+          <h1 className="brand-title text-brand-h2">Transactions</h1>
+          <p className="brand-subtitle text-brand-body text-globfam-steel">
             Track your income and expenses
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowImportModal(true)}>
+          <Button variant="outline" onClick={() => setShowImportModal(true)} className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue">
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <Button onClick={() => setShowForm(!showForm)}>
+          <Button onClick={() => setShowForm(!showForm)} className="brand-button">
             <Plus className="h-4 w-4 mr-2" />
             Add Transaction
           </Button>
@@ -188,10 +218,10 @@ export default function TransactionsPage() {
 
       {/* Create Transaction Form */}
       {showForm && (
-        <Card>
+        <Card className="brand-card">
           <CardHeader>
-            <CardTitle>Add New Transaction</CardTitle>
-            <CardDescription>Record a new income or expense</CardDescription>
+            <CardTitle className="text-globfam-deep-blue">Add New Transaction</CardTitle>
+            <CardDescription className="text-globfam-steel">Record a new income or expense</CardDescription>
           </CardHeader>
           <form onSubmit={form.handleSubmit(handleCreateTransaction)}>
             <CardContent className="space-y-4">
@@ -307,45 +337,56 @@ export default function TransactionsPage() {
       )}
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <span className="text-sm font-medium">Filters:</span>
-            </div>
-            <select
-              className="h-8 rounded border border-input bg-background px-2 text-sm"
-              value={filter.type || ''}
-              onChange={(e) => setFilter({...filter, type: e.target.value || undefined})}
-            >
-              <option value="">All Types</option>
-              <option value="INCOME">Income</option>
-              <option value="EXPENSE">Expense</option>
-              <option value="TRANSFER">Transfer</option>
-            </select>
-            <select
-              className="h-8 rounded border border-input bg-background px-2 text-sm"
-              value={filter.assetId || ''}
-              onChange={(e) => setFilter({...filter, assetId: e.target.value || undefined})}
-            >
-              <option value="">All Assets</option>
-              {assets.map(asset => (
-                <option key={asset.id} value={asset.id}>
-                  {asset.name}
-                </option>
-              ))}
-            </select>
-            {(filter.type || filter.assetId) && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setFilter({})}
+      <Card className="brand-card">
+        <CardContent className="p-brand-sm">
+          <div className="flex flex-col sm:flex-row gap-brand-sm">
+            <div className="flex flex-wrap gap-brand-sm items-center flex-1">
+              <div className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-globfam-steel" />
+                <Input
+                  type="text"
+                  placeholder="Search transactions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-8 w-48 border-globfam-border focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              <select
+                className="h-8 rounded-brand-md border border-globfam-border bg-white px-2 text-sm text-globfam-deep-blue focus:border-primary focus:ring-1 focus:ring-primary"
+                value={filter.type || ''}
+                onChange={(e) => setFilter({...filter, type: e.target.value || undefined})}
               >
-                Clear
-              </Button>
-            )}
-            <div className="ml-auto">
+                <option value="">All Types</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
+                <option value="TRANSFER">Transfer</option>
+              </select>
+              <select
+                className="h-8 rounded-brand-md border border-globfam-border bg-white px-2 text-sm text-globfam-deep-blue focus:border-primary focus:ring-1 focus:ring-primary"
+                value={filter.assetId || ''}
+                onChange={(e) => setFilter({...filter, assetId: e.target.value || undefined})}
+              >
+                <option value="">All Assets</option>
+                {assets.map(asset => (
+                  <option key={asset.id} value={asset.id}>
+                    {asset.name}
+                  </option>
+                ))}
+              </select>
+              {(filter.type || filter.assetId || filter.search) && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setFilter({})
+                    setSearchTerm('')
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -366,6 +407,25 @@ export default function TransactionsPage() {
           hasAssets={assets.length > 0} 
           onAddTransaction={() => setShowForm(true)}
         />
+      ) : filteredTransactions.length === 0 && filter.search ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Search className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No transactions found</h3>
+            <p className="text-muted-foreground mb-4">
+              Try adjusting your search or filters
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setFilter({})
+                setSearchTerm('')
+              }}
+            >
+              Clear filters
+            </Button>
+          </CardContent>
+        </Card>
       ) : transactions.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
@@ -381,26 +441,29 @@ export default function TransactionsPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="brand-card">
           <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>{transactions.length} transaction(s)</CardDescription>
+            <CardTitle className="text-globfam-deep-blue">Recent Transactions</CardTitle>
+            <CardDescription className="text-globfam-steel">
+              {filteredTransactions.length} of {transactions.length} transaction(s)
+              {filter.search && ` matching "${filter.search}"`}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {transactions.map((transaction) => {
+              {paginatedTransactions.map((transaction) => {
                 const asset = assets.find(a => a.id === transaction.assetId)
                 return (
                   <div
                     key={transaction.id}
-                    className="flex items-center justify-between border-b pb-3 last:border-0"
+                    className="flex items-center justify-between border-b border-globfam-border pb-3 last:border-0"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-brand-xs">
                       <div
                         className={`rounded-full p-2 ${
                           transaction.type === 'INCOME'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-red-100 text-red-600'
+                            ? 'bg-globfam-success/10 text-globfam-success'
+                            : 'bg-globfam-alert/10 text-globfam-alert'
                         }`}
                       >
                         {transaction.type === 'INCOME' ? (
@@ -410,8 +473,8 @@ export default function TransactionsPage() {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium">{transaction.category}</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-medium text-globfam-deep-blue">{transaction.category}</p>
+                        <p className="text-sm text-globfam-steel">
                           {transaction.description || 'No description'} • {asset?.name}
                         </p>
                       </div>
@@ -420,14 +483,14 @@ export default function TransactionsPage() {
                       <p
                         className={`font-semibold ${
                           transaction.type === 'INCOME'
-                            ? 'text-green-600'
-                            : 'text-red-600'
+                            ? 'text-globfam-success'
+                            : 'text-globfam-alert'
                         }`}
                       >
                         {transaction.type === 'INCOME' ? '+' : '-'}
                         {transaction.currency} {parseFloat(transaction.amount).toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-globfam-steel">
                         {new Date(transaction.date).toLocaleDateString()}
                       </p>
                     </div>
@@ -435,6 +498,64 @@ export default function TransactionsPage() {
                 )
               })}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-brand-md pt-brand-sm border-t border-globfam-border">
+                <div className="text-sm text-globfam-steel">
+                  Showing {startIndex + 1} to {Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length} transactions
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue disabled:opacity-50"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        (page >= currentPage - 1 && page <= currentPage + 1)
+                      ) {
+                        return (
+                          <Button
+                            key={page}
+                            variant={page === currentPage ? "default" : "outline"}
+                            size="sm"
+                            className={`w-8 h-8 p-0 ${page === currentPage ? 'bg-primary text-white' : 'border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue'}`}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </Button>
+                        )
+                      }
+                      // Show ellipsis
+                      if (page === currentPage - 2 || page === currentPage + 2) {
+                        return <span key={page} className="px-1">...</span>
+                      }
+                      return null
+                    })}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue disabled:opacity-50"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

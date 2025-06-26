@@ -245,3 +245,160 @@ Currently no tests implemented. When adding:
 4. **Rate Limiting**: 100 req/15min per IP
 5. **Secrets**: Never log sensitive data
 6. **CORS**: Restricted to known domains in production
+
+## Brand Identity Guide
+
+### Brand Overview
+GlobFam is a global family finance platform built specifically for international student families. Our brand embodies trust, sophistication, and cultural awareness while making complex financial management accessible.
+
+### Brand Positioning
+- **Mission**: To empower international student families with sophisticated financial tools that simplify cross-border money management while ensuring visa compliance and academic success.
+- **Value Proposition**: The first and only financial platform designed specifically for international student families—combining multi-currency management, visa compliance, and family coordination in one trusted solution.
+- **Brand Promise**: "Turn financial complexity into clarity, stress into confidence, and separate accounts into unified family success."
+
+### Visual Identity
+
+#### Logo
+- **Primary**: "GlobFam" in clean, modern typography
+- **Font Weight**: 600 (semi-bold)
+- **Letter Spacing**: -0.02em
+- **Variations**: Primary gradient, dark backgrounds, monochrome
+
+#### Color System
+```css
+/* Primary Colors */
+--globfam-purple: #635bff;      /* Primary brand color, CTAs */
+--deep-blue: #0a2540;           /* Headers, primary text */
+--slate: #425466;               /* Body text, secondary info */
+--steel: #6b7c93;               /* Subtle text, placeholders */
+
+/* Functional Colors */
+--success-green: #00d924;       /* Positive actions, growth */
+--alert-orange: #ff5722;        /* Warnings, visa alerts */
+--cloud: #f6f9fc;               /* Backgrounds, subtle containers */
+--border-gray: #e6ebf1;         /* Borders, dividers */
+
+/* Gradients */
+--primary-gradient: linear-gradient(135deg, #635bff 0%, #7c3aed 30%, #0ea5e9 100%);
+--brand-gradient: linear-gradient(135deg, #635bff, #7c3aed);
+```
+
+#### Typography
+```css
+/* Font Stack */
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+/* Type Scale */
+--h1: 3.5em;    /* Page titles */
+--h2: 2.5em;    /* Section headers */
+--h3: 1.75em;   /* Card titles */
+--h4: 1.25em;   /* Subsections */
+--body: 1.1em;  /* Body text */
+--caption: 0.9em; /* Small text */
+
+/* Font Weights */
+--regular: 400;
+--medium: 500;
+--semibold: 600;
+
+/* Letter Spacing */
+--tight: -0.02em;  /* Headlines */
+--normal: -0.01em; /* Subheadings */
+```
+
+### Design Principles
+
+1. **Global by Design**: Multi-currency native support with cultural awareness
+2. **Family-First**: Features designed for family coordination and shared goals
+3. **Education-Centered**: Purpose-built for international student families
+4. **Trust & Security**: Bank-grade security with transparency
+
+### UI Component Styling
+
+#### Cards
+```css
+.brand-card {
+    background: white;
+    padding: 48px;
+    border-radius: 12px;
+    border: 1px solid #e6ebf1;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.brand-card:hover {
+    border-color: #635bff;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(99, 91, 255, 0.1);
+}
+```
+
+#### Buttons
+```css
+/* Primary Button */
+.btn-primary {
+    background: #635bff;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #5851db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
+}
+```
+
+### Brand Voice & Messaging
+
+#### Voice Characteristics
+- **Intelligent**: We understand complex financial regulations
+- **Empathetic**: We've lived the international student experience
+- **Global**: Culturally aware and inclusive
+- **Empowering**: Helping families take control
+- **Trustworthy**: Transparent and reliable
+
+#### Key Messages
+- "Built by international families, for international families"
+- "Financial clarity for your global journey"
+- "Stay compliant, stay focused on your education"
+- "One platform, multiple currencies, unified family"
+
+### Implementation Guidelines
+
+#### Spacing System
+```css
+--space-xs: 8px;
+--space-sm: 16px;
+--space-md: 24px;
+--space-lg: 32px;
+--space-xl: 48px;
+--space-2xl: 64px;
+--space-3xl: 96px;
+```
+
+#### Border Radius
+```css
+--radius-sm: 4px;   /* Small elements */
+--radius-md: 8px;   /* Buttons, inputs */
+--radius-lg: 12px;  /* Cards */
+--radius-xl: 16px;  /* Modals */
+--radius-full: 50%; /* Avatars */
+```
+
+#### Shadows
+```css
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+--shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+--shadow-purple: 0 12px 24px rgba(99, 91, 255, 0.1);
+```
+
+### Accessibility
+- Maintain WCAG AA compliance
+- Minimum contrast ratio: 4.5:1 for normal text
+- Focus states: 2px #635bff outline with 2px offset
+- Support for reduced motion preferences

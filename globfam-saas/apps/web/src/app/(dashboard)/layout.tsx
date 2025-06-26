@@ -128,17 +128,17 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-globfam-cloud">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent shadow-brand-purple"></div>
+          <p className="mt-brand-xs text-sm text-globfam-steel">Loading...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-muted/50">
+    <div className="flex h-screen bg-globfam-cloud">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -149,14 +149,14 @@ export default function DashboardLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-background transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white border-r border-globfam-border transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 items-center justify-between border-b px-6">
-            <Link href="/dashboard" className="text-xl font-bold">
+          <div className="flex h-16 items-center justify-between border-b border-globfam-border px-brand-md">
+            <Link href="/dashboard" className="brand-logo">
               GlobFam
             </Link>
             <button
@@ -168,17 +168,17 @@ export default function DashboardLayout({
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 p-4">
+          <nav className="flex-1 space-y-1 p-brand-sm">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-brand-xs rounded-brand-md px-brand-sm py-2.5 text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'hover:bg-muted'
+                      ? 'bg-primary text-white shadow-brand-purple'
+                      : 'text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue'
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
@@ -189,17 +189,21 @@ export default function DashboardLayout({
           </nav>
 
           {/* User section */}
-          <div className="border-t p-4">
-            <div className="flex items-center gap-3 rounded-lg px-3 py-2">
-              <div className="h-8 w-8 rounded-full bg-primary/10" />
+          <div className="border-t border-globfam-border p-brand-sm">
+            <div className="flex items-center gap-brand-xs rounded-brand-md px-brand-sm py-2">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-sm font-semibold text-primary">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
               <div className="flex-1">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="text-sm font-medium text-globfam-deep-blue">{user?.name}</p>
+                <p className="text-xs text-globfam-steel">{user?.email}</p>
               </div>
             </div>
             <Button
               variant="ghost"
-              className="mt-2 w-full justify-start gap-3"
+              className="mt-2 w-full justify-start gap-brand-xs text-globfam-slate hover:text-globfam-deep-blue hover:bg-globfam-cloud"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
@@ -212,16 +216,16 @@ export default function DashboardLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Mobile header */}
-        <header className="flex h-16 items-center gap-4 border-b bg-background px-6 lg:hidden">
-          <button onClick={() => setSidebarOpen(true)}>
+        <header className="flex h-16 items-center gap-brand-sm border-b border-globfam-border bg-white px-brand-md lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} className="text-globfam-slate hover:text-globfam-deep-blue">
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-lg font-semibold">GlobFam</h1>
+          <h1 className="brand-logo text-xl">GlobFam</h1>
         </header>
 
         {/* Page content */}
         <main className="flex-1 overflow-auto">
-          <div className="container mx-auto p-6">{children}</div>
+          <div className="container mx-auto p-brand-md">{children}</div>
         </main>
       </div>
     </div>

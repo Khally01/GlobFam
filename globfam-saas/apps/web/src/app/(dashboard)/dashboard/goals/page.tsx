@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import { formatCurrency } from '@/lib/utils'
+import { SkeletonGoals } from '@/components/ui/skeleton-goals'
 
 interface Goal {
   id: string
@@ -147,20 +148,20 @@ export default function GoalsPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading goals...</div>
+    return <SkeletonGoals />
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Financial Goals</h1>
-          <p className="text-muted-foreground mt-1">Track and achieve your financial objectives</p>
+          <h1 className="brand-title text-brand-h2">Financial Goals</h1>
+          <p className="brand-subtitle text-brand-body text-globfam-steel mt-1">Track and achieve your financial objectives</p>
         </div>
         
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="brand-button">
               <Plus className="h-4 w-4 mr-2" />
               New Goal
             </Button>
