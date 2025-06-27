@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { PrismaClient, TransactionType } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { parse } from 'json2csv';
+import ExcelJS from 'exceljs';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -378,6 +380,109 @@ router.get('/analytics/summary', authenticate, async (req: AuthRequest, res, nex
         }
       }
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Export transactions
+router.get('/export', authenticate, async (req: AuthRequest, res, next) => {
+  try {
+    const { format = 'csv', startDate, endDate } = req.query;
+
+    // Build query
+    const where: any = {
+      organizationId: req.user!.organizationId,
+      OR: [
+        { userId: req.user!.id },
+        { asset: { family: { members: { some: { id: req.user!.id } } } } }
+      ]
+    };
+
+    if (startDate || endDate) {
+      where.date = {};
+      if (startDate) where.date.gte = new Date(startDate as string);
+      if (endDate) where.date.lte = new Date(endDate as string);
+    }
+
+    // Fetch transactions with asset details
+    const transactions = await prisma.transaction.findMany({
+      where,
+      include: {
+        asset: {
+          select: {
+            name: true,
+            type: true
+          }
+        }
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    // Transform data for export
+    const exportData = transactions.map(tx => ({
+      Date: new Date(tx.date).toLocaleDateString(),
+      Type: tx.type,
+      Category: tx.category,
+      Description: tx.description || '',
+      Amount: parseFloat(tx.amount.toString()),
+      Currency: tx.currency,
+      'Asset Name': tx.asset.name,
+      'Asset Type': tx.asset.type
+    }));
+
+    if (format === 'csv') {
+      // Generate CSV
+      const csv = parse(exportData, {
+        fields: ['Date', 'Type', 'Category', 'Description', 'Amount', 'Currency', 'Asset Name', 'Asset Type']
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="transactions_${new Date().toISOString().split('T')[0]}.csv"`);
+      res.send(csv);
+    } else if (format === 'excel') {
+      // Generate Excel
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Transactions');
+
+      // Add headers
+      worksheet.columns = [
+        { header: 'Date', key: 'Date', width: 12 },
+        { header: 'Type', key: 'Type', width: 10 },
+        { header: 'Category', key: 'Category', width: 15 },
+        { header: 'Description', key: 'Description', width: 30 },
+        { header: 'Amount', key: 'Amount', width: 12 },
+        { header: 'Currency', key: 'Currency', width: 10 },
+        { header: 'Asset Name', key: 'Asset Name', width: 20 },
+        { header: 'Asset Type', key: 'Asset Type', width: 15 }
+      ];
+
+      // Add data
+      exportData.forEach(row => {
+        worksheet.addRow(row);
+      });
+
+      // Style the header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+      };
+
+      // Format amount column as currency
+      worksheet.getColumn('Amount').numFmt = '#,##0.00';
+
+      // Set response headers
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="transactions_${new Date().toISOString().split('T')[0]}.xlsx"`);
+
+      // Write to response
+      await workbook.xlsx.write(res);
+      res.end();
+    } else {
+      res.status(400).json({ error: 'Invalid format. Use csv or excel' });
+    }
   } catch (error) {
     next(error);
   }

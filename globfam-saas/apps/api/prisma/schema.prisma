@@ -169,6 +169,10 @@ model Transaction {
 
   // Budget tracking
   budgetItems BudgetItem[]
+  
+  // YNAB-style budget category
+  budgetCategoryId String?
+  budgetCategory   BudgetCategory? @relation(fields: [budgetCategoryId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -178,6 +182,7 @@ model Transaction {
   @@index([date])
   @@index([category])
   @@index([importHistoryId])
+  @@index([budgetCategoryId])
 }
 
 model Valuation {
@@ -487,7 +492,81 @@ enum GoalStatus {
   CANCELLED
 }
 
-// Budget Models
+// Budget Models - YNAB Style
+model BudgetCategoryGroup {
+  id             String   @id @default(cuid())
+  name           String
+  order          Int      @default(0)
+  isSystem       Boolean  @default(false) // For system groups like "Credit Card Payments"
+  
+  // Relationships
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  categories     BudgetCategory[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([order])
+}
+
+model BudgetCategory {
+  id              String   @id @default(cuid())
+  name            String
+  order           Int      @default(0)
+  isHidden        Boolean  @default(false)
+  color           String?
+  icon            String?
+  goalType        String?  // 'TB' (Target Balance), 'TBD' (Target Balance by Date), 'MF' (Monthly Funding), 'NEED' (Spending Target)
+  goalAmount      Decimal? @db.Decimal(20, 2)
+  goalDate        DateTime?
+  
+  // Relationships
+  groupId         String
+  group           BudgetCategoryGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  monthlyBudgets  MonthlyBudget[]
+  transactions    Transaction[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([groupId, name])
+  @@index([groupId])
+  @@index([organizationId])
+  @@index([order])
+}
+
+model MonthlyBudget {
+  id              String   @id @default(cuid())
+  month           Int      // 1-12
+  year            Int
+  budgeted        Decimal  @default(0) @db.Decimal(20, 2)
+  activity        Decimal  @default(0) @db.Decimal(20, 2) // Calculated from transactions
+  available       Decimal  @default(0) @db.Decimal(20, 2) // budgeted + carryover - activity
+  carryover       Decimal  @default(0) @db.Decimal(20, 2) // From previous month
+  
+  // Relationships
+  categoryId      String
+  category        BudgetCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([categoryId, month, year])
+  @@index([categoryId])
+  @@index([organizationId])
+  @@index([month, year])
+}
+
+// Legacy Budget models (keeping for backward compatibility)
 model Budget {
   id          String   @id @default(cuid())
   name        String
@@ -503,7 +582,6 @@ model Budget {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   
-  categories BudgetCategory[]
   items      BudgetItem[]
   
   createdAt DateTime @default(now())
@@ -513,21 +591,6 @@ model Budget {
   @@index([organizationId])
   @@index([period])
   @@index([startDate, endDate])
-}
-
-model BudgetCategory {
-  id       String  @id @default(cuid())
-  category String
-  amount   Decimal @db.Decimal(20, 2)
-  
-  budgetId String
-  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@index([budgetId])
-  @@index([category])
 }
 
 model BudgetItem {

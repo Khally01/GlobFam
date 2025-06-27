@@ -23,6 +23,7 @@ import goalsRoutes from './routes/goals.routes';
 import forecastingRoutes from './routes/forecasting.routes';
 import bankingRoutes from './routes/banking.routes';
 import budgetRoutes from './routes/budget.routes';
+import budgetCategoriesRoutes from './routes/budget-categories.routes';
 import setupRoutes from './routes/setup';
 
 // Load environment variables
@@ -129,6 +130,7 @@ app.use('/api', goalsRoutes);
 app.use('/api', forecastingRoutes);
 app.use('/api', bankingRoutes);
 app.use('/api', budgetRoutes);
+app.use('/api', budgetCategoriesRoutes);
 
 // Temporary setup route - REMOVE IN PRODUCTION
 if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SETUP === 'true') {

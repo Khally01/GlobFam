@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input } from '@/components/shared-ui'
-import { PlusCircle, Target, TrendingUp, AlertTriangle, CheckCircle, X } from 'lucide-react'
+import { PlusCircle, Target, TrendingUp, AlertTriangle, CheckCircle, X, Folder } from 'lucide-react'
 import { analyticsApi } from '@/lib/api/analytics'
 import { api } from '@/lib/api'
 import type { BudgetComparison } from '@/lib/api/analytics'
 import { useToast } from '@/hooks/use-toast'
+import Link from 'next/link'
 
 const DEFAULT_CATEGORIES = [
   'Rent', 'Mortgage', 'Groceries', 'Utilities', 'Transport',
@@ -186,6 +187,18 @@ export default function BudgetPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href="/dashboard/budget/monthly">
+            <Button variant="outline">
+              <Target className="h-4 w-4 mr-2" />
+              Monthly Budget
+            </Button>
+          </Link>
+          <Link href="/dashboard/budget/categories">
+            <Button variant="outline">
+              <Folder className="h-4 w-4 mr-2" />
+              Manage Categories
+            </Button>
+          </Link>
           <Button
             variant="outline"
             onClick={handleAISuggestion}

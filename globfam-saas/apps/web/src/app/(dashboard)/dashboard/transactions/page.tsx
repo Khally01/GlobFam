@@ -33,6 +33,7 @@ import { CategorizeModal } from '@/components/ai/categorize-modal'
 import { EmptyTransactionsState } from './EmptyTransactionsState'
 import { SkeletonTransactionList } from '@/components/ui/skeleton-transactions'
 import { useDebounce } from '@/hooks/use-debounce'
+import { ExportTransactions } from '@/components/transactions/ExportTransactions'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
@@ -197,21 +198,24 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="brand-title text-brand-h2">Transactions</h1>
-          <p className="brand-subtitle text-brand-body text-globfam-steel">
+          <h1 className="brand-title text-2xl sm:text-brand-h2">Transactions</h1>
+          <p className="brand-subtitle text-sm sm:text-brand-body text-globfam-steel">
             Track your income and expenses
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowImportModal(true)} className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue">
-            <Upload className="h-4 w-4 mr-2" />
-            Import
+        <div className="flex flex-wrap gap-2">
+          <ExportTransactions onExport={fetchTransactions} />
+          <Button variant="outline" onClick={() => setShowImportModal(true)} className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue text-sm sm:text-base">
+            <Upload className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Import</span>
+            <span className="sm:hidden">Import</span>
           </Button>
-          <Button onClick={() => setShowForm(!showForm)} className="brand-button">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Transaction
+          <Button onClick={() => setShowForm(!showForm)} className="brand-button text-sm sm:text-base">
+            <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Add Transaction</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
       </div>
@@ -225,7 +229,7 @@ export default function TransactionsPage() {
           </CardHeader>
           <form onSubmit={form.handleSubmit(handleCreateTransaction)}>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium">Type</label>
                   <select

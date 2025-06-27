@@ -13,7 +13,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area, AreaChart } from 'recharts'
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Area, AreaChart, PieChart as RechartsPieChart, Pie, Cell, Legend } from 'recharts'
 
 interface DashboardData {
   assets: any[]
@@ -73,9 +73,9 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
     const categoryMap = new Map<string, number>()
     let totalExpenses = 0
     
-    // Filter current month expenses
-    data.transactions
-      .filter((t: any) => t.type === 'EXPENSE' && isCurrentMonth(t.date))
+    // Use period-filtered transactions
+    periodTransactions
+      .filter((t: any) => t.type === 'EXPENSE')
       .forEach((t: any) => {
         const category = t.category || 'Other'
         const amount = parseFloat(t.amount)
@@ -84,7 +84,7 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
       })
     
     // Convert to array and calculate percentages
-    return Array.from(categoryMap.entries())
+    const categories = Array.from(categoryMap.entries())
       .map(([category, amount]) => ({
         category,
         amount: Math.round(amount),
@@ -92,6 +92,17 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
       }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5) // Top 5 categories
+    
+    // Return empty array with message if no data
+    if (categories.length === 0) {
+      return [{
+        category: 'No expenses in this period',
+        amount: 0,
+        percentage: 0
+      }]
+    }
+    
+    return categories
   }
   
   const monthlyData = getMonthlyData()
@@ -101,12 +112,37 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
     return <DashboardSkeleton />
   }
 
+  // Filter transactions based on selected period
+  const filterTransactionsByPeriod = (transactions: any[], period: string) => {
+    const now = new Date()
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    
+    return transactions.filter((t: any) => {
+      const transactionDate = new Date(t.date)
+      
+      switch (period) {
+        case 'week':
+          const weekAgo = new Date(startOfDay)
+          weekAgo.setDate(weekAgo.getDate() - 7)
+          return transactionDate >= weekAgo
+        case 'month':
+          return isCurrentMonth(t.date)
+        case 'year':
+          return transactionDate.getFullYear() === now.getFullYear()
+        default:
+          return true
+      }
+    })
+  }
+  
+  const periodTransactions = filterTransactionsByPeriod(data.transactions, selectedPeriod)
+  
   const totalAssets = data.assets.reduce((sum, asset) => sum + parseFloat(asset.amount), 0)
-  const monthlyIncome = data.transactions
-    .filter((t: any) => t.type === 'INCOME' && isCurrentMonth(t.date))
+  const periodIncome = periodTransactions
+    .filter((t: any) => t.type === 'INCOME')
     .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0)
-  const monthlyExpenses = data.transactions
-    .filter((t: any) => t.type === 'EXPENSE' && isCurrentMonth(t.date))
+  const periodExpenses = periodTransactions
+    .filter((t: any) => t.type === 'EXPENSE')
     .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0)
   
   // Get primary currency from first transaction or asset
@@ -147,16 +183,16 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="brand-title text-brand-h2 bg-brand-gradient bg-clip-text text-transparent">
+          <h1 className="brand-title text-2xl sm:text-brand-h2 bg-brand-gradient bg-clip-text text-transparent">
             Your Financial Overview
           </h1>
-          <p className="text-globfam-steel mt-2">
+          <p className="text-globfam-steel mt-2 text-sm sm:text-base">
             Track, analyze, and optimize your global finances
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {['week', 'month', 'year'].map((period) => (
             <button
               key={period}
@@ -174,7 +210,7 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Net Worth"
           value={formatCurrency(totalAssets, primaryCurrency)}
@@ -183,30 +219,30 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
           color="blue"
         />
         <MetricCard
-          title="Monthly Income"
-          value={formatCurrency(monthlyIncome, primaryCurrency)}
-          change={calculateChange(monthlyIncome, 'income')}
+          title={`${selectedPeriod.charAt(0).toUpperCase() + selectedPeriod.slice(1)}ly Income`}
+          value={formatCurrency(periodIncome, primaryCurrency)}
+          change={calculateChange(periodIncome, 'income')}
           icon={TrendingUp}
           color="green"
         />
         <MetricCard
-          title="Monthly Expenses"
-          value={formatCurrency(monthlyExpenses, primaryCurrency)}
-          change={calculateChange(monthlyExpenses, 'expense')}
+          title={`${selectedPeriod.charAt(0).toUpperCase() + selectedPeriod.slice(1)}ly Expenses`}
+          value={formatCurrency(periodExpenses, primaryCurrency)}
+          change={calculateChange(periodExpenses, 'expense')}
           icon={TrendingDown}
           color="red"
         />
         <MetricCard
           title="Savings Rate"
-          value={monthlyIncome > 0 ? `${Math.round(((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100)}%` : 'N/A'}
-          change={calculateChange(monthlyIncome - monthlyExpenses, 'savings')}
+          value={periodIncome > 0 ? `${Math.round(((periodIncome - periodExpenses) / periodIncome) * 100)}%` : 'N/A'}
+          change={calculateChange(periodIncome - periodExpenses, 'savings')}
           icon={PieChart}
           color="purple"
         />
       </div>
 
       {/* Charts Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
         {/* Cash Flow Chart */}
         <Card className="brand-card">
           <CardHeader>
@@ -217,7 +253,7 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
             <CardDescription className="text-globfam-steel">Income vs Expenses over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={monthlyData}>
                   <defs>
@@ -288,6 +324,22 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Assets Breakdown - Only show if user has assets */}
+        {data.assets.length > 0 && (
+          <Card className="brand-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-globfam-deep-blue">
+                <DollarSign className="h-5 w-5 text-primary" />
+                Assets Distribution
+              </CardTitle>
+              <CardDescription className="text-globfam-steel">Your wealth across different assets</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AssetsPieChart assets={data.assets} primaryCurrency={primaryCurrency} />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -299,7 +351,7 @@ export function NotionDashboard({ data }: { data: DashboardData }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
             <QuickAction
               title="Add Transaction"
               description="Record income or expense"
@@ -412,4 +464,66 @@ function isCurrentMonth(date: string) {
   const d = new Date(date)
   const now = new Date()
   return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+}
+
+function AssetsPieChart({ assets, primaryCurrency }: { assets: any[], primaryCurrency: string }) {
+  // Group assets by type and calculate totals
+  const assetsByType = assets.reduce((acc, asset) => {
+    const type = asset.type || 'Other'
+    if (!acc[type]) {
+      acc[type] = {
+        name: type.replace(/_/g, ' ').charAt(0).toUpperCase() + type.replace(/_/g, ' ').slice(1).toLowerCase(),
+        value: 0,
+        count: 0
+      }
+    }
+    acc[type].value += parseFloat(asset.amount)
+    acc[type].count += 1
+    return acc
+  }, {} as Record<string, { name: string, value: number, count: number }>)
+
+  const data = Object.values(assetsByType)
+  const total = data.reduce((sum, item) => sum + item.value, 0)
+
+  const COLORS = ['#635bff', '#00d924', '#ff5722', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ec4899']
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload[0]) {
+      const data = payload[0].payload
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-lg border border-globfam-border">
+          <p className="font-medium text-globfam-deep-blue">{data.name}</p>
+          <p className="text-sm text-globfam-steel">
+            {formatCurrency(data.value, primaryCurrency)} ({((data.value / total) * 100).toFixed(1)}%)
+          </p>
+          <p className="text-xs text-globfam-steel">{data.count} asset{data.count > 1 ? 's' : ''}</p>
+        </div>
+      )
+    }
+    return null
+  }
+
+  return (
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <RechartsPieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={<CustomTooltip />} />
+        </RechartsPieChart>
+      </ResponsiveContainer>
+    </div>
+  )
 }

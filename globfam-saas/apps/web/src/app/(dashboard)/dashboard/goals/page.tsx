@@ -153,10 +153,10 @@ export default function GoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="brand-title text-brand-h2">Financial Goals</h1>
-          <p className="brand-subtitle text-brand-body text-globfam-steel mt-1">Track and achieve your financial objectives</p>
+          <h1 className="brand-title text-2xl sm:text-brand-h2">Financial Goals</h1>
+          <p className="brand-subtitle text-sm sm:text-brand-body text-globfam-steel mt-1">Track and achieve your financial objectives</p>
         </div>
         
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -266,29 +266,29 @@ export default function GoalsPage() {
       </div>
 
       {goals.length === 0 ? (
-        <Card>
+        <Card className="brand-card">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Target className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No goals yet</h3>
-            <p className="text-muted-foreground text-center mb-4">
+            <Target className="h-12 w-12 text-primary mb-4" />
+            <h3 className="text-xl font-semibold text-globfam-deep-blue mb-2">No goals yet</h3>
+            <p className="text-globfam-steel text-center mb-4">
               Start by creating your first financial goal
             </p>
-            <Button onClick={() => setShowCreateDialog(true)}>
+            <Button onClick={() => setShowCreateDialog(true)} className="brand-button">
               <Plus className="h-4 w-4 mr-2" />
               Create Goal
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {goals.map((goal) => (
-            <Card key={goal.id}>
+            <Card key={goal.id} className="brand-card">
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg">{goal.name}</CardTitle>
+                    <CardTitle className="text-lg text-globfam-deep-blue">{goal.name}</CardTitle>
                     {goal.description && (
-                      <CardDescription>{goal.description}</CardDescription>
+                      <CardDescription className="text-globfam-steel">{goal.description}</CardDescription>
                     )}
                   </div>
                   <Badge variant={getStatusColor(goal.status) as any}>
@@ -299,12 +299,12 @@ export default function GoalsPage() {
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="font-semibold">{goal.progress || 0}%</span>
+                    <span className="text-globfam-steel">Progress</span>
+                    <span className="font-semibold text-globfam-deep-blue">{goal.progress || 0}%</span>
                   </div>
-                  <div className="w-full bg-secondary rounded-full h-2">
+                  <div className="w-full bg-globfam-cloud rounded-full h-2">
                     <div
-                      className="bg-primary h-2 rounded-full transition-all"
+                      className="bg-brand-gradient h-2 rounded-full transition-all duration-500"
                       style={{ width: `${goal.progress || 0}%` }}
                     />
                   </div>
@@ -312,20 +312,20 @@ export default function GoalsPage() {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Current</span>
-                    <p className="font-semibold">
+                    <span className="text-globfam-steel">Current</span>
+                    <p className="font-semibold text-globfam-deep-blue">
                       {formatCurrency(goal.currentAmount, goal.currency)}
                     </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Target</span>
-                    <p className="font-semibold">
+                    <span className="text-globfam-steel">Target</span>
+                    <p className="font-semibold text-globfam-deep-blue">
                       {formatCurrency(goal.targetAmount, goal.currency)}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-globfam-steel">
                   <Calendar className="h-4 w-4" />
                   <span>Target: {new Date(goal.targetDate).toLocaleDateString()}</span>
                 </div>
@@ -333,13 +333,13 @@ export default function GoalsPage() {
                 <div className="flex gap-2">
                   <Button 
                     size="sm" 
-                    className="flex-1"
+                    className="flex-1 brand-button"
                     onClick={() => setContributingGoalId(goal.id)}
                   >
                     <TrendingUp className="h-4 w-4 mr-2" />
                     Contribute
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
+                  <Button size="sm" variant="outline" className="flex-1 border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue">
                     View Details
                   </Button>
                 </div>

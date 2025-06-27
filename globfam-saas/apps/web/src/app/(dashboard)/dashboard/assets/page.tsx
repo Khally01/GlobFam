@@ -168,7 +168,7 @@ export default function AssetsPage() {
         </div>
         
         {/* Asset Cards Skeleton */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {[...Array(6)].map((_, i) => (
             <SkeletonCard key={i} />
           ))}
@@ -180,10 +180,10 @@ export default function AssetsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="brand-title text-brand-h2">Assets</h1>
-          <p className="brand-subtitle text-brand-body text-globfam-steel">
+          <h1 className="brand-title text-2xl sm:text-brand-h2">Assets</h1>
+          <p className="brand-subtitle text-sm sm:text-brand-body text-globfam-steel">
             Track your assets across multiple countries
           </p>
         </div>
@@ -202,7 +202,7 @@ export default function AssetsPage() {
           </CardHeader>
           <form onSubmit={form.handleSubmit(handleCreateAsset)}>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div>
                   <label className="text-sm font-medium text-globfam-deep-blue">Asset Name</label>
                   <Input
@@ -338,7 +338,7 @@ export default function AssetsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {assets.map((asset) => {
             const Icon = getAssetIcon(asset.type as AssetType)
             const amount = parseFloat(asset.amount)

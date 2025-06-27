@@ -34,7 +34,7 @@ export default function DashboardPage() {
           console.error('Assets API error:', err)
           return { data: { data: { assets: [] } } }
         }),
-        transactionsApi.getAll({ limit: 10 }).catch(err => {
+        transactionsApi.getAll().catch(err => {
           console.error('Transactions API error:', err)
           return { data: { data: { transactions: [] } } }
         }),
