@@ -4,7 +4,7 @@ import { logger } from '../../utils/logger';
 
 interface TransactionForCategorization {
   id: string;
-  description: string;
+  description: string | null;
   amount: string;
   type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
   date: Date;
@@ -171,7 +171,7 @@ export class OpenAIService {
   ): string {
     const transactionList = transactions.map(t => ({
       id: t.id,
-      description: t.description,
+      description: t.description || 'No description',
       amount: t.amount,
       type: t.type,
       date: t.date.toISOString().split('T')[0]

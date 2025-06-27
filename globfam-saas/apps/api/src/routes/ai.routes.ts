@@ -60,8 +60,7 @@ router.post('/ai/categorize', authenticate, aiCategorizationLimiter, checkAIQuot
       transactions.map(t => ({
         ...t,
         amount: t.amount.toString(),
-        currentCategory: t.category,
-        description: t.description || ''
+        currentCategory: t.category
       })),
       req.user!.id,
       req.user!.organizationId
