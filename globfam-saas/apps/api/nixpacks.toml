@@ -8,7 +8,7 @@ cmds = ["npm install --legacy-peer-deps"]
 cmds = ["npx prisma generate", "npm run build"]
 
 [start]
-cmd = "npx prisma migrate deploy --skip-seed && npm start"
+cmd = "npx prisma migrate deploy && npm start"
 
 [variables]
 NODE_ENV = "production"
