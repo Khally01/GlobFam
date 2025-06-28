@@ -4,9 +4,9 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Install dependencies with memory optimization
-COPY package*.json ./
+COPY package.json ./
 ENV NODE_OPTIONS="--max-old-space-size=512"
-RUN npm ci --only=production --legacy-peer-deps --no-audit --no-fund && \
+RUN npm install --only=production --legacy-peer-deps --no-audit --no-fund && \
     rm -rf /root/.npm
 
 # Build stage
@@ -15,12 +15,12 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 COPY prisma ./prisma/
 
 # Install all dependencies including dev
 ENV NODE_OPTIONS="--max-old-space-size=512"
-RUN npm ci --legacy-peer-deps --no-audit --no-fund && \
+RUN npm install --legacy-peer-deps --no-audit --no-fund && \
     npx prisma generate && \
     rm -rf /root/.npm
 

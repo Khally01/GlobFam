@@ -6,9 +6,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install dependencies
-COPY package*.json ./
+COPY package.json ./
 ENV NODE_OPTIONS="--max-old-space-size=512"
-RUN npm ci --only=production --legacy-peer-deps --no-audit --no-fund && \
+RUN npm install --only=production --legacy-peer-deps --no-audit --no-fund && \
     rm -rf /root/.npm
 
 # Builder stage
@@ -19,11 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
 # Install all dependencies
 ENV NODE_OPTIONS="--max-old-space-size=768"
-RUN npm ci --legacy-peer-deps --no-audit --no-fund && \
+RUN npm install --legacy-peer-deps --no-audit --no-fund && \
     rm -rf /root/.npm
 
 # Copy source files
