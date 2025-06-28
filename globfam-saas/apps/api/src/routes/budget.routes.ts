@@ -13,14 +13,10 @@ const createBudgetSchema = z.object({
   period: z.enum(['weekly', 'biweekly', 'monthly', 'quarterly', 'yearly', 'custom']).default('monthly'),
   startDate: z.string().transform(str => new Date(str)),
   endDate: z.string().transform(str => new Date(str)),
-  currency: z.string().length(3),
-  categories: z.array(z.object({
-    category: z.string(),
-    amount: z.number().positive()
-  }))
+  currency: z.string().length(3)
 });
 
-// Get budgets
+// Get budgets (legacy)
 router.get('/budgets', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const budgets = await prisma.budget.findMany({
@@ -29,7 +25,7 @@ router.get('/budgets', authenticate, async (req: AuthRequest, res: Response) => 
         organizationId: req.user!.organizationId
       },
       include: {
-        categories: true
+        items: true
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -41,7 +37,7 @@ router.get('/budgets', authenticate, async (req: AuthRequest, res: Response) => 
   }
 });
 
-// Create budget
+// Create budget (legacy)
 router.post('/budgets', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const data = createBudgetSchema.parse(req.body);
@@ -54,16 +50,10 @@ router.post('/budgets', authenticate, async (req: AuthRequest, res: Response) =>
         endDate: data.endDate,
         currency: data.currency,
         userId: req.user!.id,
-        organizationId: req.user!.organizationId,
-        categories: {
-          create: data.categories.map(cat => ({
-            category: cat.category,
-            amount: cat.amount
-          }))
-        }
+        organizationId: req.user!.organizationId
       },
       include: {
-        categories: true
+        items: true
       }
     });
 
@@ -78,7 +68,7 @@ router.post('/budgets', authenticate, async (req: AuthRequest, res: Response) =>
   }
 });
 
-// Update budget
+// Update budget (legacy)
 router.put('/budgets/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -102,7 +92,7 @@ router.put('/budgets/:id', authenticate, async (req: AuthRequest, res: Response)
       where: { id },
       data: updates,
       include: {
-        categories: true
+        items: true
       }
     });
 
@@ -113,7 +103,7 @@ router.put('/budgets/:id', authenticate, async (req: AuthRequest, res: Response)
   }
 });
 
-// Delete budget
+// Delete budget (legacy)
 router.delete('/budgets/:id', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
@@ -131,67 +121,62 @@ router.delete('/budgets/:id', authenticate, async (req: AuthRequest, res: Respon
       return res.status(404).json({ error: 'Budget not found' });
     }
 
-    await prisma.budget.delete({
-      where: { id }
-    });
+    await prisma.budget.delete({ where: { id } });
 
-    res.json({ success: true });
+    res.json({ message: 'Budget deleted successfully' });
   } catch (error) {
     console.error('Delete budget error:', error);
     res.status(500).json({ error: 'Failed to delete budget' });
   }
 });
 
-// Monthly budget routes (YNAB-style)
-const monthlyBudgetSchema = z.object({
-  categoryId: z.string(),
-  month: z.number().min(1).max(12),
-  year: z.number().min(2000).max(2100),
-  budgeted: z.number().min(0)
-});
-
-// Get monthly budget
+// Get monthly budget (new YNAB-style)
 router.get('/budgets/monthly', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const month = parseInt(req.query.month as string) || new Date().getMonth() + 1;
-    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const { month, year } = req.query;
+    
+    const currentDate = new Date();
+    const targetMonth = month ? parseInt(month as string) : currentDate.getMonth() + 1;
+    const targetYear = year ? parseInt(year as string) : currentDate.getFullYear();
 
-    const budgetData = await monthlyBudgetService.getMonthlyBudget(
+    const monthlyBudget = await monthlyBudgetService.getMonthlyBudget(
       req.user!.organizationId,
-      month,
-      year
+      targetMonth,
+      targetYear
     );
 
-    res.json({ data: budgetData });
+    res.json({ data: monthlyBudget });
   } catch (error) {
     console.error('Get monthly budget error:', error);
     res.status(500).json({ error: 'Failed to fetch monthly budget' });
   }
 });
 
-// Update monthly budget for a category
+// Update monthly budget for a category (new YNAB-style)
 router.post('/budgets/monthly', authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const data = monthlyBudgetSchema.parse(req.body);
+    const { categoryId, month, year, budgeted } = req.body;
+
+    if (!categoryId || budgeted === undefined) {
+      return res.status(400).json({ error: 'Category ID and budgeted amount are required' });
+    }
+
+    const currentDate = new Date();
+    const targetMonth = month || currentDate.getMonth() + 1;
+    const targetYear = year || currentDate.getFullYear();
 
     const updated = await monthlyBudgetService.updateMonthlyBudget(
       req.user!.organizationId,
-      data.categoryId,
-      data.month,
-      data.year,
-      data.budgeted
+      categoryId,
+      targetMonth,
+      targetYear,
+      budgeted
     );
 
     res.json({ data: updated });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Update monthly budget error:', error);
-    if (error.name === 'ZodError') {
-      res.status(400).json({ error: 'Invalid data', details: error.errors });
-    } else if (error.statusCode === 404) {
-      res.status(404).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Failed to update monthly budget' });
-    }
+    res.status(500).json({ error: 'Failed to update monthly budget' });
   }
 });
 
@@ -199,21 +184,21 @@ router.post('/budgets/monthly', authenticate, async (req: AuthRequest, res: Resp
 router.post('/budgets/monthly/recalculate', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     const { month, year } = req.body;
-    
+
     if (!month || !year) {
       return res.status(400).json({ error: 'Month and year are required' });
     }
 
-    const results = await monthlyBudgetService.recalculateMonthlyBudgets(
+    await monthlyBudgetService.recalculateMonthlyBudgets(
       req.user!.organizationId,
       month,
       year
     );
 
-    res.json({ data: results });
+    res.json({ message: 'Monthly budgets recalculated successfully' });
   } catch (error) {
     console.error('Recalculate monthly budgets error:', error);
-    res.status(500).json({ error: 'Failed to recalculate budgets' });
+    res.status(500).json({ error: 'Failed to recalculate monthly budgets' });
   }
 });
 

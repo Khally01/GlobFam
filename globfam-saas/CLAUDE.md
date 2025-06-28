@@ -143,10 +143,27 @@ npm run test -- --watch   # Watch mode
 
 See `DEPLOYMENT.md` for comprehensive deployment instructions.
 
-Quick checklist:
-1. Set root directories in Railway (`/apps/api` and `/apps/web`)
-2. Configure all environment variables
-3. Deploy with `railway up`
+### IMPORTANT: Pre-Deployment Validation
+
+**Always run the validation script before deploying:**
+```bash
+chmod +x validate-deployment.sh
+./validate-deployment.sh
+```
+
+This script checks:
+- Prisma schema validity
+- TypeScript compilation
+- Missing dependencies
+- Docker build compatibility
+
+**Only deploy if all checks pass!**
+
+Quick deployment steps:
+1. Run `./validate-deployment.sh`
+2. Set root directories in Railway (`/apps/api` and `/apps/web`)
+3. Configure all environment variables
+4. Deploy with `railway up`
 
 ## Important Notes
 

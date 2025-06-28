@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { AppError } from '../../middleware/errorHandler';
+import { ApiError } from '../../middleware/errorHandler';
 
 export class MonthlyBudgetService {
   constructor(private prisma: PrismaClient) {}
