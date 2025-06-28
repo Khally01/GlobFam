@@ -1,6 +1,6 @@
 [build]
-builder = "NIXPACKS"
-buildCommand = "rm -f package-lock.json && npm install --legacy-peer-deps && npx prisma generate && npx prisma migrate deploy && npm run build"
+builder = "DOCKERFILE"
+dockerfilePath = "./Dockerfile"
 
 [deploy]
 startCommand = "npm start"

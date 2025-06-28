@@ -50,11 +50,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Copy production files
-COPY --from=builder --chown=nodejs:nodejs /app/.next ./.next
+COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nodejs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nodejs:nodejs /app/public ./public
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --chown=nodejs:nodejs package*.json ./
-COPY --chown=nodejs:nodejs next.config.js ./
 
 USER nodejs
 
@@ -69,4 +69,4 @@ ENV NODE_OPTIONS="--max-old-space-size=512"
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

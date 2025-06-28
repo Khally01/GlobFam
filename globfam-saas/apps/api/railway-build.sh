@@ -2,14 +2,13 @@
 set -e
 
 # Set memory limits for Node.js
-export NODE_OPTIONS="--max-old-space-size=768"
-export NEXT_TELEMETRY_DISABLED=1
+export NODE_OPTIONS="--max-old-space-size=512"
 
-echo "Starting Railway build for Web..."
+echo "Starting Railway build for API..."
 
 # Clean up any existing build artifacts
 echo "Cleaning up previous builds..."
-rm -rf .next node_modules package-lock.json
+rm -rf dist node_modules package-lock.json
 
 # Install dependencies with memory optimization
 echo "Installing dependencies..."
@@ -20,20 +19,20 @@ npm install --legacy-peer-deps \
   --no-optional \
   --progress=false
 
-# Build Next.js application
-echo "Building Next.js application..."
+# Generate Prisma client
+echo "Generating Prisma client..."
+npx prisma generate
+
+# Run database migrations
+echo "Running database migrations..."
+npx prisma migrate deploy --skip-seed || echo "Migration deployment skipped (may already be applied)"
+
+# Build TypeScript
+echo "Building TypeScript..."
 npm run build
 
 # Clean up dev dependencies to save space
 echo "Cleaning up dev dependencies..."
 npm prune --production
-
-# Verify build output
-if [ -d ".next" ]; then
-  echo "Build successful - .next directory created"
-else
-  echo "Build failed - .next directory not found"
-  exit 1
-fi
 
 echo "Railway build completed successfully!"

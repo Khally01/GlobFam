@@ -1,0 +1,28 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "chmod +x railway-build.sh && ./railway-build.sh",
+    "watchPatterns": [
+      "src/**",
+      "public/**",
+      "package.json",
+      "next.config.js"
+    ]
+  },
+  "deploy": {
+    "startCommand": "npm run start",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 10,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3,
+    "numReplicas": 1,
+    "region": "us-west1"
+  },
+  "envVars": {
+    "NODE_ENV": "production",
+    "NODE_OPTIONS": "--max-old-space-size=512",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "PORT": "3000"
+  }
+}
