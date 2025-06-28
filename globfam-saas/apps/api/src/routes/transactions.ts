@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { PrismaClient, TransactionType } from '@prisma/client';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { parse } from 'json2csv';
+import Papa from 'papaparse';
 import ExcelJS from 'exceljs';
 
 const router = Router();
@@ -432,9 +432,10 @@ router.get('/export', authenticate, async (req: AuthRequest, res, next) => {
     }));
 
     if (format === 'csv') {
-      // Generate CSV
-      const csv = parse(exportData, {
-        fields: ['Date', 'Type', 'Category', 'Description', 'Amount', 'Currency', 'Asset Name', 'Asset Type']
+      // Generate CSV using Papa Parse
+      const csv = Papa.unparse(exportData, {
+        header: true,
+        columns: ['Date', 'Type', 'Category', 'Description', 'Amount', 'Currency', 'Asset Name', 'Asset Type']
       });
 
       res.setHeader('Content-Type', 'text/csv');

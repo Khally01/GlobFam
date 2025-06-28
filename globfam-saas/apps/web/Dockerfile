@@ -13,6 +13,9 @@ RUN npm install --legacy-peer-deps
 # Copy source code
 COPY . .
 
+# Install SWC dependencies for Next.js
+RUN npm install @next/swc-linux-x64-gnu @next/swc-linux-x64-musl --save-dev
+
 # Build the Next.js application
 RUN npm run build
 
