@@ -1,11 +1,14 @@
 [phases.setup]
 nixPkgs = ["nodejs-18_x", "openssl"]
 
-[phases.build]
-cmd = "rm -f package-lock.json && npm install --legacy-peer-deps && npx prisma generate && npx prisma migrate deploy && npm run build"
+[phases.install]
+cmds = ["npm install --legacy-peer-deps"]
 
-[phases.start]
-cmd = "npm start"
+[phases.build]
+cmds = ["npx prisma generate", "npm run build"]
+
+[start]
+cmd = "npx prisma migrate deploy --skip-seed && npm start"
 
 [variables]
 NODE_ENV = "production"

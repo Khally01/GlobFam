@@ -1,20 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "libc6-compat"]
-aptPkgs = []
+nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
-dependsOn = ["setup"]
-cmds = [
-  "npm config set registry https://registry.npmjs.org/",
-  "npm ci --legacy-peer-deps --no-audit --no-fund --prefer-offline"
-]
-cacheDirectories = ["/app/node_modules", "/app/.next/cache"]
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-dependsOn = ["install"]
-cmds = [
-  "npm run build"
-]
+cmds = ["npm run build"]
 
 [start]
 cmd = "npm run start"
