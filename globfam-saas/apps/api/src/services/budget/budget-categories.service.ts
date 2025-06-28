@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ApiError } from '../../middleware/errorHandler';
+import { ApiError } from '../../utils/errors';
 
 export class BudgetCategoriesService {
   constructor(private prisma: PrismaClient) {}
@@ -116,7 +116,7 @@ export class BudgetCategoriesService {
     });
 
     if (!group) {
-      throw new AppError('Category group not found', 404);
+      throw new ApiError('Category group not found', 404);
     }
 
     return this.prisma.budgetCategoryGroup.update({
@@ -132,11 +132,11 @@ export class BudgetCategoriesService {
     });
 
     if (!group) {
-      throw new AppError('Category group not found', 404);
+      throw new ApiError('Category group not found', 404);
     }
 
     if (group.categories.length > 0) {
-      throw new AppError('Cannot delete group with categories', 400);
+      throw new ApiError('Cannot delete group with categories', 400);
     }
 
     await this.prisma.budgetCategoryGroup.delete({
@@ -160,7 +160,7 @@ export class BudgetCategoriesService {
     });
 
     if (!group) {
-      throw new AppError('Category group not found', 404);
+      throw new ApiError('Category group not found', 404);
     }
 
     const maxOrder = await this.prisma.budgetCategory.findFirst({
@@ -199,7 +199,7 @@ export class BudgetCategoriesService {
     });
 
     if (!category) {
-      throw new AppError('Category not found', 404);
+      throw new ApiError('Category not found', 404);
     }
 
     return this.prisma.budgetCategory.update({
@@ -214,7 +214,7 @@ export class BudgetCategoriesService {
     });
 
     if (!category) {
-      throw new AppError('Category not found', 404);
+      throw new ApiError('Category not found', 404);
     }
 
     // Check if category has transactions
@@ -223,7 +223,7 @@ export class BudgetCategoriesService {
     });
 
     if (transactionCount > 0) {
-      throw new AppError('Cannot delete category with transactions', 400);
+      throw new ApiError('Cannot delete category with transactions', 400);
     }
 
     await this.prisma.budgetCategory.delete({
@@ -240,7 +240,7 @@ export class BudgetCategoriesService {
     });
 
     if (groups.length !== groupIds.length) {
-      throw new AppError('Invalid group IDs', 400);
+      throw new ApiError('Invalid group IDs', 400);
     }
 
     // Update order for each group
@@ -260,7 +260,7 @@ export class BudgetCategoriesService {
     });
 
     if (!group) {
-      throw new AppError('Category group not found', 404);
+      throw new ApiError('Category group not found', 404);
     }
 
     const categories = await this.prisma.budgetCategory.findMany({
@@ -272,7 +272,7 @@ export class BudgetCategoriesService {
     });
 
     if (categories.length !== categoryIds.length) {
-      throw new AppError('Invalid category IDs', 400);
+      throw new ApiError('Invalid category IDs', 400);
     }
 
     // Update order for each category

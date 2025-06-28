@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ApiError } from '../../middleware/errorHandler';
+import { ApiError } from '../../utils/errors';
 
 export class MonthlyBudgetService {
   constructor(private prisma: PrismaClient) {}
@@ -93,7 +93,7 @@ export class MonthlyBudgetService {
     });
 
     if (!category) {
-      throw new AppError('Category not found', 404);
+      throw new ApiError('Category not found', 404);
     }
 
     // Calculate activity for this month

@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../utils/logger';
 import { ZodError } from 'zod';
+import { ApiError } from '../utils/errors';
 
-export interface ApiError extends Error {
-  statusCode?: number;
-  code?: string;
-  details?: any;
-}
+export { ApiError };
 
 export const errorHandler = (
   err: ApiError,
