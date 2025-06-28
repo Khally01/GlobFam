@@ -68,3 +68,23 @@ Thumbs.db
 # Temporary files
 tmp
 temp
+*.temp
+*.backup
+*.optimized
+*.disabled
+*.old
+*.orig
+build-errors.log
+serve.json
+index.html
+
+# Build artifacts
+tsconfig.tsbuildinfo
+
+# Deployment variations
+railway.*.toml
+railway.*.json
+Dockerfile.*
+package.json.*
+!package.json
+!package-lock.json

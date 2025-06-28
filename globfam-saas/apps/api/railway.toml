@@ -1,9 +1,9 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+builder = "NIXPACKS"
+buildCommand = "rm -f package-lock.json && npm install --legacy-peer-deps && npx prisma generate && npm run build"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "npx prisma migrate deploy --skip-seed && npm start"
 healthcheckPath = "/health"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
