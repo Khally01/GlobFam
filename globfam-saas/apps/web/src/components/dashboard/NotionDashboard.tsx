@@ -482,7 +482,7 @@ function AssetsPieChart({ assets, primaryCurrency }: { assets: any[], primaryCur
     return acc
   }, {} as Record<string, { name: string, value: number, count: number }>)
 
-  const data = Object.values(assetsByType)
+  const data = Object.values(assetsByType) as Array<{ name: string; value: number; count: number }>
   const total = data.reduce((sum, item) => sum + item.value, 0)
 
   const COLORS = ['#635bff', '#00d924', '#ff5722', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ec4899']

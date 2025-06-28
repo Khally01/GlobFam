@@ -1,15 +1,18 @@
-# Build stage
+# Dependencies stage - production only
 FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-# Install dependencies with memory optimization
+# Copy package files
 COPY package.json ./
+COPY prisma ./prisma/
+
+# Install production dependencies only (without postinstall)
 ENV NODE_OPTIONS="--max-old-space-size=512"
-RUN npm install --only=production --legacy-peer-deps --no-audit --no-fund && \
+RUN npm install --only=production --legacy-peer-deps --no-audit --no-fund --ignore-scripts && \
     rm -rf /root/.npm
 
-# Build stage
+# Builder stage - all dependencies
 FROM node:18-alpine AS builder
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
@@ -18,11 +21,13 @@ WORKDIR /app
 COPY package.json ./
 COPY prisma ./prisma/
 
-# Install all dependencies including dev
+# Install ALL dependencies including dev (needed for build)
 ENV NODE_OPTIONS="--max-old-space-size=512"
 RUN npm install --legacy-peer-deps --no-audit --no-fund && \
-    npx prisma generate && \
     rm -rf /root/.npm
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Copy source code
 COPY tsconfig.json ./
@@ -31,7 +36,7 @@ COPY src ./src
 # Build application
 RUN npm run build
 
-# Runner stage
+# Runner stage - production
 FROM node:18-alpine AS runner
 RUN apk add --no-cache libc6-compat openssl && \
     addgroup -g 1001 -S nodejs && \
@@ -39,11 +44,16 @@ RUN apk add --no-cache libc6-compat openssl && \
 
 WORKDIR /app
 
-# Copy production dependencies
+# Copy production dependencies from deps stage
 COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
+
+# Copy Prisma client from builder
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy built application
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --chown=nodejs:nodejs package*.json ./
+COPY --chown=nodejs:nodejs package.json ./
 COPY --chown=nodejs:nodejs prisma ./prisma
 
 USER nodejs
