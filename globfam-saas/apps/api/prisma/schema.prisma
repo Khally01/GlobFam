@@ -32,6 +32,11 @@ model Organization {
   bankConnections BankConnection[]
   importHistory   ImportHistory[]
   budgets         Budget[]
+  
+  // Budget relationships
+  budgetCategoryGroups BudgetCategoryGroup[]
+  budgetCategories     BudgetCategory[]
+  monthlyBudgets       MonthlyBudget[]
 
   @@index([plan])
   @@index([stripeCustomerId])

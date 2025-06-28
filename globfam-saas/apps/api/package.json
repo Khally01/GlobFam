@@ -5,8 +5,6 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "npx prisma generate && npx tsc",
-    "postinstall": "prisma generate",
-    "railway-build": "npm ci && prisma generate && npm run build",
     "start": "node dist/index.js",
     "start:prod": "node dist/index.js",
     "start:dev": "ts-node src/index.ts",
