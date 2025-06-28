@@ -57,21 +57,9 @@ export default function BudgetCategoriesPage() {
       const response = await api.get('/api/budget-categories')
       setGroups(response.data.data || [])
       
-      // If no categories exist, offer to create defaults
+      // If no categories exist, show empty state
       if (response.data.data?.length === 0) {
-        toast({
-          title: 'No categories found',
-          description: 'Would you like to create default budget categories?',
-          action: (
-            <Button 
-              size="sm" 
-              onClick={createDefaultCategories}
-              className="brand-button"
-            >
-              Create Defaults
-            </Button>
-          )
-        })
+        // Empty state will be shown, no toast needed
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error)

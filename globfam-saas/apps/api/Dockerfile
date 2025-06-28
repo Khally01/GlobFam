@@ -1,16 +1,20 @@
-FROM node:18-slim
+# Use Node.js 18
+FROM node:18-alpine AS builder
 
-# Install OpenSSL for Prisma
-RUN apt-get update -y && apt-get install -y openssl
+# Install dependencies for Prisma
+RUN apk add --no-cache openssl
 
+# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (ignore lock file issues)
+RUN npm install --legacy-peer-deps
+
+# Copy Prisma schema
+COPY prisma ./prisma
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -21,8 +25,29 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Production stage
+FROM node:18-alpine AS production
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm install --production --legacy-peer-deps
+
+# Copy Prisma files and generated client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
+
+# Copy built application
+COPY --from=builder /app/dist ./dist
+
 # Expose port
 EXPOSE 3001
 
-# Start the application
-CMD ["npm", "start"]
+# Run migrations and start the app
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
