@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "rm -f package-lock.json && npm install --legacy-peer-deps && npx prisma generate && npm run build"
+buildCommand = "npm install --legacy-peer-deps && npx prisma generate && npm run build"
 
 [deploy]
 startCommand = "npx prisma migrate deploy --skip-seed && npm start"
