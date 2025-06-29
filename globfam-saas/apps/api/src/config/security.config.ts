@@ -7,10 +7,11 @@ export class SecurityConfig {
    * Encrypt sensitive data like API keys
    */
   static encrypt(text: string, masterKey?: string): { encrypted: string; iv: string } {
-    const key = Buffer.from(
-      masterKey || process.env.ENCRYPTION_KEY || 'default-32-char-encryption-key!!',
-      'utf8'
-    ).slice(0, 32);
+    const encryptionKey = masterKey || process.env.ENCRYPTION_KEY;
+    if (!encryptionKey) {
+      throw new Error('ENCRYPTION_KEY environment variable is required for production security');
+    }
+    const key = Buffer.from(encryptionKey, 'utf8').slice(0, 32);
     
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(this.algorithm, key, iv);
@@ -28,10 +29,11 @@ export class SecurityConfig {
    * Decrypt sensitive data
    */
   static decrypt(encryptedData: { encrypted: string; iv: string }, masterKey?: string): string {
-    const key = Buffer.from(
-      masterKey || process.env.ENCRYPTION_KEY || 'default-32-char-encryption-key!!',
-      'utf8'
-    ).slice(0, 32);
+    const encryptionKey = masterKey || process.env.ENCRYPTION_KEY;
+    if (!encryptionKey) {
+      throw new Error('ENCRYPTION_KEY environment variable is required for production security');
+    }
+    const key = Buffer.from(encryptionKey, 'utf8').slice(0, 32);
     
     const decipher = crypto.createDecipheriv(
       this.algorithm,
