@@ -26,6 +26,7 @@ import budgetRoutes from './routes/budget.routes';
 import budgetCategoriesRoutes from './routes/budget-categories.routes';
 import setupRoutes from './routes/setup';
 import fixMigrationsRoutes from './routes/fix-migrations'; // TEMPORARY - REMOVE AFTER FIX
+import debugCheckRoutes from './routes/debug-check'; // TEMPORARY - REMOVE AFTER FIX
 
 // Load environment variables
 dotenv.config();
@@ -138,6 +139,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/families', familyRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/temp', fixMigrationsRoutes); // TEMPORARY - REMOVE AFTER FIX
+app.use('/api/temp', debugCheckRoutes); // TEMPORARY - REMOVE AFTER FIX
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api', importRoutes);
 app.use('/api', aiRoutes);
