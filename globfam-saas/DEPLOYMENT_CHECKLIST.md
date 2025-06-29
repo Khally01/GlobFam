@@ -12,6 +12,7 @@
 ### 2. Build Issues (COMPLETED)
 - [x] Fixed API missing dependencies (papaparse, exceljs)
 - [x] Fixed Web SWC binary issue
+- [x] Excluded test files from production build
 - [x] Both builds now passing
 
 ### 3. Configuration (COMPLETED)
