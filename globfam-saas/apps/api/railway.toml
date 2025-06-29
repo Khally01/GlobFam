@@ -1,9 +1,9 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm install --legacy-peer-deps && npx prisma generate && npm run build"
+buildCommand = "npm install --legacy-peer-deps && npm run build"
 
 [deploy]
-startCommand = "sh start.sh"
+startCommand = "sh start-production.sh"
 healthcheckPath = "/health"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3

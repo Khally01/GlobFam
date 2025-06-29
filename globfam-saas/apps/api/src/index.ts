@@ -140,10 +140,11 @@ if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_SETUP === 'true'
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Start server
-const server = app.listen(PORT, () => {
+// Start server - bind to all interfaces
+const server = app.listen(Number(PORT), '0.0.0.0', () => {
   logger.info(`🚀 GlobFam API running on port ${PORT}`);
   logger.info(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`🔗 Health check available at http://0.0.0.0:${PORT}/health`);
 });
 
 // Graceful shutdown

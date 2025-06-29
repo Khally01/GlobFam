@@ -5,10 +5,10 @@ nixPkgs = ["nodejs-18_x", "openssl"]
 cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["npx prisma generate", "npm run build"]
+cmds = ["npm run build"]
 
 [start]
-cmd = "sh start.sh"
+cmd = "sh start-production.sh"
 
 [variables]
 NODE_ENV = "production"
