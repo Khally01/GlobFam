@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const registerSchema = z.object({
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password, name, organizationName } = registerSchema.parse(body)
 
-    const supabase = await createServiceRoleClient()
+    const supabase = createServiceRoleClient()
 
     // Start a transaction by creating organization first
     const organizationSlug = generateSlug(organizationName)
