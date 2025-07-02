@@ -201,4 +201,4 @@ This project is proprietary software. All rights reserved.
 
 - Documentation: [docs.globfam.app](https://docs.globfam.app)
 - Email: support@globfam.app
-- Discord: [Join our community](https://discord.gg/globfam)
+- Discord: [Join our community](https://discord.gg/globfam)# Deployed with Vercel
