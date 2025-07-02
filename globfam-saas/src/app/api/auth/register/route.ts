@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server-client'
+import { createServiceRoleClient } from '../../../../lib/supabase/server-client'
 import { z } from 'zod'
 
 const registerSchema = z.object({
