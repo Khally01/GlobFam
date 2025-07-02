@@ -1,118 +1,48 @@
-# GlobFam - Multi-Currency Family Finance Platform 🌍💰
+# GlobFam - Multi-Currency Family Finance Platform
 
-> Empowering international student families to manage wealth across borders
+GlobFam helps international families manage finances across borders with multi-currency support, family sharing, and financial education features.
 
-## 🚀 Overview
-
-GlobFam solves the complex financial challenges faced by 6+ million international student families managing assets across multiple countries and currencies. Built by an international student, for international students.
-
-## ✨ Key Features
-
-- **Multi-Currency Dashboard**: Real-time view of family wealth in USD/AUD/MNT
-- **Family Coordination**: Shared budgets and financial goals
-- **Visa Compliance Tracking**: Monitor work hours and income limits
-- **Family Legacy**: Financial education platform for children
-- **Smart Insights**: Currency optimization and investment recommendations
-
-## 🛠️ Tech Stack
-
-- **Mobile**: React Native + Expo
-- **Backend**: Firebase (Auth, Firestore, Functions)
-- **APIs**: Currency exchange, banking integrations
-- **State**: Redux Toolkit
-- **UI**: React Native Paper
-
-## 📱 Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- Expo CLI
-- iOS Simulator (Xcode) or Android Studio
-- Firebase account
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/globfam.git
-cd globfam
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm start
-
-# Run on iOS
-npm run ios
-
-# Run on Android
-npm run android
-```
-
-### Environment Setup
-
-Create a `.env` file in the root directory:
-
-```env
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
-FIXER_API_KEY=your_fixer_api_key
-```
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
-globfam/
-├── src/
-│   ├── screens/          # App screens
-│   ├── components/       # Reusable components
-│   ├── services/         # API and Firebase services
-│   ├── store/           # Redux store and slices
-│   ├── navigation/      # React Navigation setup
-│   └── utils/           # Helper functions
-├── assets/              # Images, fonts, etc.
-├── docs/               # Documentation
+GlobFam/
+├── globfam-saas/       # Main web application (Next.js + Supabase)
+├── globfam-mobile/     # React Native mobile app (optional)
 └── marketing/          # Marketing materials
 ```
 
-## 🎯 Roadmap
+## Quick Start
 
-### Phase 1: MVP (Current)
-- [x] Project setup
-- [ ] Authentication flow
-- [ ] Multi-currency dashboard
-- [ ] Basic family sharing
+### Web Application
 
-### Phase 2: Core Features
-- [ ] Bank integrations
-- [ ] Visa compliance tracking
-- [ ] Real-time sync
-- [ ] Push notifications
+```bash
+cd globfam-saas
+npm install
+npm run dev
+```
 
-### Phase 3: Family Legacy
-- [ ] Child profiles
-- [ ] Educational content
-- [ ] Gamification
-- [ ] Achievement system
+### Deployment
 
-## 🤝 Contributing
+The main application is deployed on Vercel with Supabase:
+- Frontend: Vercel
+- Database & Auth: Supabase
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+See `globfam-saas/DEPLOYMENT.md` for detailed deployment instructions.
 
-## 📄 License
+## Tech Stack
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Frontend**: Next.js 14, React, TailwindCSS
+- **Backend**: Next.js API Routes, Supabase
+- **Database**: PostgreSQL (via Supabase)
+- **Auth**: Supabase Auth
+- **Mobile**: React Native (optional)
 
-## 🙏 Acknowledgments
+## Documentation
 
-Built with ❤️ for the international student community
+- [Deployment Guide](globfam-saas/DEPLOYMENT.md)
+- [Development Guide](globfam-saas/README.md)
+- [Claude AI Assistant Guide](CLAUDE.md)
 
----
+## License
 
-**Questions?** Reach out at globfam@example.com
+Proprietary - All rights reserved
