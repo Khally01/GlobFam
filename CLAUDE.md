@@ -54,7 +54,7 @@ chmod +x validate-deployment.sh
 - **Backend**: Express.js, TypeScript, PostgreSQL (Prisma ORM), Redis, JWT auth, Stripe
 - **Frontend**: Next.js 14 (App Router), React Query, Zustand, TailwindCSS, Shadcn UI
 - **Mobile**: React Native with Expo
-- **Infrastructure**: Docker, Railway, Vercel, GitHub Actions
+- **Infrastructure**: Docker, Vercel, Supabase, GitHub Actions
 
 ### Key Architectural Patterns
 
@@ -169,10 +169,10 @@ npx prisma studio  # Visual database browser
 3. Test database migrations locally
 4. Verify TypeScript compilation
 
-### Railway Deployment
-- API root directory: `/apps/api`
-- Web root directory: `/apps/web`
-- Set `NODE_OPTIONS=--max-old-space-size=512` for production
+### Vercel Deployment
+- Monorepo root: `/globfam-saas`
+- Automatic builds from main branch
+- Environment variables configured in Vercel dashboard
 
 ### Key Services
 - **Currency Service**: Real-time exchange rates, portfolio optimization

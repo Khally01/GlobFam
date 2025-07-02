@@ -120,18 +120,15 @@ elif [ "$ENVIRONMENT" = "production" ]; then
     docker push $REGISTRY_URL/globfam-api:latest
     docker push $REGISTRY_URL/globfam-web:latest
     
-    # Deploy via Railway/Vercel webhooks
+    # Deploy via Vercel webhook
     log_info "Triggering production deployment..."
-    if [ ! -z "$RAILWAY_WEBHOOK_URL" ]; then
-        curl -X POST $RAILWAY_WEBHOOK_URL
-    fi
     
     if [ ! -z "$VERCEL_WEBHOOK_URL" ]; then
         curl -X POST $VERCEL_WEBHOOK_URL
     fi
     
     log_success "Production deployment triggered successfully!"
-    log_info "Check Railway/Vercel dashboards for deployment status"
+    log_info "Check Vercel dashboard for deployment status"
 fi
 
 # Cleanup

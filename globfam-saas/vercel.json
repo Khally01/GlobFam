@@ -3,9 +3,9 @@
   "outputDirectory": "apps/web/.next",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
+  "regions": ["syd1", "iad1"],
   "functions": {
-    "apps/web/**/*.ts": {
+    "apps/web/src/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },
@@ -14,10 +14,21 @@
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_URL": "@next_public_api_url",
+      "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
       "NEXT_PUBLIC_APP_NAME": "@next_public_app_name",
       "NEXT_PUBLIC_APP_URL": "@next_public_app_url",
       "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@next_public_stripe_publishable_key"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/sync-exchange-rates",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-sessions",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }

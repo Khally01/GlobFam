@@ -1,169 +1,166 @@
 # GlobFam Deployment Guide
 
-## Quick Start
+This guide covers deploying GlobFam to Vercel (application) and Supabase (database & auth).
 
-### Prerequisites
-- Railway account with project created
-- PostgreSQL database (Railway or external)
-- Redis instance (Railway or external)
-- Stripe account (for payments)
-- OpenAI API key (for AI features)
+## Prerequisites
 
-### Deploy to Railway
+- Node.js 18+
+- Git repository (GitHub, GitLab, or Bitbucket)
+- Vercel account
+- Supabase account
 
-1. **Configure Railway Services**
-   - Create two services: `api` and `web`
-   - Set root directories:
-     - API Service: `/apps/api`
-     - Web Service: `/apps/web`
+## 1. Supabase Setup
 
-2. **Set Environment Variables**
-   
-   **API Service:**
-   ```bash
-   NODE_ENV=production
-   NODE_OPTIONS=--max-old-space-size=512
-   PORT=3001
-   DATABASE_URL=<your-postgres-url>
-   JWT_SECRET=<generate-with: openssl rand -base64 32>
-   JWT_REFRESH_SECRET=<generate-with: openssl rand -base64 32>
-   REDIS_URL=<your-redis-url>
-   OPENAI_API_KEY=<your-openai-key>
-   STRIPE_SECRET_KEY=<your-stripe-secret>
-   STRIPE_WEBHOOK_SECRET=<your-stripe-webhook-secret>
-   ```
+### Create Supabase Project
 
-   **Web Service:**
-   ```bash
-   NODE_ENV=production
-   NODE_OPTIONS=--max-old-space-size=512
-   NEXT_TELEMETRY_DISABLED=1
-   PORT=3000
-   NEXT_PUBLIC_API_URL=<your-api-service-url>
-   NEXT_PUBLIC_APP_NAME=GlobFam
-   NEXT_PUBLIC_APP_URL=<your-web-service-url>
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<your-stripe-publishable>
-   ```
+1. Go to [https://app.supabase.com](https://app.supabase.com)
+2. Create a new project
+3. Save your project URL and keys:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
 
-3. **Deploy**
-   ```bash
-   # From repository root
-   railway link
-   
-   # Deploy API
-   cd apps/api
-   railway up
-   
-   # Deploy Web
-   cd apps/web
-   railway up
-   ```
+### Run Database Migrations
 
-## Configuration Details
+```bash
+# Install Supabase CLI
+npm install -g supabase
 
-### Railway Configuration Files
+# Link to your project
+supabase link --project-ref your-project-ref
 
-Both services use Nixpacks for building:
+# Run migrations
+supabase db push
+```
 
-- **API**: `apps/api/railway.toml`
-- **Web**: `apps/web/railway.json`
+## 2. Vercel Setup
 
-These files are pre-configured with optimized build commands that handle dependency installation and memory constraints.
+### Connect Repository
 
-### Database Setup
+1. Go to [https://vercel.com/new](https://vercel.com/new)
+2. Import your Git repository
+3. Select the `globfam-saas` directory as the root
 
-1. **Create Database**
-   ```bash
-   # If using Railway PostgreSQL
-   railway run railway add
-   # Select PostgreSQL
-   ```
+### Configure Build Settings
 
-2. **Run Migrations**
-   ```bash
-   cd apps/api
-   npx prisma migrate deploy
-   ```
+- **Framework Preset**: Next.js
+- **Root Directory**: `globfam-saas`
+- **Build Command**: `npm run build`
+- **Output Directory**: `apps/web/.next`
+- **Install Command**: `npm install`
 
-3. **Seed Data (Optional)**
-   ```bash
-   npm run db:seed
-   ```
+### Environment Variables
 
-### Custom Domains
+Add these environment variables in Vercel dashboard:
 
-1. In Railway dashboard, go to service settings
-2. Add custom domain
-3. Configure DNS:
-   - API: `api.yourdomain.com`
-   - Web: `app.yourdomain.com`
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-## Troubleshooting
+# App Configuration
+NEXT_PUBLIC_APP_NAME=GlobFam
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 
-### Common Issues
+# Stripe (if using payments)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-**Memory Errors (Exit Code 137)**
-- Increase `NODE_OPTIONS` to `--max-old-space-size=768`
-- Upgrade Railway plan for more resources
+# External APIs
+OPENAI_API_KEY=sk-...
+EXCHANGE_RATE_API_KEY=your_api_key
+PLAID_CLIENT_ID=your_plaid_client_id
+PLAID_SECRET=your_plaid_secret
+BASIQ_API_KEY=your_basiq_api_key
+```
 
-**Build Failures**
-- Check environment variables are set
-- Clear Railway build cache
-- Review build logs in Railway dashboard
+## 3. Deploy
 
-**Database Connection Issues**
-- Verify `DATABASE_URL` format
-- Ensure SSL is enabled: `?sslmode=require`
-- Check connection pool limits
+### Initial Deployment
 
-**SWC/Next.js Issues**
-- Current config uses Nixpacks which handles this automatically
-- If issues persist, Railway support can help
+```bash
+# Install Vercel CLI
+npm install -g vercel
 
-### Health Checks
+# Deploy
+cd globfam-saas
+vercel
 
-- API: `https://api.yourdomain.com/health`
-- Web: `https://app.yourdomain.com`
+# Follow the prompts to link your project
+```
 
-## Production Checklist
+### Automatic Deployments
 
-- [ ] All environment variables set
-- [ ] Database migrations run
-- [ ] Redis connected
-- [ ] Stripe webhooks configured
-- [ ] Custom domains configured
-- [ ] SSL certificates active
-- [ ] Health checks passing
-- [ ] Error monitoring setup (optional)
+- **Production**: Pushes to `main` branch auto-deploy to production
+- **Preview**: Pull requests create preview deployments
 
-## Monitoring
+## 4. Post-Deployment
 
-### Railway Dashboard
-- CPU and memory usage
-- Build and deploy logs
-- Service health status
+### Configure Custom Domain
 
-### Application Monitoring (Optional)
-- Sentry for error tracking
-- LogDNA for centralized logging
-- Uptime monitoring service
+1. Go to Vercel Dashboard → Settings → Domains
+2. Add your domain (e.g., `globfam.app`)
+3. Update DNS records:
+   - A Record: `76.76.21.21`
+   - CNAME: `cname.vercel-dns.com`
 
-## Scaling
+### Set up Cron Jobs
 
-Railway automatically handles:
-- Zero-downtime deploys
-- Horizontal scaling (with proper plan)
-- Load balancing
-- SSL certificates
+Vercel automatically detects cron jobs from `vercel.json`:
+- Exchange rate sync: Every 6 hours
+- Session cleanup: Daily at midnight
 
-For advanced scaling needs:
-- Enable autoscaling in Railway
-- Add read replicas for database
-- Implement caching strategies
-- Use CDN for static assets
+### Monitor Performance
+
+1. Check Vercel Analytics for performance metrics
+2. Monitor Supabase dashboard for database usage
+3. Set up alerts for errors or performance issues
+
+## 5. Troubleshooting
+
+### Build Failures
+
+1. Check build logs in Vercel dashboard
+2. Ensure all environment variables are set
+3. Verify Node.js version compatibility
+
+### Database Connection Issues
+
+1. Verify Supabase project is active
+2. Check environment variables are correct
+3. Ensure RLS policies are properly configured
+
+### Authentication Issues
+
+1. Verify Supabase Auth settings
+2. Check redirect URLs in Supabase dashboard
+3. Ensure cookies are properly configured
+
+## 6. Scaling Considerations
+
+### Vercel Limits
+
+- **Free**: 100GB bandwidth, 100 hours build time
+- **Pro**: 1TB bandwidth, 400 hours build time
+- Consider upgrading for production use
+
+### Supabase Limits
+
+- **Free**: 500MB database, 2GB bandwidth
+- **Pro**: 8GB database, 50GB bandwidth
+- Monitor usage and upgrade as needed
+
+### Performance Optimization
+
+1. Enable Vercel Edge Functions for better performance
+2. Use Supabase connection pooling
+3. Implement caching strategies
+4. Optimize images with Next.js Image component
 
 ## Support
 
-- Railway Docs: https://docs.railway.app
-- Railway Discord: https://discord.gg/railway
-- GlobFam Issues: [Create issue in repository]
+- Vercel Documentation: [https://vercel.com/docs](https://vercel.com/docs)
+- Supabase Documentation: [https://supabase.com/docs](https://supabase.com/docs)
+- GlobFam Issues: [GitHub Issues](https://github.com/your-repo/issues)

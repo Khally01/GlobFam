@@ -37,9 +37,8 @@ npx prisma studio      # Open Prisma Studio GUI
 
 ### Deployment
 ```bash
-# Deploy to Railway (see DEPLOYMENT.md for full guide)
-cd apps/api && railway up
-cd apps/web && railway up
+# Deploy to Vercel (see DEPLOYMENT.md for full guide)
+vercel deploy
 ```
 
 ## Project Structure
@@ -161,15 +160,15 @@ This script checks:
 
 Quick deployment steps:
 1. Run `./validate-deployment.sh`
-2. Set root directories in Railway (`/apps/api` and `/apps/web`)
-3. Configure all environment variables
-4. Deploy with `railway up`
+2. Connect GitHub repo to Vercel
+3. Configure all environment variables in Vercel dashboard
+4. Deploy with `vercel deploy` or git push
 
 ## Important Notes
 
 - **Workspace packages**: Use direct imports, not `@globfam/*`
-- **Railway**: Uses Nixpacks builder with optimized commands
-- **Memory**: Set NODE_OPTIONS=--max-old-space-size=512 for production
+- **Vercel**: Automatic deployments from main branch
+- **Supabase**: Database, Auth, and Storage in one platform
 - **Security**: Always validate inputs and check organization access
 
 ## Need Help?

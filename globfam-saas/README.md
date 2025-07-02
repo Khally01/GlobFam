@@ -93,8 +93,8 @@ globfam/
 **Infrastructure:**
 - Docker containers
 - GitHub Actions CI/CD
-- Vercel (web hosting)
-- Railway/Render (API hosting)
+- Vercel (hosting)
+- Supabase (database & auth)
 
 ## 🔑 Key Features
 
@@ -137,10 +137,10 @@ cd apps/api
 npm run build
 ```
 
-2. Deploy to your platform:
-- Railway: `railway up`
-- Heroku: `git push heroku main`
-- Docker: `docker build -t globfam-api .`
+2. Deploy to Vercel:
+```bash
+vercel deploy
+```
 
 ### Web Deployment
 
