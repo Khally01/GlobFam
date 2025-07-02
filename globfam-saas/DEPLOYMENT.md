@@ -13,13 +13,14 @@ This guide covers deploying the GlobFam platform to Vercel with Supabase.
 
 1. Create a new Supabase project
 2. Go to Settings > Database and copy your connection string
-3. Run the migrations:
+3. Run the migrations from the root directory:
    ```bash
-   cd globfam-saas
+   cd /path/to/GlobFam
    npx supabase login
    npx supabase link --project-ref your-project-ref
    npx supabase db push
    ```
+   Note: Supabase files are in the root `supabase/` directory, not inside globfam-saas
 
 ## Step 2: Configure Environment Variables
 

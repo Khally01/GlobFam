@@ -33,3 +33,7 @@ packages/
 # Environment files
 .env*
 !.env.example
+
+# Supabase Edge Functions (Deno)
+supabase/functions/
+supabase/
