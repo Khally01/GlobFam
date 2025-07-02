@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '../../../../lib/supabase/server-client'
+import { createClient } from '@/lib/supabase'
 import { z } from 'zod'
 
 const loginSchema = z.object({

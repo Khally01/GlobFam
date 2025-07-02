@@ -35,5 +35,4 @@ packages/
 !.env.example
 
 # Supabase Edge Functions (Deno)
-supabase/functions/
-supabase/
+/supabase/
