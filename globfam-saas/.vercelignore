@@ -1,0 +1,35 @@
+# Development files
+*.sh
+*.md
+.git
+.gitignore
+.DS_Store
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Config files
+.eslintrc*
+.prettierrc*
+jest.config.*
+tsconfig.tsbuildinfo
+
+# Documentation
+docs/
+*.md
+
+# Scripts
+scripts/
+
+# Packages (if any)
+packages/
+
+# Logs
+*.log
+
+# Environment files
+.env*
+!.env.example
