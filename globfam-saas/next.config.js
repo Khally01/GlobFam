@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -20,6 +22,13 @@ const nextConfig = {
         tls: false,
       };
     }
+    
+    // Ensure proper alias resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './src'),
+    };
+    
     return config;
   },
   transpilePackages: ['lucide-react'],

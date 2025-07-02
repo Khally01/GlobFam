@@ -1,0 +1,5 @@
+{
+  "rootDirectory": "globfam-saas",
+  "framework": "nextjs",
+  "regions": ["syd1"]
+}
