@@ -1,9 +1,6 @@
 {
   "buildCommand": "cd globfam-saas && npm run build",
-  "outputDirectory": "globfam-saas/apps/web/.next",
+  "outputDirectory": "globfam-saas/.next",
   "installCommand": "cd globfam-saas && npm install",
-  "framework": "nextjs",
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "framework": "nextjs"
 }

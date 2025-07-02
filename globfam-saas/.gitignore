@@ -1,18 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-node_modules
-.pnp
+/node_modules
+/.pnp
 .pnp.js
 
 # testing
-coverage
+/coverage
+
+# next.js
+/.next/
+/out/
 
 # production
-build
-dist
-.next
-out
+/build
 
 # misc
 .DS_Store
@@ -22,14 +23,9 @@ out
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
 # local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*.local
 
 # vercel
 .vercel
@@ -38,53 +34,3 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# turbo
-.turbo
-
-# logs
-logs
-*.log
-
-# runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# prisma
-prisma/migrations/dev
-
-# IDEs
-.vscode
-.idea
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Temporary files
-tmp
-temp
-*.temp
-*.backup
-*.optimized
-*.disabled
-*.old
-*.orig
-build-errors.log
-serve.json
-index.html
-
-# Build artifacts
-tsconfig.tsbuildinfo
-
-# Deployment variations
-railway.*.toml
-railway.*.json
-Dockerfile.*
-package.json.*
-!package.json
-!package-lock.json
