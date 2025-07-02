@@ -3,11 +3,6 @@
   "outputDirectory": "apps/web/.next",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "functions": {
-    "apps/web/src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
