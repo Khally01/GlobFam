@@ -75,8 +75,11 @@ export default function DashboardLayout({
         
         if (!mountedRef.current) return
 
-        if (response.data.success && response.data.data) {
-          const { user: userData } = response.data.data
+        // The axios response.data contains our API response which has success/data structure
+        const apiResponse = response.data as any
+        
+        if (apiResponse.success && apiResponse.data) {
+          const { user: userData } = apiResponse.data
           
           // Update auth store - Supabase handles tokens via cookies
           useAuthStore.getState().setAuth({ 
