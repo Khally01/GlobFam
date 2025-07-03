@@ -50,9 +50,11 @@ export default function RegisterPage() {
       router.push('/dashboard')
     } catch (error: any) {
       console.error('Registration error:', error)
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || error.message || 'Something went wrong'
+      
       toast({
         title: 'Registration failed',
-        description: error.response?.data?.message || error.message || 'Something went wrong',
+        description: errorMessage,
         variant: 'destructive',
       })
     } finally {

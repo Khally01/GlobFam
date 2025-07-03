@@ -55,9 +55,11 @@ export default function LoginPage() {
       // Force navigation to dashboard
       window.location.href = '/dashboard'
     } catch (error: any) {
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || 'Invalid email or password'
+      
       toast({
         title: 'Login failed',
-        description: error.response?.data?.message || 'Invalid email or password',
+        description: errorMessage,
         variant: 'destructive',
       })
     } finally {
