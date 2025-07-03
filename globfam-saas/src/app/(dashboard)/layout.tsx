@@ -62,45 +62,34 @@ export default function DashboardLayout({
       authCheckRef.current = true
 
       try {
-        // First check if we have a token
-        const token = localStorage.getItem('token')
-        const cookieToken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('token='))
-          ?.split('=')[1]
-
-        const activeToken = token || cookieToken
-
-        if (!activeToken) {
-          console.log('No token found, redirecting to login')
-          router.push('/login')
-          return
-        }
-
         // If we already have user data, just verify it's still valid
         if (user) {
-          console.log('User data exists, verifying token')
+          console.log('User data exists in store')
           setLoading(false)
           return
         }
 
-        // Fetch user data
-        console.log('Fetching user data')
+        // Fetch user data from Supabase
+        console.log('Fetching user data from Supabase')
         const response = await authApi.getMe()
         
         if (!mountedRef.current) return
 
-        const { user: userData, organization: org, family } = response.data.data
-        
-        // Update auth store
-        useAuthStore.getState().setAuth({ 
-          user: userData, 
-          organization: org, 
-          family,
-          token: activeToken
-        })
+        if (response.data.success && response.data.data) {
+          const { user: userData } = response.data.data
+          
+          // Update auth store - Supabase handles tokens via cookies
+          useAuthStore.getState().setAuth({ 
+            user: userData, 
+            organization: userData.organization, 
+            family: userData.family,
+            token: 'supabase-managed' // Placeholder since Supabase manages this
+          })
 
-        setLoading(false)
+          setLoading(false)
+        } else {
+          throw new Error('Failed to fetch user data')
+        }
       } catch (error) {
         console.error('Auth check failed:', error)
         

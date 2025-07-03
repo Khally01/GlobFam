@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // Get user profile with organization
     const { data: userProfile, error } = await supabase
       .from('users')
-      .select('*, organization:organizations(*), family:families(*)')
+      .select('*, organization:organizations(*)')
       .eq('id', user.id)
       .single()
 
@@ -27,6 +27,18 @@ export async function GET(request: NextRequest) {
         { success: false, error: { message: 'User profile not found' } },
         { status: 404 }
       )
+    }
+
+    // Get family if user has one
+    let family = null
+    if (userProfile.family_id) {
+      const { data: familyData } = await supabase
+        .from('families')
+        .select('*')
+        .eq('id', userProfile.family_id)
+        .single()
+      
+      family = familyData
     }
 
     return NextResponse.json({
@@ -45,7 +57,7 @@ export async function GET(request: NextRequest) {
           organizationId: userProfile.organization_id,
           familyId: userProfile.family_id,
           organization: userProfile.organization,
-          family: userProfile.family,
+          family: family,
           created_at: userProfile.created_at,
           updated_at: userProfile.updated_at,
         }
