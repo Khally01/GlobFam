@@ -60,12 +60,30 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    if (authError || !authData.user) {
+    if (authError) {
+      // Rollback organization creation
+      await supabase.from('organizations').delete().eq('id', organization.id)
+      
+      // Check if user already exists
+      if (authError.message?.includes('already registered')) {
+        return NextResponse.json(
+          { success: false, error: { message: 'An account with this email already exists. Please sign in instead.' } },
+          { status: 400 }
+        )
+      }
+      
+      return NextResponse.json(
+        { success: false, error: { message: authError.message || 'Failed to create account' } },
+        { status: 400 }
+      )
+    }
+
+    if (!authData.user) {
       // Rollback organization creation
       await supabase.from('organizations').delete().eq('id', organization.id)
       
       return NextResponse.json(
-        { success: false, error: { message: authError?.message || 'Failed to create account' } },
+        { success: false, error: { message: 'Failed to create account - no user returned' } },
         { status: 400 }
       )
     }
@@ -128,7 +146,7 @@ export async function POST(request: NextRequest) {
 
     console.error('Registration error:', error)
     return NextResponse.json(
-      { success: false, error: { message: 'Internal server error' } },
+      { success: false, error: { message: error instanceof Error ? error.message : 'Internal server error' } },
       { status: 500 }
     )
   }
