@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
           organizationId: userProfile.organization_id,
           organization: userProfile.organization,
         },
+        organization: userProfile.organization,
+        token: data.session?.access_token,
         session: data.session,
       },
     })
