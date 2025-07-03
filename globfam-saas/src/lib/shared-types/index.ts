@@ -42,7 +42,7 @@ export interface Family {
   updatedAt: Date;
 }
 
-export type AssetType = 'CASH' | 'PROPERTY' | 'VEHICLE' | 'INVESTMENT' | 'CRYPTO' | 'SUPERANNUATION' | 'SOCIAL_INSURANCE' | 'DEBT' | 'OTHER';
+export type AssetType = 'BANK_ACCOUNT' | 'INVESTMENT' | 'PROPERTY' | 'CRYPTO' | 'LOAN' | 'CASH' | 'OTHER';
 
 export interface Asset {
   id: string;

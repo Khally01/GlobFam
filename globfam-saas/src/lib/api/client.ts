@@ -4,7 +4,7 @@ export async function apiClient(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  // Supabase handles auth via cookies, no need for manual token management
   
   const defaultHeaders: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
@@ -13,10 +13,6 @@ export async function apiClient(
   // Only set Content-Type if not already set (for FormData)
   if (!options.body || !(options.body instanceof FormData)) {
     defaultHeaders['Content-Type'] = 'application/json'
-  }
-  
-  if (token) {
-    defaultHeaders['Authorization'] = `Bearer ${token}`
   }
   
   const response = await fetch(`${API_URL}${endpoint}`, {
@@ -30,8 +26,7 @@ export async function apiClient(
       // Only redirect if we're not already on the login page
       const currentPath = window.location.pathname
       if (!currentPath.includes('/login')) {
-        localStorage.removeItem('token')
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+        // Supabase will handle clearing auth cookies
         window.location.href = '/login'
       }
     }

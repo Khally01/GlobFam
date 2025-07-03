@@ -10,15 +10,11 @@ export const api = axios.create({
   },
 })
 
-// Request interceptor to add auth token
+// Request interceptor - Supabase handles auth via cookies
 api.interceptors.request.use(
   (config) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token')
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-    }
+    // Supabase automatically includes auth cookies
+    // No need to manually add Authorization header
     return config
   },
   (error) => {
@@ -31,7 +27,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token')
+      // Redirect to login on auth errors
       window.location.href = '/login'
     }
     return Promise.reject(error)

@@ -86,10 +86,9 @@ export function DailyReminder() {
                 size="sm"
                 variant="outline"
                 className="border-blue-300 text-blue-700 hover:bg-blue-50"
-                disabled // Will be enabled when photo upload is implemented
               >
                 <Camera className="h-4 w-4 mr-1" />
-                Take Photo (Coming Soon)
+                Take Photo
               </Button>
             </div>
           </div>

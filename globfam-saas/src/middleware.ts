@@ -46,9 +46,6 @@ export async function middleware(request: NextRequest) {
 
   // Refresh session if expired
   const { data: { user }, error } = await supabase.auth.getUser()
-  
-  // Also check for JWT token cookie
-  const token = request.cookies.get('token')?.value
 
   // Define route types
   const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
@@ -57,15 +54,12 @@ export async function middleware(request: NextRequest) {
                           request.nextUrl.pathname.startsWith('/settings') ||
                           request.nextUrl.pathname.startsWith('/family')
 
-  // User is authenticated if they have either Supabase user or JWT token
-  const isAuthenticated = !!(user || token)
-
-  // Redirect logic
-  if (isProtectedRoute && !isAuthenticated) {
+  // Redirect logic - only check Supabase auth
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (isAuthPage && isAuthenticated) {
+  if (isAuthPage && user) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 

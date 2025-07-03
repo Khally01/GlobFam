@@ -43,9 +43,10 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       const response = await authApi.login(data)
-      const { user, organization, token } = response.data.data
+      const { user, organization } = response.data.data
 
-      setAuth({ user, organization, token })
+      // Supabase handles the session cookies automatically
+      setAuth({ user, organization, token: 'supabase-managed' })
       
       toast({
         title: 'Welcome back!',

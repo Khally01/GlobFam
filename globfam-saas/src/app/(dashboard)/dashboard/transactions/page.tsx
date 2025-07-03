@@ -21,6 +21,7 @@ import {
   Calendar,
   Search,
   Upload,
+  Camera,
   Sparkles,
   ChevronLeft,
   ChevronRight
@@ -34,6 +35,7 @@ import { EmptyTransactionsState } from './EmptyTransactionsState'
 import { SkeletonTransactionList } from '@/components/ui/skeleton-transactions'
 import { useDebounce } from '@/hooks/use-debounce'
 import { ExportTransactions } from '@/components/transactions/ExportTransactions'
+import { PhotoUploadModal } from '@/components/transactions/PhotoUploadModal'
 
 const transactionSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER']),
@@ -66,6 +68,8 @@ export default function TransactionsPage() {
   const [showForm, setShowForm] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [showCategorizeModal, setShowCategorizeModal] = useState(false)
+  const [showPhotoModal, setShowPhotoModal] = useState(false)
+  const [selectedAssetForPhoto, setSelectedAssetForPhoto] = useState<string>('')
   const [filter, setFilter] = useState<{
     type?: string
     category?: string
@@ -209,8 +213,24 @@ export default function TransactionsPage() {
           <ExportTransactions onExport={fetchTransactions} />
           <Button variant="outline" onClick={() => setShowImportModal(true)} className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue text-sm sm:text-base">
             <Upload className="h-4 w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Import</span>
+            <span className="hidden sm:inline">Import CSV</span>
             <span className="sm:hidden">Import</span>
+          </Button>
+          <Button variant="outline" onClick={() => {
+            if (assets.length === 0) {
+              toast({
+                title: 'No assets found',
+                description: 'Please create an asset first to upload receipts.',
+                variant: 'destructive',
+              })
+            } else {
+              setSelectedAssetForPhoto(assets[0].id)
+              setShowPhotoModal(true)
+            }
+          }} className="border-globfam-border text-globfam-slate hover:bg-globfam-cloud hover:text-globfam-deep-blue text-sm sm:text-base">
+            <Camera className="h-4 w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Upload Photo</span>
+            <span className="sm:hidden">Photo</span>
           </Button>
           <Button onClick={() => setShowForm(!showForm)} className="brand-button text-sm sm:text-base">
             <Plus className="h-4 w-4 mr-1 sm:mr-2" />
@@ -582,6 +602,28 @@ export default function TransactionsPage() {
         onComplete={() => {
           setShowCategorizeModal(false)
           fetchData()
+        }}
+      />
+
+      {/* Photo Upload Modal */}
+      <PhotoUploadModal
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
+        assetId={selectedAssetForPhoto}
+        onSuccess={(transactionData) => {
+          setShowPhotoModal(false)
+          // Pre-fill the form with extracted data
+          form.setValue('amount', transactionData.amount.toString())
+          form.setValue('description', transactionData.description)
+          form.setValue('date', transactionData.date)
+          form.setValue('category', transactionData.category)
+          form.setValue('assetId', selectedAssetForPhoto)
+          form.setValue('type', 'EXPENSE')
+          setShowForm(true)
+          toast({
+            title: 'Receipt uploaded',
+            description: 'Please review and complete the transaction details.',
+          })
         }}
       />
     </div>

@@ -30,11 +30,8 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setAuth: ({ user, organization, family, token }) => {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', token)
-          // Also set as cookie for middleware
-          document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}` // 7 days
-        }
+        // Supabase handles auth cookies automatically
+        // We only store user data for UI purposes
         set({
           user,
           organization,
@@ -52,11 +49,7 @@ export const useAuthStore = create<AuthState>()(
       updateFamily: (family) => set({ family }),
 
       logout: () => {
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token')
-          // Clear cookie
-          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-        }
+        // Supabase will handle clearing auth cookies
         set({
           user: null,
           organization: null,
@@ -68,11 +61,9 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () => {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('token')
           localStorage.removeItem('auth-storage')
-          // Clear cookie
-          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
         }
+        // Supabase will handle clearing auth cookies
         set({
           user: null,
           organization: null,

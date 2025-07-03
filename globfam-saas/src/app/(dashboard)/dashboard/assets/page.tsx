@@ -47,15 +47,12 @@ const assetSchema = z.object({
 type AssetForm = z.infer<typeof assetSchema>
 
 const ASSET_TYPES = [
-  { value: 'CASH', label: 'Cash', icon: Wallet },
   { value: 'BANK_ACCOUNT', label: 'Bank Account', icon: Building2 },
-  { value: 'PROPERTY', label: 'Property', icon: Home },
-  { value: 'VEHICLE', label: 'Vehicle', icon: Car },
+  { value: 'CASH', label: 'Cash', icon: Wallet },
   { value: 'INVESTMENT', label: 'Investment', icon: TrendingUp },
+  { value: 'PROPERTY', label: 'Property', icon: Home },
   { value: 'CRYPTO', label: 'Cryptocurrency', icon: Bitcoin },
-  { value: 'SUPERANNUATION', label: 'Superannuation', icon: PiggyBank },
-  { value: 'SOCIAL_INSURANCE', label: 'Social Insurance', icon: Shield },
-  { value: 'DEBT', label: 'Debt/Loan', icon: CreditCard },
+  { value: 'LOAN', label: 'Loan/Debt', icon: CreditCard },
   { value: 'OTHER', label: 'Other', icon: MoreHorizontal },
 ] as const
 
@@ -80,7 +77,7 @@ export default function AssetsPage() {
     defaultValues: {
       country: 'AU',
       currency: 'AUD',
-      type: 'CASH'
+      type: 'BANK_ACCOUNT'
     }
   })
 
