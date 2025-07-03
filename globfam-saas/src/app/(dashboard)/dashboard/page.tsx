@@ -8,6 +8,7 @@ import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress'
 import { NotionDashboard } from '@/components/dashboard/NotionDashboard'
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard'
 import { SkeletonDashboard } from '@/components/ui/skeleton'
+import { DailyReminder } from '@/components/dashboard/DailyReminder'
 
 export default function DashboardPage() {
   const { user, family } = useAuthStore()
@@ -85,6 +86,7 @@ export default function DashboardPage() {
   if (isNewUser) {
     return (
       <div className="space-y-6">
+        <DailyReminder />
         <OnboardingProgress />
         <EmptyDashboard />
       </div>
@@ -98,6 +100,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Daily reminder to log transactions */}
+      <DailyReminder />
+      
       {/* Show onboarding progress if user hasn't completed all steps */}
       <OnboardingProgress />
       
