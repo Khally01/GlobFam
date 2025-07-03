@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
 export async function apiClient(
   endpoint: string,
@@ -19,7 +19,7 @@ export async function apiClient(
     defaultHeaders['Authorization'] = `Bearer ${token}`
   }
   
-  const response = await fetch(`${API_URL}/api${endpoint}`, {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: defaultHeaders,
   })
