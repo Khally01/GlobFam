@@ -23,7 +23,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password, name, organizationName } = registerSchema.parse(body)
 
-    const supabase = createServiceRoleClient()
+    let supabase
+    try {
+      supabase = createServiceRoleClient()
+    } catch (serviceRoleError) {
+      console.error('Failed to create service role client:', serviceRoleError)
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: { 
+            message: 'Server configuration error. Please contact support.',
+            details: 'Service role key not configured'
+          } 
+        },
+        { status: 500 }
+      )
+    }
 
     // Start a transaction by creating organization first
     const organizationSlug = generateSlug(organizationName)
@@ -42,8 +57,16 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (orgError) {
+      console.error('Organization creation failed:', orgError)
       return NextResponse.json(
-        { success: false, error: { message: 'Failed to create organization' } },
+        { 
+          success: false, 
+          error: { 
+            message: 'Failed to create organization',
+            details: orgError.message,
+            hint: orgError.hint
+          } 
+        },
         { status: 400 }
       )
     }
@@ -107,8 +130,23 @@ export async function POST(request: NextRequest) {
       // This is critical - user is created in auth but not in our tables
       console.error('Failed to create user profile:', profileError)
       
+      // Try to provide more specific error info
+      let errorMessage = 'Account created but profile setup failed.'
+      if (profileError.message?.includes('violates foreign key constraint')) {
+        errorMessage = 'Database constraint error - please ensure all migrations are applied.'
+      } else if (profileError.message?.includes('permission denied')) {
+        errorMessage = 'Permission denied - service role key may not have sufficient permissions.'
+      }
+      
       return NextResponse.json(
-        { success: false, error: { message: 'Account created but profile setup failed. Please contact support.' } },
+        { 
+          success: false, 
+          error: { 
+            message: errorMessage,
+            details: profileError.message,
+            hint: profileError.hint || 'Please contact support'
+          } 
+        },
         { status: 500 }
       )
     }

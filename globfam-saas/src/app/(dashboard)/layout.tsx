@@ -58,54 +58,71 @@ export default function DashboardLayout({
   useEffect(() => {
     const checkAuth = async () => {
       // Prevent multiple auth checks
-      if (authCheckRef.current) return
+      if (authCheckRef.current || !mountedRef.current) return
       authCheckRef.current = true
 
       try {
-        // If we already have user data, just verify it's still valid
-        if (user) {
-          console.log('User data exists in store')
+        // If we already have user data in store, use it
+        if (user && organization) {
+          console.log('Using existing user data from store')
           setLoading(false)
           return
         }
 
-        // Fetch user data from Supabase
-        console.log('Fetching user data from Supabase')
+        // Fetch user data from API
+        console.log('Fetching user data from API')
         const response = await authApi.getMe()
         
         if (!mountedRef.current) return
 
-        // The axios response.data contains our API response which has success/data structure
+        // Check if the request was successful
+        if (response.status !== 200) {
+          throw new Error(`API returned status ${response.status}`)
+        }
+
+        // The axios response.data contains our API response
         const apiResponse = response.data as any
         
-        if (apiResponse.success && apiResponse.data) {
+        if (apiResponse.success && apiResponse.data?.user) {
           const { user: userData } = apiResponse.data
           
-          // Update auth store - Supabase handles tokens via cookies
+          console.log('User data fetched successfully:', userData.email)
+          
+          // Update auth store
           useAuthStore.getState().setAuth({ 
             user: userData, 
-            organization: userData.organization, 
-            family: userData.family,
-            token: 'supabase-managed' // Placeholder since Supabase manages this
+            organization: userData.organization || null, 
+            family: userData.family || null,
+            token: 'supabase-managed'
           })
 
           setLoading(false)
         } else {
-          throw new Error('Failed to fetch user data')
+          console.error('Invalid API response:', apiResponse)
+          throw new Error(apiResponse.error?.message || 'Failed to fetch user data')
         }
-      } catch (error) {
-        console.error('Auth check failed:', error)
+      } catch (error: any) {
+        console.error('Auth check failed:', error.message || error)
         
         if (!mountedRef.current) return
 
-        // Clear auth and redirect
-        clearAuth()
-        router.push('/login')
+        // If it's a 401, clear auth and redirect
+        if (error.response?.status === 401 || error.message?.includes('401')) {
+          clearAuth()
+          router.push('/login')
+        } else {
+          // For other errors, show error state
+          setLoading(false)
+          // You might want to set an error state here
+          console.error('Non-auth error, staying on page:', error)
+        }
+      } finally {
+        authCheckRef.current = false // Allow retry if needed
       }
     }
 
     checkAuth()
-  }, []) // Empty dependencies to run only once
+  }, [user, organization]) // Re-run if user or org changes
 
   const handleLogout = async () => {
     try {

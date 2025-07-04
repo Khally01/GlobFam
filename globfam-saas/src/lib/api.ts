@@ -22,13 +22,14 @@ api.interceptors.request.use(
   }
 )
 
-// Response interceptor to handle auth errors
+// Response interceptor - only for logging, no automatic redirects
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && typeof window !== 'undefined') {
-      // Redirect to login on auth errors
-      window.location.href = '/login'
+    // Log the error but don't automatically redirect
+    // Let the calling code handle auth errors appropriately
+    if (error.response?.status === 401) {
+      console.log('API returned 401 - authentication required')
     }
     return Promise.reject(error)
   }
