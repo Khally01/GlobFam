@@ -30,9 +30,15 @@ export function createClient() {
 }
 
 export function createServiceRoleClient() {
+  // For now, use the anon key since Vercel integration might not expose service role key
+  // This is a temporary fix - we'll need to handle this differently
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 
+                      process.env.SUPABASE_SERVICE_KEY ||
+                      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    supabaseKey,
     {
       cookies: {
         getAll() {
