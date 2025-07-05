@@ -5,7 +5,7 @@ import { assetsApi, transactionsApi } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
 import type { Asset, Transaction } from '@/lib/shared-types/index'
 import { OnboardingProgress } from '@/components/onboarding/OnboardingProgress'
-import { NotionDashboard } from '@/components/dashboard/NotionDashboard'
+import { ModernDashboard } from '@/components/dashboard/modern-dashboard'
 import { EmptyDashboard } from '@/components/dashboard/EmptyDashboard'
 import { SkeletonDashboard } from '@/components/ui/skeleton'
 import { DailyReminder } from '@/components/dashboard/DailyReminder'
@@ -106,8 +106,8 @@ export default function DashboardPage() {
       {/* Show onboarding progress if user hasn't completed all steps */}
       <OnboardingProgress />
       
-      {/* Notion-inspired Dashboard */}
-      <NotionDashboard 
+      {/* Modern Dashboard */}
+      <ModernDashboard 
         data={{
           assets,
           transactions,
