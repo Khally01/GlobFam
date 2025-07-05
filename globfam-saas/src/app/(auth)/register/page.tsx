@@ -45,10 +45,10 @@ export default function RegisterPage() {
       
       toast({
         title: 'Account created!',
-        description: 'Welcome to GlobFam. Your 14-day trial has started.',
+        description: 'Please check your email to confirm your account.',
       })
 
-      router.push('/dashboard')
+      router.push('/register-success')
     } catch (error: any) {
       console.error('Registration error:', error)
       const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || error.message || 'Something went wrong'

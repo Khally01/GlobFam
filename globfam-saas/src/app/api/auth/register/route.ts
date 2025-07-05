@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sign up the user
+    // Sign up the user with email confirmation
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
           name,
           organization_id: organization.id,
         },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.globfam.com.au'}/confirm-email`,
       },
     })
 
