@@ -83,7 +83,7 @@ export function QuickTemplates({ onSelectTemplate }: QuickTemplatesProps) {
                 {template.icon}
               </div>
               <span className="text-xs font-medium">{template.name}</span>
-              {template.amount > 0 && (
+              {template.amount && template.amount > 0 && (
                 <span className="text-xs text-muted-foreground">
                   ${template.amount}
                 </span>

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Plus, Upload, Sparkles, Search, Filter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { transactionsApi } from '@/lib/api'
+import { transactionsApi, assetsApi } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { Transaction } from '@/lib/shared-types'
 import { AddTransactionModal } from '@/components/transactions/add-transaction-modal'
@@ -19,6 +19,7 @@ export default function ModernTransactionsPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [assets, setAssets] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
@@ -27,6 +28,7 @@ export default function ModernTransactionsPage() {
 
   useEffect(() => {
     fetchTransactions()
+    fetchAssets()
     
     // Check if we should open the add modal
     if (searchParams.get('action') === 'add') {
@@ -49,6 +51,15 @@ export default function ModernTransactionsPage() {
     }
   }
 
+  const fetchAssets = async () => {
+    try {
+      const response = await assetsApi.getAll()
+      setAssets(response.data.data?.assets || [])
+    } catch (error) {
+      console.error('Failed to load assets:', error)
+    }
+  }
+
   const formattedTransactions = transactions.map(tx => ({
     id: tx.id,
     title: tx.description || `${tx.type} transaction`,
@@ -56,7 +67,7 @@ export default function ModernTransactionsPage() {
     member: user?.name || 'You',
     memberInitials: user?.name?.split(' ').map(n => n[0]).join('') || 'Y',
     date: new Date(tx.date).toLocaleDateString(),
-    amount: tx.amount,
+    amount: parseFloat(tx.amount),
     type: tx.type.toLowerCase() as 'income' | 'expense' | 'transfer'
   }))
 
@@ -151,16 +162,18 @@ export default function ModernTransactionsPage() {
       />
       
       <SimpleImportModal
-        open={showImportModal}
+        isOpen={showImportModal}
         onClose={() => setShowImportModal(false)}
+        assets={assets}
         onImportComplete={fetchTransactions}
       />
       
       {showCategorizeModal && (
         <CategorizeModal
-          transactions={transactions}
+          isOpen={showCategorizeModal}
           onClose={() => setShowCategorizeModal(false)}
-          onCategorized={fetchTransactions}
+          transactionIds={transactions.map(t => t.id)}
+          onComplete={fetchTransactions}
         />
       )}
     </div>

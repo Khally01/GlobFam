@@ -30,14 +30,14 @@ export function ModernDashboard({ data }: ModernDashboardProps) {
     if (!acc[type]) {
       acc[type] = { total: 0, count: 0, items: [] }
     }
-    acc[type].total += asset.balance
+    acc[type].total += parseFloat(asset.amount || '0')
     acc[type].count += 1
     acc[type].items.push(asset)
     return acc
   }, {} as Record<string, { total: number; count: number; items: Asset[] }>)
 
   // Calculate total portfolio value
-  const totalPortfolioValue = assets.reduce((sum, asset) => sum + asset.balance, 0)
+  const totalPortfolioValue = assets.reduce((sum, asset) => sum + parseFloat(asset.amount || '0'), 0)
 
   // Get recent transactions (last 5)
   const recentTransactions = transactions
@@ -50,8 +50,8 @@ export function ModernDashboard({ data }: ModernDashboardProps) {
       member: user?.name || 'You',
       memberInitials: user?.name?.split(' ').map(n => n[0]).join('') || 'Y',
       date: new Date(tx.date).toLocaleDateString(),
-      amount: tx.amount,
-      type: tx.type
+      amount: parseFloat(tx.amount),
+      type: tx.type.toLowerCase() as 'income' | 'expense' | 'transfer'
     }))
 
   // Mock currency data (you would calculate this from actual multi-currency assets)

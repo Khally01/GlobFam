@@ -46,7 +46,7 @@ export function ModernNav() {
   }
 
   const userInitials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'
-  const userPlan = organization?.plan || 'starter'
+  const userPlan = (organization?.plan || 'starter').toLowerCase()
 
   return (
     <nav className="bg-white border-b border-gray-200">
