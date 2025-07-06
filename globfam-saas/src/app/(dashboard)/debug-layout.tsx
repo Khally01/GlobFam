@@ -29,13 +29,13 @@ export default function DebugDashboardLayout({
     fetch('/api/health')
       .then(res => res.json())
       .then(data => {
-        setDebugInfo(prev => ({
+        setDebugInfo((prev: any) => ({
           ...prev,
           apiHealth: data
         }))
       })
       .catch(err => {
-        setDebugInfo(prev => ({
+        setDebugInfo((prev: any) => ({
           ...prev,
           apiError: err.message
         }))
