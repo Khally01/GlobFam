@@ -1,10 +1,10 @@
 import axios from 'axios'
 import type { ApiResponse } from '@/lib/shared-types'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || ''
-
+// Since we're using Next.js API routes, we don't need a separate API URL
+// Just use relative paths
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: '',
   headers: {
     'Content-Type': 'application/json',
   },
