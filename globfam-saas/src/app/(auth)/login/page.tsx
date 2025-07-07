@@ -7,8 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/shared-ui'
-import { authApi } from '@/lib/api'
-import { useAuthStore } from '@/store/auth'
+import { useAuth } from '@/components/auth-provider'
 import { useToast } from '@/hooks/use-toast'
 
 const loginSchema = z.object({
@@ -21,7 +20,7 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const { setAuth, user } = useAuthStore()
+  const { signIn, user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   // Redirect if already logged in
@@ -40,23 +39,20 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginForm) => {
+    console.log('Login attempt with email:', data.email)
     setIsLoading(true)
     try {
-      const response = await authApi.login(data)
-      const { user, organization } = response.data.data
-
-      // Supabase handles the session cookies automatically
-      setAuth({ user, organization, token: 'supabase-managed' })
+      await signIn(data.email, data.password)
       
       toast({
         title: 'Welcome back!',
         description: 'You have successfully logged in.',
       })
 
-      // Force navigation to dashboard
-      window.location.href = '/dashboard'
+      // The signIn method handles navigation to dashboard
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || 'Invalid email or password'
+      console.error('Login error:', error)
+      const errorMessage = error.message || 'Invalid email or password'
       
       toast({
         title: 'Login failed',

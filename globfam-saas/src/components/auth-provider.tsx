@@ -35,8 +35,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [initError, setInitError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
+  
+  let supabase
+  try {
+    supabase = createClient()
+  } catch (error) {
+    console.error('Failed to initialize Supabase client:', error)
+    setInitError(error instanceof Error ? error.message : 'Failed to initialize authentication')
+    setLoading(false)
+    return <div className="p-4 text-red-600">Authentication Error: {error instanceof Error ? error.message : 'Unknown error'}</div>
+  }
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -87,19 +97,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      // Use Supabase directly instead of API route
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    const data = await response.json()
+      if (error) {
+        console.error('Login error:', error)
+        throw new Error(error.message || 'Failed to sign in')
+      }
 
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to sign in')
+      // Successfully signed in
+      if (data.user) {
+        await fetchProfile(data.user.id)
+        // Auth state will be updated by the onAuthStateChange listener
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error('Sign in error:', error)
+      throw error
     }
-
-    router.push('/dashboard')
   }
 
   const signUp = async (
@@ -108,19 +127,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     name: string,
     organizationName: string
   ) => {
-    const response = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, name, organizationName }),
-    })
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name, organizationName }),
+      })
 
-    const data = await response.json()
+      const data = await response.json()
 
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to sign up')
+      if (!response.ok) {
+        console.error('Registration failed:', response.status, data)
+        throw new Error(data.error?.message || 'Failed to sign up')
+      }
+
+      // Auth state will be updated by the onAuthStateChange listener
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Sign up error:', error)
+      throw error
     }
-
-    router.push('/dashboard')
   }
 
   const signOut = async () => {

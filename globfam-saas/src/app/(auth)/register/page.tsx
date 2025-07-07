@@ -7,8 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/shared-ui'
-import { authApi } from '@/lib/api'
-import { useAuthStore } from '@/store/auth'
+import { useAuth } from '@/components/auth-provider'
 import { useToast } from '@/hooks/use-toast'
 
 const registerSchema = z.object({
@@ -23,7 +22,7 @@ type RegisterForm = z.infer<typeof registerSchema>
 export default function RegisterPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const setAuth = useAuthStore((state) => state.setAuth)
+  const { signUp } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   const {
@@ -37,11 +36,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true)
     try {
-      const response = await authApi.register(data)
-      const { user, organization } = response.data.data
-
-      // Supabase handles the session cookies automatically
-      setAuth({ user, organization, token: 'supabase-managed' })
+      await signUp(data.email, data.password, data.name, data.organizationName)
       
       toast({
         title: 'Account created!',
