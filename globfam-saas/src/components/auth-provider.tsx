@@ -35,7 +35,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [initError, setInitError] = useState<string | null>(null)
   const router = useRouter()
   
   let supabase
@@ -43,8 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase = createClient()
   } catch (error) {
     console.error('Failed to initialize Supabase client:', error)
-    setInitError(error instanceof Error ? error.message : 'Failed to initialize authentication')
-    setLoading(false)
     return <div className="p-4 text-red-600">Authentication Error: {error instanceof Error ? error.message : 'Unknown error'}</div>
   }
 
