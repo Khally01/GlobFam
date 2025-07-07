@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "precommit": "npm run lint && npm run type-check && npm run build",
+    "preview": "npm run build && npm run start",
+    "validate-env": "node scripts/validate-env.js",
+    "test:local": "npm run validate-env && npm run type-check && npm run lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
