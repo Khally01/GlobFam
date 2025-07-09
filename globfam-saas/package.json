@@ -11,7 +11,13 @@
     "precommit": "npm run lint && npm run type-check && npm run build",
     "preview": "npm run build && npm run start",
     "validate-env": "node scripts/validate-env.js",
-    "test:local": "npm run validate-env && npm run type-check && npm run lint"
+    "test:local": "npm run validate-env && npm run type-check && npm run lint",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:push": "prisma db push",
+    "prisma:pull": "prisma db pull",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
@@ -50,9 +56,11 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"
+    "@prisma/client": "^5.9.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "prisma": "^5.9.1",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "eslint": "^8.55.0",
